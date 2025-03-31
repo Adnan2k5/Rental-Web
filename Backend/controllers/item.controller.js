@@ -122,7 +122,7 @@ export const createItem = asyncHandler(async (req, res) => {
 
 export const updateItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, description, price, category, images, availableQuantity, location } = req.body;
+    const { name, description, price, category, availableQuantity, location } = req.body;
 
     if (!id) {
         throw new ApiError(400, "Item ID is required");
@@ -143,9 +143,9 @@ export const updateItem = asyncHandler(async (req, res) => {
     if (description !== undefined) updatedFields.description = description;
     if (price !== undefined) updatedFields.price = price;
     if (category !== undefined) updatedFields.category = category;
-    if (images !== undefined) {
+    if (req.files.images !== undefined) {
         await Promise.all(itemExists.images.map(async (image) => {
-            const link = await deleteFromCloudinary(image.path);
+            const link = await deleteFromCloudinary(image);
         }));
 
         const mediasUrl = await Promise.all(req.files.images.map(async (image) => {
