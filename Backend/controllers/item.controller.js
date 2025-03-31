@@ -87,4 +87,24 @@ export const discoverItems = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, "Items fetched successfully", items));
 });
 
+export const createItem = asyncHandler(async (req, res) => {
+    const { name, description, price, category, images, availableQuantity, location } = req.body;
+
+    if (!name || !description || !price || !category || !images || !availableQuantity || !location) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const item = await Item.create({
+        name,
+        description,
+        price,
+        category,
+        images,
+        availableQuantity,
+        location,
+        owner: req.user._id
+    });
+
+    res.status(201).json(new ApiResponse(201, "Item created successfully", item));
+});
 
