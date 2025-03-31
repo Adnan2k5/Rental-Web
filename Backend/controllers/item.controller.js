@@ -99,22 +99,17 @@ export const createItem = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Image is required");
     }
     
-    const imagesUrl = [];
-
-    const uploadPromises = req.files.map(async (image) => {
-        const uploadResponse = await uploadOnCloudinary(image.path);
-        return uploadResponse ? uploadResponse.url : null;
-    });
-    
-    const uploadedUrls = await Promise.all(uploadPromises);
-    imagesUrl.push(...uploadedUrls.filter(url => url !== null));
+    const mediasUrl = await Promise.all(req.files.images.map(async (image) => {
+        const link = await uploadOnCloudinary(image.path);
+        return link.url;
+    }));
 
     const item = await Item.create({
         name,
         description,
         price,
         category,
-        images: imagesUrl,
+        images: mediasUrl,
         status: "available",
         bookings: [],
         availableQuantity,
