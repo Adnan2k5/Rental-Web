@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
-import { getItemById, discoverItems, createItem } from '../controllers/item.controller.js';
+import { getItemById, discoverItems, createItem, updateItem, deleteItem } from '../controllers/item.controller.js';
 import upload from '../middlewares/upload.middleware.js';
 
 const router = express.Router();
