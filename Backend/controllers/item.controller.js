@@ -2,6 +2,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Item } from "../models/item.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -94,17 +95,62 @@ export const createItem = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
+    if(!req.file) {
+        throw new ApiError(400, "Image is required");
+    }
+    
+    const imagesUrl = [];
+
+    const uploadPromises = req.files.map(async (image) => {
+        const uploadResponse = await uploadOnCloudinary(image.path);
+        return uploadResponse ? uploadResponse.url : null;
+    });
+    
+    const uploadedUrls = await Promise.all(uploadPromises);
+    imagesUrl.push(...uploadedUrls.filter(url => url !== null));
+
     const item = await Item.create({
         name,
         description,
         price,
         category,
-        images,
+        images: imagesUrl,
+        status: "available",
+        bookings: [],
         availableQuantity,
         location,
         owner: req.user._id
     });
 
     res.status(201).json(new ApiResponse(201, "Item created successfully", item));
+});
+
+export const updateItem = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { name, description, price, category, images, availableQuantity, location } = req.body;
+
+    if (!name || !description || !price || !category || !images || !availableQuantity || !location) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const item = await Item.findByIdAndUpdate(
+        id,
+        {
+            name,
+            description,
+            price,
+            category,
+            images,
+            availableQuantity,
+            location
+        },
+        { new: true }
+    );
+
+    if (!item) {
+        throw new ApiError(404, "Item not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, "Item updated successfully", item));
 });
 
