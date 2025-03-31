@@ -7,7 +7,8 @@ import {
     getUserReviews,
     getBookingDetailsById,
     getReviewDetailsById,
-    updateReviewById
+    updateReviewById,
+    deleteReviewById
 } from '../controllers/user.controller.js';
 
 const router = express.Router();
@@ -19,9 +20,11 @@ router.get('/bookings', verifyJWT, getUserBookings);
 router.get('/bookings/:id', verifyJWT, getBookingDetailsById);
 
 router.get('/reviews', verifyJWT, getUserReviews);
-router.get('/reviews/:id', verifyJWT, getReviewDetailsById)
-.put(verifyJWT, updateReviewById)
-.delete(verifyJWT, deleteReviewById);
+
+router.route('/reviews/:id')
+    .get(verifyJWT, getReviewDetailsById)
+    .put(verifyJWT, updateReviewById)
+    .delete(verifyJWT, deleteReviewById);
 
 
 export default router;
