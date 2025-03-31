@@ -95,7 +95,7 @@ export const createItem = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
-    if(!req.file) {
+    if(!req.files || !req.files.images || req.files.images.length === 0) {
         throw new ApiError(400, "Image is required");
     }
     
@@ -144,7 +144,7 @@ export const updateItem = asyncHandler(async (req, res) => {
     if (price !== undefined) updatedFields.price = price;
     if (category !== undefined) updatedFields.category = category;
     if (images !== undefined) {
-        await Promise.all(updatedFields.images.map(async (image) => {
+        await Promise.all(itemExists.images.map(async (image) => {
             const link = await deleteFromCloudinary(image.path);
         }));
 
@@ -177,7 +177,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Item not found");
     }
 
-    if(item.user.toString() !== req.user._id.toString()) {
+    if(item.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "You are not authorized to delete this item");
     }
 
