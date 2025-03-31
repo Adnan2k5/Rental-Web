@@ -43,7 +43,7 @@ export const getBookingDetailsById = asyncHandler(async (req, res) => {
 export const getReviewDetailsById = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const review = await Item.findById(id).populate("item").populate("paymentDetails");
+    const review = await Review.findById(id).populate("item").populate("paymentDetails");
     if (!review) {
         throw new ApiError(404, "Review not found");
     }
