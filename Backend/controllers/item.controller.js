@@ -182,7 +182,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
     }
 
     await Promise.all(item.images.map(async (image) => {
-        const link = await deleteFromCloudinary(image.path);
+        const link = await deleteFromCloudinary(image);
     }));
 
     res.status(200).json(new ApiResponse(200, "Item deleted successfully", item));
