@@ -14,5 +14,12 @@ router.post('/upload', verifyJWT, upload.fields([
     },
 ]) ,createItem);
 
+router.put('/:id', verifyJWT, upload.fields([
+    {
+        name: 'images',
+        maxCount: 5
+    },
+]), updateItem).delete(verifyJWT, deleteItem);
+
 
 

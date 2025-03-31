@@ -2,7 +2,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Item } from "../models/item.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -124,23 +124,31 @@ export const updateItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { name, description, price, category, images, availableQuantity, location } = req.body;
 
-    if (!name || !description || !price || !category || !images || !availableQuantity || !location) {
-        throw new ApiError(400, "All fields are required");
+    if (!id) {
+        throw new ApiError(400, "Item ID is required");
     }
 
-    const item = await Item.findByIdAndUpdate(
-        id,
-        {
-            name,
-            description,
-            price,
-            category,
-            images,
-            availableQuantity,
-            location
-        },
-        { new: true }
-    );
+    const updatedFields = {};
+
+    if (name !== undefined) updatedFields.name = name;
+    if (description !== undefined) updatedFields.description = description;
+    if (price !== undefined) updatedFields.price = price;
+    if (category !== undefined) updatedFields.category = category;
+    if (images !== undefined) {
+        await Promise.all(updatedFields.images.map(async (image) => {
+            const link = await deleteFromCloudinary(image.path);
+        }));
+
+        const mediasUrl = await Promise.all(req.files.images.map(async (image) => {
+            const link = await uploadOnCloudinary(image.path);
+            return link.url;
+        }));
+        updatedFields.images = mediasUrl;
+    }
+    if (availableQuantity !== undefined) updatedFields.availableQuantity = availableQuantity;
+    if (location !== undefined) updatedFields.location = location;
+
+    const item = await Item.findByIdAndUpdate(id, updatedFields, { new: true });
 
     if (!item) {
         throw new ApiError(404, "Item not found");
@@ -149,3 +157,20 @@ export const updateItem = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, "Item updated successfully", item));
 });
 
+export const deleteItem = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if(!id) {
+        throw new ApiError(400, "Item ID is required");
+    }
+
+    const item = await Item.findByIdAndDelete(id);
+    if (!item) {
+        throw new ApiError(404, "Item not found");
+    }
+
+    await Promise.all(item.images.map(async (image) => {
+        const link = await deleteFromCloudinary(image.path);
+    }));
+
+    res.status(200).json(new ApiResponse(200, "Item deleted successfully", item));
+});
