@@ -362,61 +362,6 @@ const signInWithGoogle = asyncHandler(async (req, res) => {
 });
 
 
-const signInWithApple = asyncHandler(async (req, res) => {
-
-});
-
-const signInWithLinkedin = asyncHandler(async (req, res) => {
-    const { code } = req.body;
-
-    if (!code) {
-        throw new ApiError(400, "Code is Required");
-    }
-
-
-    const linkedinAccessToken = await getLinkedInAccessToken(code);
-    const userDetails = await verifyLinkedInToken(linkedinAccessToken);
-
-    let user = await User.findOne({ email: userDetails.email });
-
-    if (!user) {
-        user = await User.create({
-            email: userDetails.email,
-            name: userDetails.name,
-            verified: true,
-        }).select('email phoneNumber name verified role');
-
-        await user.save();
-    }
-
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user);
-
-    user.refreshToken = refreshToken;
-
-    await user.save();
-
-    const options = {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None'
-    };
-
-    return res.status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json(
-            new ApiResponse(
-                200,
-                {
-                    user: user,
-                    accessToken,
-                },
-                "User logged in Successfully",
-            )
-        );
-
-});
-
 const signInWithFacebook = asyncHandler(async (req, res) => {
     const { code } = req.body;
     if (!code) {
@@ -472,7 +417,5 @@ export {
     forgotPassword,
     updatePassword,
     signInWithGoogle,
-    signInWithApple,
-    signInWithLinkedin,
     signInWithFacebook,
 };
