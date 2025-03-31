@@ -187,3 +187,31 @@ export const deleteItem = asyncHandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200, "Item deleted successfully", item));
 });
+
+export const reviewItem = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+
+    if (!rating) {
+        throw new ApiError(400, "Rating is required");
+    }
+
+    const item = await Item.findById(id);
+    if (!item) {
+        throw new ApiError(404, "Item not found");
+    }
+
+    const reviewExists = item.reviews.find((review) => review.user.toString() === req.user._id.toString());
+    if (reviewExists) {
+        throw new ApiError(400, "You have already reviewed this item");
+    }
+
+    item.reviews.push({ user: req.user._id, rating, comment });
+    item.numReviews = item.reviews.length;
+    
+    item.avgRating = item.reviews.reduce((acc, review) => acc + review.rating, 0) / item.numReviews;
+
+    await item.save();
+
+    res.status(201).json(new ApiResponse(201, "Review added successfully", item));
+});
