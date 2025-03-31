@@ -6,10 +6,8 @@ import {
     loginUser, 
     forgotPassword, 
     updatePassword,
-    signInWithApple,
     signInWithFacebook,
     signInWithGoogle,
-    signInWithLinkedin,
 } from '../controllers/auth.controller.js';
 
 const authRoute = express.Router();
@@ -20,8 +18,6 @@ authRoute.post('/resendOtp', resendOtp);
 authRoute.post('/forgotPassword', forgotPassword);
 authRoute.post('/updatePassword', updatePassword);
 authRoute.post('/signInWithGoogle', signInWithGoogle);
-authRoute.post('/signInWithApple', signInWithApple);
-authRoute.post('/signInWithLinkedin', signInWithLinkedin);
 authRoute.post('/signInWithFacebook', signInWithFacebook);
 
 export default authRoute;
