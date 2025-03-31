@@ -128,6 +128,15 @@ export const updateItem = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Item ID is required");
     }
 
+    const itemExists = await Item.findById(id);
+    if (!itemExists) { 
+        throw new ApiError(404, "Item not found");
+    }
+
+    if (itemExists.owner.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not authorized to update this item");
+    }
+
     const updatedFields = {};
 
     if (name !== undefined) updatedFields.name = name;
@@ -166,6 +175,10 @@ export const deleteItem = asyncHandler(async (req, res) => {
     const item = await Item.findByIdAndDelete(id);
     if (!item) {
         throw new ApiError(404, "Item not found");
+    }
+
+    if(item.user.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this item");
     }
 
     await Promise.all(item.images.map(async (image) => {
