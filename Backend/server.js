@@ -7,8 +7,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import connectDB from "./config/db.config.js";
 import authRoute from "./routes/auth.routes.js"
-import adventureRoute from "./routes/adventure.routes.js"
 import userRoute from "./routes/user.routes.js"
+import itemRoute from "./routes/item.routes.js"
 import { initCloudinary } from "./utils/cloudinary.js";
 
 
@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoute);
-app.use("/api/adventure", adventureRoute);
+app.use("/api/item", itemRoute);
 app.use("/api/user", userRoute);
 
 
