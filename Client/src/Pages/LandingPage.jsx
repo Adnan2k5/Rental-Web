@@ -403,9 +403,9 @@ export default function LandingPage() {
               },
               {
                 number: "03",
-                title: "Enjoy & Return",
-                description: "We deliver to your doorstep. When done, schedule a pickup or extend your rental.",
-                icon: "🚚"
+                title: "Enjoy",
+                description: "Experience the convenience of renting without the hassle of ownership.",
+                icon: "🎉"
               }
             ].map((step, index) => (
               <motion.div 
