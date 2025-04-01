@@ -91,7 +91,6 @@ export default function Dashboard() {
     uploadedFiles.forEach((image) => {
         formData.append("images", image.file);
       });
-    console.log("formData", formData);
     const res = await createItems(formData);
     setIsNewItemDialogOpen(false);
     setUploadedFiles([]);
