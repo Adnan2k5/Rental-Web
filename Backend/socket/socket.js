@@ -1,4 +1,5 @@
 import { Message } from "../models/Message.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 /**
  * Socket.IO initialization and event handlers
  */
@@ -6,9 +7,9 @@ const initSocketIO = (io) => {
     const userSocketMap = new Map();
 
     io.on("connection", (socket) => {
-        
+
         // Listen for user joining a room
-        socket.on("joinRoom", async (userId) => {
+        socket.on("joinRoom", asyncHandler( async (userId) => {
             userSocketMap.set(userId, socket.id);
             socket.join(userId);
             console.log(`User ${userId} joined room: ${socket.id}`);
@@ -17,7 +18,7 @@ const initSocketIO = (io) => {
             if (pendingMessages.length > 0) {
                 socket.emit("pendingMessage", pendingMessages);
             }
-        });
+        }));
 
         // Listen for user disconnecting
         socket.on("disconnect", () => {
@@ -32,7 +33,7 @@ const initSocketIO = (io) => {
         });
 
         // Send Message to a specific user
-        socket.on("sendMessage", async ({ userId, message }) => {
+        socket.on("sendMessage", asyncHandler(async ({ userId, message }) => {
             const isOnline = userSocketMap.has(userId);
 
             await Message.create({
@@ -46,18 +47,16 @@ const initSocketIO = (io) => {
             if (isOnline) {
                 io.to(userId).emit("receiveMessage", message);
             } 
-        });
+        }));
 
         // Mark message as read
-        socket.on("markAsRead", async ({ messageId }) => {
+        socket.on("markAsRead", asyncHandler(async ({ messageId }) => {
             const message = await Message.findById(messageId);
             if (message) {
                 message.isRead = true;
                 await message.save();
             }
-        });
-
-
+        }));
     });
 };
 
