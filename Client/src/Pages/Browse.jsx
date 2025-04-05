@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowUpDown, Filter, Grid3X3, LayoutList, Search, ShoppingCart, Star, X } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
@@ -7,11 +7,21 @@ import { Slider } from "../components/ui/slider"
 import { Badge } from "../components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import ProductQuickView from "../Components/Quick-View"
-
+import { useAuth } from "../Middleware/AuthProvider"
+import { useSelector } from "react-redux"
+import { fetchAllItems } from "../api/items.api"
 export default function BrowsePage() {
-    const [activeView, setActiveView] = useState("grid");
+  const [products, setitems] = useState([])
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  useEffect(()=> {
+    if(!user){
+      navigate('/login')
+    }
+  }, [user])
+  const [activeView, setActiveView] = useState("grid");
   const [filters, setFilters] = useState({
     priceRange: [0, 200],
     categories: [],
@@ -19,6 +29,7 @@ export default function BrowsePage() {
     availability: [],
     rating: null,
   });
+
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const openQuickView = (product) => {
@@ -47,13 +58,17 @@ export default function BrowsePage() {
 
   // Mock data
   const categories = ["Electronics", "Furniture", "Appliances", "Fitness Equipment", "Home Office", "Kitchen", "Gaming", "Cameras"];
-  const brands = ["Apple", "Samsung", "Sony", "IKEA", "Google", "Herman Miller", "Whirlpool", "Peloton"];
   const availability = ["Available Now", "Available Within 1 Week", "Coming Soon"];
+  const FetchProducts = async()=> {
+    const res = await fetchAllItems();
+    console.log(res)
+    setitems(res.data)
+  }
 
-  const products = [
-    { id: 1, name: 'MacBook Pro 16"', category: "Electronics", brand: "Apple", rating: 4.8, reviews: 245, price: 35, availability: "Available Now", tags: ["Featured", "New"], image: "/placeholder.svg?height=200&width=300" },
-    { id: 2, name: "Modern Lounge Chair", category: "Furniture", brand: "Herman Miller", rating: 4.6, reviews: 189, price: 15, availability: "Available Now", tags: ["Featured"], image: "/placeholder.svg?height=200&width=300" },
-  ];
+  useEffect(()=> {
+    FetchProducts();
+  }, [products])
+  
 
   // Filter handlers
   const handleCategoryChange = (category) => {
@@ -63,12 +78,6 @@ export default function BrowsePage() {
     }));
   };
 
-  const handleBrandChange = (brand) => {
-    setFilters((prev) => ({
-      ...prev,
-      brands: prev.brands.includes(brand) ? prev.brands.filter((b) => b !== brand) : [...prev.brands, brand],
-    }));
-  };
 
   const handleAvailabilityChange = (status) => {
     setFilters((prev) => ({
@@ -94,6 +103,7 @@ export default function BrowsePage() {
   const clearFilters = () => {
     setFilters({ priceRange: [0, 200], categories: [], brands: [], availability: [], rating: null });
   };
+
 
   // Filtered products
   const filteredProducts = products.filter((product) => {
@@ -227,9 +237,9 @@ export default function BrowsePage() {
                 3
               </span>
             </Link>
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Sign In
+            <Link to="/profile">
+              <Button variant="ghost" className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white" size="sm">
+                {user ? user.email.charAt(0).toUpperCase() : ""}
               </Button>
             </Link>
           </div>
@@ -279,25 +289,6 @@ export default function BrowsePage() {
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                  <div className="flex items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setActiveView("grid")}
-                      className={activeView === "grid" ? "text-primary" : "text-muted-foreground"}
-                    >
-                      <Grid3X3 className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setActiveView("list")}
-                      className={activeView === "list" ? "text-primary" : "text-muted-foreground"}
-                    >
-                      <LayoutList className="h-5 w-5" />
-                    </Button>
-                  </div>
-
                   <div className="flex items-center gap-2 border-l pl-2">
                     <Button variant="ghost" size="sm" className="h-8 gap-1 text-sm font-normal">
                       Sort <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
