@@ -1,25 +1,63 @@
+import { Message } from "../models/Message.js";
 /**
  * Socket.IO initialization and event handlers
  */
 const initSocketIO = (io) => {
+    const userSocketMap = new Map();
+
     io.on("connection", (socket) => {
-        console.log(`User connected: ${socket.id}`);
         
-        // Handle chat messages
-        socket.on("send_message", (data) => {
-            socket.to(data.room).emit("receive_message", data);
+        // Listen for user joining a room
+        socket.on("joinRoom", async (userId) => {
+            userSocketMap.set(userId, socket.id);
+            socket.join(userId);
+            console.log(`User ${userId} joined room: ${socket.id}`);
+
+            const pendingMessages = await Message.find({ to: userId, isRead: false });
+            if (pendingMessages.length > 0) {
+                socket.emit("pendingMessage", pendingMessages);
+            }
         });
-        
-        // Join a room (for private messaging)
-        socket.on("join_room", (room) => {
-            socket.join(room);
-            console.log(`User ${socket.id} joined room: ${room}`);
-        });
-        
-        // Handle disconnection
+
+        // Listen for user disconnecting
         socket.on("disconnect", () => {
-            console.log(`User disconnected: ${socket.id}`);
+            // Find the user by socket ID
+            for(const [userId, socketId] of userSocketMap.entries()) {
+                if(socketId === socket.id) {
+                    userSocketMap.delete(userId);
+                    console.log(`User ${userId} disconnected`);
+                    break;
+                }
+            }
         });
+
+        // Send Message to a specific user
+        socket.on("sendMessage", async ({ userId, message }) => {
+            const isOnline = userSocketMap.has(userId);
+
+            await Message.create({
+                from: message.from,
+                to: userId,
+                content: message.content,
+                timestamp: message.timestamp,
+                isRead: false,
+            });
+
+            if (isOnline) {
+                io.to(userId).emit("receiveMessage", message);
+            } 
+        });
+
+        // Mark message as read
+        socket.on("markAsRead", async ({ messageId }) => {
+            const message = await Message.findById(messageId);
+            if (message) {
+                message.isRead = true;
+                await message.save();
+            }
+        });
+
+
     });
 };
 
