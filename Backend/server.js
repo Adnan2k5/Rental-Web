@@ -12,7 +12,7 @@ import authRoute from "./routes/auth.routes.js"
 import userRoute from "./routes/user.routes.js"
 import itemRoute from "./routes/item.routes.js"
 import { initCloudinary } from "./utils/cloudinary.js";
-
+import initSocketIO from "./socket/socket.js";
 
 const app = express();
 // Create HTTP server using Express app
@@ -21,7 +21,7 @@ const server = createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
 });
@@ -30,26 +30,8 @@ app.use(cors({origin: "http://localhost:5173", credentials: true}));
 app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Socket.IO connection handlers
-io.on("connection", (socket) => {
-    console.log(`User connected: ${socket.id}`);
-    
-    // Handle chat messages
-    socket.on("send_message", (data) => {
-        socket.to(data.room).emit("receive_message", data);
-    });
-    
-    // Join a room (for private messaging)
-    socket.on("join_room", (room) => {
-        socket.join(room);
-        console.log(`User ${socket.id} joined room: ${room}`);
-    });
-    
-    // Handle disconnection
-    socket.on("disconnect", () => {
-        console.log(`User disconnected: ${socket.id}`);
-    });
-});
+// Initialize Socket.IO with event handlers
+initSocketIO(io);
 
 // Routes
 app.use("/api/auth", authRoute);
