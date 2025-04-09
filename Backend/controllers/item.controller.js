@@ -30,6 +30,7 @@ export const discoverItems = asyncHandler(async (req, res) => {
         page = 1
     } = req.query;
 
+
     const categories = category
         ? (Array.isArray(category) ? category : [category])
         : [];
@@ -62,6 +63,7 @@ export const discoverItems = asyncHandler(async (req, res) => {
         .skip((page - 1) * limit);
 
     const totalItems = await Item.countDocuments(filter);
+
     res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
 });
 

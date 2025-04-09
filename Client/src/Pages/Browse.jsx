@@ -604,7 +604,7 @@ export default function BrowsePage() {
 
                   {/* Page numbers */}
                   {(() => {
-                    const totalPages = Math.ceil(countItems / filters.limit);
+                    const totalPages = Math.max(1, Math.ceil(countItems / filters.limit));
                     const pageNumbers = [];
                     const maxVisiblePages = 5;
 
@@ -628,7 +628,7 @@ export default function BrowsePage() {
                         </Button>
                       );
                       if (startPage > 2) {
-                        pageNumbers.push(<span key="ellipsis-start">...</span>);
+                        pageNumbers.push(<span key="ellipsis-start" className="px-1">...</span>);
                       }
                     }
 
@@ -648,7 +648,7 @@ export default function BrowsePage() {
 
                     if (endPage < totalPages) {
                       if (endPage < totalPages - 1) {
-                        pageNumbers.push(<span key="ellipsis-end">...</span>);
+                        pageNumbers.push(<span key="ellipsis-end" className="px-1">...</span>);
                       }
                       pageNumbers.push(
                         <Button
