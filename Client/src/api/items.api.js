@@ -1,6 +1,6 @@
 import axiosClient from "../Middleware/AxiosClient"
 
-export const fetchAllItems = async ({ priceRange, categories, brands, availability, rating, query }) => {
+export const fetchAllItems = async ({ priceRange, categories, brands, availability, rating, query, page, limit }) => {
     const res = await axiosClient.get("/api/item/discover", { 
         withCredentials: true, 
         params: { 
@@ -11,6 +11,8 @@ export const fetchAllItems = async ({ priceRange, categories, brands, availabili
             availability,
             rating,
             query,
+            page,
+            limit
         } 
     });
     return res;

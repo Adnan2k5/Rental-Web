@@ -32,7 +32,10 @@ export default function BrowsePage() {
     availability: [],
     rating: null,
     query: "",
+    page: 1,
+    limit: 10,
   });
+  const [countItems, setCountItems] = useState(0);
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -90,6 +93,7 @@ export default function BrowsePage() {
       try {
         const res = await fetchAllItems(filters);
         setitems(res.data.message.items);
+        setCountItems(res.data.message.totalItems);
       }
       catch (err) {
         console.log(err);
@@ -98,7 +102,7 @@ export default function BrowsePage() {
         setLoading(false);
       }
     };
-    
+
     FetchProducts();
   }, [filters]);
 
@@ -109,6 +113,7 @@ export default function BrowsePage() {
       categories: prev.categories.includes(category)
         ? prev.categories.filter((c) => c !== category)
         : [...prev.categories, category],
+      page: 1
     }));
   };
 
@@ -118,6 +123,7 @@ export default function BrowsePage() {
       availability: prev.availability.includes(status)
         ? prev.availability.filter((a) => a !== status)
         : [...prev.availability, status],
+      page: 1
     }));
   };
 
@@ -125,6 +131,7 @@ export default function BrowsePage() {
     setFilters((prev) => ({
       ...prev,
       priceRange: value,
+      page: 1
     }));
   };
 
@@ -132,6 +139,7 @@ export default function BrowsePage() {
     setFilters((prev) => ({
       ...prev,
       rating,
+      page: 1
     }));
   };
 
@@ -143,6 +151,15 @@ export default function BrowsePage() {
       availability: [],
       rating: null,
     });
+  };
+
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({
+      ...prev,
+      page: newPage
+    }));
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const FilterPanel = () => (
@@ -574,18 +591,90 @@ export default function BrowsePage() {
             {products.length > 0 && (
               <div className="mt-12 flex justify-center">
                 <div className="flex items-center gap-1">
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                    1
+                  {/* Previous page button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={() => handlePageChange(Math.max(1, filters.page - 1))}
+                    disabled={filters.page <= 1}
+                  >
+                    Previous
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    2
-                  </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    3
-                  </Button>
-                  <span>...</span>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    8
+
+                  {/* Page numbers */}
+                  {(() => {
+                    const totalPages = Math.ceil(countItems / filters.limit);
+                    const pageNumbers = [];
+                    const maxVisiblePages = 5;
+
+                    let startPage = Math.max(1, filters.page - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                    if (endPage - startPage + 1 < maxVisiblePages) {
+                      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                    }
+
+                    if (startPage > 1) {
+                      pageNumbers.push(
+                        <Button
+                          key={1}
+                          variant={filters.page === 1 ? "default" : "ghost"}
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => handlePageChange(1)}
+                        >
+                          1
+                        </Button>
+                      );
+                      if (startPage > 2) {
+                        pageNumbers.push(<span key="ellipsis-start">...</span>);
+                      }
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
+                      pageNumbers.push(
+                        <Button
+                          key={i}
+                          variant={filters.page === i ? "default" : "ghost"}
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => handlePageChange(i)}
+                        >
+                          {i}
+                        </Button>
+                      );
+                    }
+
+                    if (endPage < totalPages) {
+                      if (endPage < totalPages - 1) {
+                        pageNumbers.push(<span key="ellipsis-end">...</span>);
+                      }
+                      pageNumbers.push(
+                        <Button
+                          key={totalPages}
+                          variant={filters.page === totalPages ? "default" : "ghost"}
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => handlePageChange(totalPages)}
+                        >
+                          {totalPages}
+                        </Button>
+                      );
+                    }
+
+                    return pageNumbers;
+                  })()}
+
+                  {/* Next page button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={() => handlePageChange(filters.page + 1)}
+                    disabled={filters.page >= Math.ceil(countItems / filters.limit)}
+                  >
+                    Next
                   </Button>
                 </div>
               </div>
