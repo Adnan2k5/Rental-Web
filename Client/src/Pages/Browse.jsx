@@ -17,6 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProductQuickView from "../Components/Quick-View";
 import { useAuth } from "../Middleware/AuthProvider";
 import { fetchAllItems } from "../api/items.api";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 export default function BrowsePage() {
@@ -24,12 +25,6 @@ export default function BrowsePage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
-
   const [filters, setFilters] = useState({
     priceRange: [0, 200],
     categories: [],
@@ -40,6 +35,30 @@ export default function BrowsePage() {
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+
+  const categories = [
+    "Electronics",
+    "Furniture",
+    "Appliances",
+    "Fitness Equipment",
+    "Home Office",
+    "Kitchen",
+    "Gaming",
+    "Cameras",
+  ];
+
+  const availability = [
+    "Available Now",
+    "Available Within 1 Week",
+    "Coming Soon",
+  ];
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
   const openQuickView = (product) => {
     setQuickViewProduct(product);
   };
@@ -63,38 +82,25 @@ export default function BrowsePage() {
       },
     },
   };
-  const categories = [
-    "Electronics",
-    "Furniture",
-    "Appliances",
-    "Fitness Equipment",
-    "Home Office",
-    "Kitchen",
-    "Gaming",
-    "Cameras",
-  ];
-  const availability = [
-    "Available Now",
-    "Available Within 1 Week",
-    "Coming Soon",
-  ];
-  const FetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetchAllItems();
-      setitems(res.data.message);
-    }
-    catch (err) {
-      console.log(err);
-    }
-    finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const FetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await fetchAllItems(filters);
+        console.log(res.data.message);
+        setitems(res.data.message);
+      }
+      catch (err) {
+        console.log(err);
+      }
+      finally {
+        setLoading(false);
+      }
+    };
+    
     FetchProducts();
-  }, []);
+  }, [filters]);
 
   // Filter handlers
   const handleCategoryChange = (category) => {
@@ -138,29 +144,6 @@ export default function BrowsePage() {
       rating: null,
     });
   };
-
-  const filteredProducts = products.filter((product) => {
-    if (
-      product.price < filters.priceRange[0] ||
-      product.price > filters.priceRange[1]
-    )
-      return false;
-    if (
-      filters.categories.length > 0 &&
-      !filters.categories.includes(product.category)
-    )
-      return false;
-    if (filters.brands.length > 0 && !filters.brands.includes(product.brand))
-      return false;
-    if (
-      filters.availability.length > 0 &&
-      !filters.availability.includes(product.availability)
-    )
-      return false;
-    if (filters.rating !== null && product.rating < filters.rating)
-      return false;
-    return true;
-  });
 
   const FilterPanel = () => (
     <div className="space-y-6">
@@ -484,8 +467,8 @@ export default function BrowsePage() {
 
             {/* Product count */}
             <p className="text-sm text-muted-foreground mb-6">
-              Showing {filteredProducts.length}{" "}
-              {filteredProducts.length === 1 ? "product" : "products"}
+              Showing {products.length}{" "}
+              {products.length === 1 ? "product" : "products"}
             </p>
 
             {loading ? (
@@ -494,7 +477,7 @@ export default function BrowsePage() {
               <div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
               >
-                {filteredProducts.map((product, index) => (
+                {products.map((product, index) => (
                   <motion.div
                     key={index}
                     variants={fadeIn}
@@ -561,7 +544,7 @@ export default function BrowsePage() {
               </div>
             )}
 
-            {filteredProducts.length === 0 && (
+            {products.length === 0 && (
               <motion.div
                 className="py-12 text-center"
                 initial={{ opacity: 0 }}
@@ -580,7 +563,7 @@ export default function BrowsePage() {
             )}
 
             {/* Pagination */}
-            {filteredProducts.length > 0 && (
+            {products.length > 0 && (
               <div className="mt-12 flex justify-center">
                 <div className="flex items-center gap-1">
                   <Button variant="outline" size="sm" className="h-8 w-8 p-0">
