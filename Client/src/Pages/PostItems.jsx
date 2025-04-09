@@ -79,7 +79,7 @@ export default function Dashboard() {
     },
   });
 
-  
+
 
   const handlePostItem = async (data) => {
     const formData = new FormData();
@@ -89,10 +89,10 @@ export default function Dashboard() {
     formData.append("category", data.category);
     formData.append("availableQuantity", data.availableQuantity || 1);
     formData.append("location", data.location);
-    formData.append("available", data.available);   
+    formData.append("available", data.available);
     uploadedFiles.forEach((image) => {
-        formData.append("images", image.file);
-      });
+      formData.append("images", image.file);
+    });
     await createItems(formData);
     setIsNewItemDialogOpen(false);
     setUploadedFiles([]);
@@ -110,15 +110,15 @@ export default function Dashboard() {
 
   const [fetchItemsfrombackend, setFetchItems] = useState([]);
 
-  const fetchItems = async () => {
 
-    const res = await fetchByUserId(user.user._id);
-    setFetchItems(res.data.message);
-  }
 
   useEffect(() => {
+    const fetchItems = async () => {
+      const res = await fetchByUserId(user.user._id);
+      setFetchItems(res.data.message);
+    }
     fetchItems();
-  }, []);
+  }, [user]);
 
 
 
@@ -323,29 +323,28 @@ export default function Dashboard() {
               },
             ].map((item, index) => (
               <Link to={item.link || "#"} key={index}>
-              <motion.button
-                key={index}
-                className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${
-                  item.active
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-gray-100"
-                }`}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                {item.icon}
-                {item.label}
-                {item.active && (
-                  <motion.div
-                    className="ml-auto h-2 w-2 rounded-full bg-primary"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 2,
-                      repeat: Number.POSITIVE_INFINITY,
-                    }}
-                  />
-                )}
-              </motion.button>
+                <motion.button
+                  key={index}
+                  className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${item.active
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:bg-gray-100"
+                    }`}
+                  whileHover={{ x: 5 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  {item.icon}
+                  {item.label}
+                  {item.active && (
+                    <motion.div
+                      className="ml-auto h-2 w-2 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Number.POSITIVE_INFINITY,
+                      }}
+                    />
+                  )}
+                </motion.button>
               </Link>
             ))}
           </div>
@@ -484,17 +483,15 @@ export default function Dashboard() {
               >
                 <div className="flex items-center space-x-1 bg-white rounded-md p-1 border border-gray-200">
                   <button
-                    className={`p-1.5 rounded ${
-                      viewMode === "grid" ? "bg-gray-100" : ""
-                    }`}
+                    className={`p-1.5 rounded ${viewMode === "grid" ? "bg-gray-100" : ""
+                      }`}
                     onClick={() => setViewMode("grid")}
                   >
                     <Grid className="h-4 w-4 text-muted-foreground" />
                   </button>
                   <button
-                    className={`p-1.5 rounded ${
-                      viewMode === "list" ? "bg-gray-100" : ""
-                    }`}
+                    className={`p-1.5 rounded ${viewMode === "list" ? "bg-gray-100" : ""
+                      }`}
                     onClick={() => setViewMode("list")}
                   >
                     <List className="h-4 w-4 text-muted-foreground" />
@@ -644,7 +641,7 @@ export default function Dashboard() {
                               <button className="p-1.5 rounded-md hover:bg-gray-100">
                                 <Edit className="h-4 w-4 text-muted-foreground" />
                               </button>
-                              <button onClick={()=>{
+                              <button onClick={() => {
                                 ItemDelte(item._id)
                               }} className="p-1.5 rounded-md hover:bg-gray-100">
                                 <Trash2 className="h-4 w-4 text-muted-foreground" />
@@ -862,11 +859,10 @@ export default function Dashboard() {
               <div>
                 <Label className="block mb-2">Upload Images</Label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                    isDragging
+                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
                       ? "border-primary bg-primary/5"
                       : "border-gray-200"
-                  }`}
+                    }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -925,7 +921,7 @@ export default function Dashboard() {
                         >
                           <img
                             src={file.url
-                               || "/placeholder.svg"
+                              || "/placeholder.svg"
                             }
                             alt={`Preview ${index}`}
                             className="w-full h-full object-cover"
