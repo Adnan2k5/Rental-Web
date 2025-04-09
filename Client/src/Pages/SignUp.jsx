@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Link, useNavigate } from "react-router-dom"
 import "../App.css"
 import { useForm } from "react-hook-form"
-import { userRegister, verifyOtp } from "../api/auth.api"
+import { Otpresend, userRegister, verifyOtp } from "../api/auth.api"
 import {
   Dialog,
   DialogContent,
@@ -126,6 +126,21 @@ export default function SignUp() {
       if(err === 409){
         alert("Email already exists. Please use a different email.");
       }
+    }
+  }
+
+  const resendOtp = async () => {
+    try{
+      const res = await Otpresend({email});
+      if(res === true){
+        toast.success("OTP resent successfully");
+      }
+      else{
+        toast.error("Failed to resend OTP");
+      }
+    }
+    catch(err){
+      toast.error("Failed to resend OTP");
     }
   }
 

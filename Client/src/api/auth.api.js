@@ -58,3 +58,18 @@ export const verifyOtp = async (data) => {
     }
 }
 
+export const Otpresend = async (data) => {
+    try {
+        const res = await axiosClient.post("/api/auth/resendOtp", data);
+        if(res.status === 200){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    catch(err){
+        return false;
+    }
+}
+

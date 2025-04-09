@@ -5,10 +5,13 @@ import SignUp from './Pages/SignUp'
 import SignIn from './Pages/SignIn'
 import CartPage from './Pages/Cart'
 import BrowsePage from './Pages/Browse'
-import { Provider } from 'react-redux'
 import { Toaster } from 'sonner'
 import { AuthProvider } from './Middleware/AuthProvider'
 import ItemDashboard from './Pages/PostItems'
+import AdminDashboard from './Pages/Admin/AdminDashboard'
+import AdminLayout from './Pages/Admin/Layout'
+import ManageItems from './Pages/Admin/ManageItems'
+import ManageUsers from './Pages/Admin/ManageUser'
 
 
 function App() {
@@ -24,6 +27,11 @@ function App() {
           <Route path="/cart" element={<CartPage/>}/>
           <Route path='/browse' element={<BrowsePage/>}/>
           <Route path='/dashboard' element={<ItemDashboard/>}/>
+          <Route path='/admin' element={<AdminLayout/>}>
+            <Route index element={<AdminDashboard/>}/>
+            <Route path='/admin/items' element={<ManageItems/>}/>
+            <Route path='/admin/users' element={<ManageUsers/>}/>
+          </Route>
         </Routes>
         </AuthProvider>
       </BrowserRouter>
