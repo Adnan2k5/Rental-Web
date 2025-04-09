@@ -5,9 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
  */
 const initSocketIO = (io) => {
     const userSocketMap = new Map();
-
     io.on("connection", (socket) => {
-
         // Listen for user joining a room
         socket.on("joinRoom", asyncHandler( async (userId) => {
             userSocketMap.set(userId, socket.id);
