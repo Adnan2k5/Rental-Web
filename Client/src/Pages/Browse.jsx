@@ -63,12 +63,6 @@ export default function BrowsePage() {
       },
     },
   };
-
-  // // Use mock data for initial state
-  // useEffect(() => {
-  //   setitems(mockProducts);
-  // }, []);
-  // Mock data
   const categories = [
     "Electronics",
     "Furniture",
@@ -145,7 +139,6 @@ export default function BrowsePage() {
     });
   };
 
-  // Filtered products
   const filteredProducts = products.filter((product) => {
     if (
       product.price < filters.priceRange[0] ||

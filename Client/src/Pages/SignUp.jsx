@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Eye, EyeOff, Facebook, Twitter, ArrowRight, Sparkles } from "lucide-react"
+import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Checkbox } from "../components/ui/checkbox"
@@ -14,13 +14,12 @@ import { userRegister, verifyOtp } from "../api/auth.api"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../components/ui/dialog"
 import { useAuth } from "../Middleware/AuthProvider"
+import { toast } from "sonner"
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false)
@@ -33,22 +32,20 @@ export default function SignUp() {
   const [email, setEmail] = useState("")
   const navigate = useNavigate();
   const {user} = useAuth();
-
   useEffect(()=>{
-    if(user){
+    if(user?.user){
       navigate("/browse");
     }
-  }, [user])
-  // Rental Color Palette
-  const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
-  }
+  }, [user, navigate])
 
-  // Animation variants
+
+  const colors = {
+    primary: "#4D39EE",
+    secondary: "#191B24",
+    accent: "#4FC3F7",
+    light: "#FAFAFA",
+    dark: "#455A64", 
+  }
   const pageTransition = {
     hidden: { opacity: 0 },
     visible: {
@@ -132,7 +129,6 @@ export default function SignUp() {
     }
   }
 
-  // Particle effect for the form section
   const Particles = () => {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -173,9 +169,10 @@ export default function SignUp() {
       if (res === true) {
         reset();
         setIsOpen(false);
-        alert("OTP verified successfully!");
+        toast.success("Account created successfully.");
+        navigate("/browse");
       } else {
-        alert("Invalid OTP. Please try again.");
+        toast.error("Invalid OTP. Please try again.");
       }
     } catch (err) {
       console.log(err);
@@ -551,6 +548,9 @@ export default function SignUp() {
             onChange={(e) => setOtp(e.target.value)}
           />
           <DialogFooter>
+            <Button variant="outline" onClick={resendOtp}>
+              Resend OTP
+            </Button>
             <Button onClick={handleOtpSubmit}>Submit</Button>
           </DialogFooter>
         </DialogContent>
