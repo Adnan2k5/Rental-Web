@@ -11,6 +11,7 @@ export const createItems = async (data) => {
     console.log(res);
 }
 
+
 export const deleteItem = async (id) => {
     const res = await axiosClient.delete(`/api/item/${id}`, {withCredentials: true});
     return res

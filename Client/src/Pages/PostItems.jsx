@@ -48,7 +48,6 @@ import {
 import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
 import { createItems, deleteItem, fetchAllItems } from "../api/items.api";
 import { toast } from "sonner";
@@ -61,8 +60,6 @@ export default function Dashboard() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
-
-  // Form handling
   const {
     register,
     handleSubmit,
@@ -72,7 +69,7 @@ export default function Dashboard() {
     defaultValues: {
       title: "",
       description: "",
-      category: "electronics",
+      category: "Electronics",
       location: "",
       price: "",
       available: true,
@@ -109,66 +106,8 @@ export default function Dashboard() {
     dark: "#455A64", // Blue Grey
   };
 
-  // Sample user data
   
 
-
-  // Sample items data
-  const items = [
-    {
-      id: 1,
-      title: "Modern Desk Chair",
-      description: "Ergonomic office chair with lumbar support",
-      price: 25,
-      period: "week",
-      category: "Furniture",
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "2 weeks ago",
-      views: 45,
-      inquiries: 3,
-    },
-    {
-      id: 2,
-      title: "Professional DSLR Camera",
-      description:
-        "Canon EOS with 18-55mm lens, perfect for photography enthusiasts",
-      price: 50,
-      period: "day",
-      category: "Electronics",
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "5 days ago",
-      views: 120,
-      inquiries: 8,
-    },
-    {
-      id: 3,
-      title: "Mountain Bike",
-      description: "All-terrain bike, suitable for trails and city riding",
-      price: 15,
-      period: "day",
-      category: "Sports",
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "1 month ago",
-      views: 67,
-      inquiries: 5,
-    },
-    {
-      id: 4,
-      title: "Portable Projector",
-      description: "HD projector with Bluetooth speaker, ideal for home cinema",
-      price: 35,
-      period: "day",
-      category: "Electronics",
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "inactive",
-      postedDate: "3 months ago",
-      views: 32,
-      inquiries: 2,
-    },
-  ];
 
   const [fetchItemsfrombackend, setFetchItems] = useState([]);
 
