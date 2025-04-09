@@ -17,7 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProductQuickView from "../Components/Quick-View";
 import { useAuth } from "../Middleware/AuthProvider";
 import { fetchAllItems } from "../api/items.api";
-
+import { motion } from "framer-motion";
 
 export default function BrowsePage() {
   const [products, setitems] = useState([]);
