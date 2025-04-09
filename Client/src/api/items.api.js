@@ -10,3 +10,8 @@ export const createItems = async (data) => {
     const res = await axiosClient.post("/api/item/upload", data, {withCredentials: true, headers: { "Content-Type": "multipart/form-data" }});
     console.log(res);
 }
+
+export const deleteItem = async (id) => {
+    const res = await axiosClient.delete(`/api/item/${id}`, {withCredentials: true});
+    return res
+}

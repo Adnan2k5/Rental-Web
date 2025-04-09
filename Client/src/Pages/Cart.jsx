@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { AlertCircle, ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2, Truck } from "lucide-react"
 import { Button } from "../components/ui/button"
@@ -10,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
 import { Label } from "../components/ui/label"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
+import { useAuth } from "../Middleware/AuthProvider"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([
@@ -85,6 +84,8 @@ export default function CartPage() {
   // Is cart empty
   const isCartEmpty = cartItems.length === 0
 
+  const user = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
@@ -112,20 +113,19 @@ export default function CartPage() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link to="/cart" className="relative">
-              <ShoppingCart className="h-6 w-6 text-primary" />
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                {cartItems.length}
-              </span>
-            </Link>
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Sign In
+          {user.user ? (
+            <Link to="/profile">
+              <Button variant="ghost" className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white" size="sm">
+                {user.user.email.charAt(0).toUpperCase()}
               </Button>
             </Link>
-            <Link to="/register">
-              <Button size="sm">Register</Button>
-            </Link>
+              ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              )}
           </div>
         </div>
       </header>
@@ -283,7 +283,7 @@ export default function CartPage() {
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium mb-2">Have a promo code?</h3>
+                  <h3 className="font-medium mb-2">Have a promo code? //Later Part</h3>
                   <div className="flex">
                     <Input
                       type="text"
@@ -294,23 +294,6 @@ export default function CartPage() {
                     />
                     <Button className="rounded-l-none">Apply</Button>
                   </div>
-                </div>
-                <div className="flex-1 ml-4">
-                  <h3 className="font-medium mb-2 text-start">Choose shipping method</h3>
-                  <RadioGroup value={shippingMethod} onValueChange={setShippingMethod} className="flex flex-col gap-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="standard" id="standard" />
-                      <Label htmlFor="standard" className="flex-1">
-                        Standard (Free)
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="express" id="express" />
-                      <Label htmlFor="express" className="flex-1">
-                        Express ($15)
-                      </Label>
-                    </div>
-                  </RadioGroup>
                 </div>
               </div>
             </motion.div>
@@ -352,15 +335,8 @@ export default function CartPage() {
 
                   <div className="text-sm text-muted-foreground">
                     You'll be charged ${total.toFixed(2)} today, and then ${subtotal.toFixed(2)} per month starting next
-                    month.
+                    month. <br/>  <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
                   </div>
-
-                  <Alert variant="default" className="bg-primary/5 text-primary border-primary/20">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Free returns</AlertTitle>
-                    <AlertDescription>No long-term commitment. Cancel anytime.</AlertDescription>
-                  </Alert>
-
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
                   </Button>
@@ -368,8 +344,6 @@ export default function CartPage() {
                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <CreditCard className="h-3 w-3" />
                     <span>Secure Checkout</span>
-                    <Truck className="h-3 w-3 ml-2" />
-                    <span>Free Delivery & Returns</span>
                   </div>
                 </div>
               </div>
