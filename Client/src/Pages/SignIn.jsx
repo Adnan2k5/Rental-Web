@@ -21,7 +21,7 @@ export default function SignIn() {
     if(user){
       navigate("/browse")
     }
-  }, [user])
+  }, [user, navigate])
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [activeField, setActiveField] = useState(null)
@@ -300,25 +300,6 @@ export default function SignIn() {
                 </Button>
               </div>
             </motion.div>
-
-            <motion.div
-              className="flex items-center space-x-2"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 400 }}
-            >
-              <Checkbox
-                id="remember"
-                onCheckedChange={(checked) => setRememberMe(checked)}
-                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-              />
-              <label
-                htmlFor="remember"
-                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-dark"
-              >
-                Remember me
-              </label>
-            </motion.div>
-
             <motion.div variants={buttonHover} initial="rest" whileHover="hover">
               <Button
                 type="submit"

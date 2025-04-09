@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import {
   ArrowUpDown,
   Filter,
-  Grid3X3,
-  LayoutList,
   Search,
   ShoppingCart,
   Star,
@@ -165,7 +163,7 @@ export default function BrowsePage() {
   });
 
   const FilterPanel = () => (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Filters</h3>
         <Button
@@ -342,8 +340,6 @@ export default function BrowsePage() {
               <FilterPanel />
             </div>
           </motion.div>
-
-          {/* Mobile Filter Button */}
           <div className="lg:hidden mb-4">
             <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
               <SheetTrigger asChild>
@@ -380,19 +376,6 @@ export default function BrowsePage() {
                     className="pl-10"
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                </div>
-
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                  <div className="flex items-center gap-2 border-l pl-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 gap-1 text-sm font-normal"
-                    >
-                      Sort{" "}
-                      <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
