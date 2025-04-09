@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Eye, EyeOff, Facebook, Twitter, ArrowRight, Sparkles } from "lucide-react"
+import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from "lucide-react"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Checkbox } from "../components/ui/checkbox"
@@ -14,11 +14,9 @@ import { userRegister, verifyOtp } from "../api/auth.api"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../components/ui/dialog"
 import { useAuth } from "../Middleware/AuthProvider"
 
@@ -35,11 +33,10 @@ export default function SignUp() {
   const {user} = useAuth();
 
   useEffect(()=>{
-    if(user){
+    if(user?.user){
       navigate("/browse");
     }
-  }, [user])
-  // Rental Color Palette
+  }, [user, navigate])
   const colors = {
     primary: "#4D39EE", // Coral
     secondary: "#191B24", // Amber
