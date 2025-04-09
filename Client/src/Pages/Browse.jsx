@@ -31,6 +31,7 @@ export default function BrowsePage() {
     brands: [],
     availability: [],
     rating: null,
+    query: "",
   });
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -88,8 +89,7 @@ export default function BrowsePage() {
       setLoading(true);
       try {
         const res = await fetchAllItems(filters);
-        console.log(res.data.message);
-        setitems(res.data.message);
+        setitems(res.data.message.items);
       }
       catch (err) {
         console.log(err);
@@ -359,6 +359,14 @@ export default function BrowsePage() {
                     type="text"
                     placeholder="Search products..."
                     className="pl-10"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFilters((prev) => ({
+                        ...prev,
+                        query: value,
+                      }));
+                    }}
+                    value={filters.query || ""}
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 </div>

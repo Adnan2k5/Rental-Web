@@ -22,6 +22,7 @@ export const discoverItems = asyncHandler(async (req, res) => {
         location,
         availability,
         rating,
+        query,
         minPrice = 0,
         maxPrice = 99999999,
         limit = 10,
@@ -44,19 +45,25 @@ export const discoverItems = asyncHandler(async (req, res) => {
 
     const availableFilter = availableList.map((a) => availableListMap[a] || a);
 
-    const items = await Item.find({
+    // Build the main filter
+    const filter = {
         ...(categories.length > 0 && { category: { $in: categories } }),
         ...(availableFilter.length > 0 && { status: { $in: availableFilter } }),
         ...(location && { location }),
         ...(rating && { avgRating: { $gte: rating } }),
+        ...(query && { name: { $regex: query, $options: "i" } }),
         price: { $gte: minPrice, $lte: maxPrice },
-    })
+    };
+
+    const items = await Item.find(filter)
         .populate("owner", "name")
         .limit(limit * 1)
         .skip((page - 1) * limit);
 
-    res.status(200).json(new ApiResponse(200, "Items fetched successfully", items));
+    const totalItems = await Item.countDocuments(filter);
+    res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
 });
+
 
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, availableQuantity, location } = req.body;
