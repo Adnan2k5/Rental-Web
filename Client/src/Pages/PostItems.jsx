@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Plus,
@@ -50,7 +50,10 @@ import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
-import { createItems } from "../api/items.api";
+import { createItems, deleteItem, fetchAllItems } from "../api/items.api";
+import { toast } from "sonner";
+import { useAuth } from "../Middleware/AuthProvider";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("grid");
@@ -81,22 +84,22 @@ export default function Dashboard() {
 
   const handlePostItem = async (data) => {
     const formData = new FormData();
-    formData.append("title", data.title);
+    formData.append("name", data.name);
     formData.append("description", data.description);
-    formData.append("category", data.category);
-    formData.append("location", data.location);
     formData.append("price", data.price);
+    formData.append("category", data.category);
+    formData.append("availableQuantity", data.availableQuantity || 1);
+    formData.append("location", data.location);
     formData.append("available", data.available);   
-    formData.append("availableQuntity", data.availableQuntity);
     uploadedFiles.forEach((image) => {
         formData.append("images", image.file);
       });
     const res = await createItems(formData);
     setIsNewItemDialogOpen(false);
     setUploadedFiles([]);
+    toast.success("Item posted successfully!");
     reset();
   };
-  console.log(uploadedFiles);
   // Rental Color Palette
   const colors = {
     primary: "#4D39EE", // Coral
@@ -107,12 +110,8 @@ export default function Dashboard() {
   };
 
   // Sample user data
-  const user = {
-    name: "Alex Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    itemsPosted: 12,
-    joinedDate: "March 2023",
-  };
+  
+
 
   // Sample items data
   const items = [
@@ -170,6 +169,21 @@ export default function Dashboard() {
       inquiries: 2,
     },
   ];
+
+  const [fetchItemsfrombackend, setFetchItems] = useState([]);
+
+  const fetchItems = async () => {
+    const res = await fetchAllItems();
+    setFetchItems(res.data.message);
+  }
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+
+  const user = useAuth();
+
 
   // Animation variants
   const pageTransition = {
@@ -306,6 +320,16 @@ export default function Dashboard() {
     fileInputRef.current?.click();
   };
 
+  const ItemDelte = async (id) => {
+    const res = await deleteItem(id);
+    if (res.status === 200) {
+      toast.success("Item deleted successfully!");
+      fetchItems();
+    } else {
+      toast.error("Failed to delete item.");
+    }
+  }
+
   return (
     <motion.div
       className="min-h-screen bg-light flex"
@@ -352,13 +376,16 @@ export default function Dashboard() {
                 icon: <LayoutGrid className="h-4 w-4 mr-3" />,
                 label: "Browse",
                 active: false,
+                link: "/browse",
               },
               {
                 icon: <Settings className="h-4 w-4 mr-3" />,
                 label: "Settings",
                 active: false,
+
               },
             ].map((item, index) => (
+              <Link to={item.link || "#"} key={index}>
               <motion.button
                 key={index}
                 className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${
@@ -382,6 +409,7 @@ export default function Dashboard() {
                   />
                 )}
               </motion.button>
+              </Link>
             ))}
           </div>
 
@@ -467,11 +495,11 @@ export default function Dashboard() {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Avatar>
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={user.avatar} alt={user.user?.email} />
+                      <AvatarFallback>{user.user?.email.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="hidden md:block text-sm font-medium">
-                      {user.name}
+                      {user.user?.email}
                     </div>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </motion.button>
@@ -574,7 +602,7 @@ export default function Dashboard() {
 
             {/* Stats */}
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
               variants={itemFadeIn}
             >
               {[
@@ -585,13 +613,8 @@ export default function Dashboard() {
                 },
                 {
                   label: "Active Listings",
-                  value: items.filter((i) => i.status === "active").length,
+                  value: fetchItemsfrombackend.length,
                   icon: <Sparkles className="h-5 w-5 text-primary" />,
-                },
-                {
-                  label: "Total Views",
-                  value: items.reduce((acc, item) => acc + item.views, 0),
-                  icon: <EyeIcon className="h-5 w-5 text-primary" />,
                 },
               ].map((stat, index) => (
                 <motion.div
@@ -632,9 +655,9 @@ export default function Dashboard() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    {items.map((item) => (
+                    {fetchItemsfrombackend.map((item) => (
                       <motion.div
-                        key={item.id}
+                        key={item._id}
                         className="bg-white rounded-lg overflow-hidden border border-gray-100"
                         whileHover={{
                           y: -5,
@@ -645,7 +668,7 @@ export default function Dashboard() {
                         <div className="relative h-48 bg-gray-100">
                           <img
                             src={item.images[0] || "/placeholder.svg"}
-                            alt={item.title}
+                            alt={item.name}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-3 right-3">
@@ -667,11 +690,11 @@ export default function Dashboard() {
                               {item.category}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {item.postedDate}
+                              {item.createdAt}
                             </div>
                           </div>
                           <h3 className="font-semibold mb-1 text-dark">
-                            {item.title}
+                            {item.name}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                             {item.description}
@@ -679,15 +702,14 @@ export default function Dashboard() {
                           <div className="flex items-center justify-between">
                             <div className="text-primary font-semibold">
                               ${item.price}
-                              <span className="text-xs text-muted-foreground font-normal">
-                                /{item.period}
-                              </span>
                             </div>
                             <div className="flex space-x-2">
                               <button className="p-1.5 rounded-md hover:bg-gray-100">
                                 <Edit className="h-4 w-4 text-muted-foreground" />
                               </button>
-                              <button className="p-1.5 rounded-md hover:bg-gray-100">
+                              <button onClick={()=>{
+                                ItemDelte(item._id)
+                              }} className="p-1.5 rounded-md hover:bg-gray-100">
                                 <Trash2 className="h-4 w-4 text-muted-foreground" />
                               </button>
                             </div>
@@ -808,12 +830,12 @@ export default function Dashboard() {
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Item Title</Label>
+                  <Label htmlFor="Name">Item Title</Label>
                   <Input
-                    id="title"
+                    id="name"
                     placeholder="e.g. Professional DSLR Camera"
                     className="mt-1.5"
-                    {...register("title", { required: "Title is required" })}
+                    {...register("name", { required: "Name is required" })}
                   />
                   {errors.title && (
                     <p className="text-xs text-red-500 mt-1">
