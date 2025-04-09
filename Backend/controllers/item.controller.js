@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Item } from "../models/item.model.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -22,84 +23,63 @@ export const discoverItems = asyncHandler(async (req, res) => {
         location,
         availability,
         rating,
+        query,
         minPrice = 0,
         maxPrice = 99999999,
         limit = 10,
         page = 1
     } = req.query;
 
-    // Build availability filter
-    let availabilityFilter = {};
-    if (availability) {
-        const currentDate = new Date();
-        
-        if (availability === "Available Now") {
-            availabilityFilter = { 
-                status: "available",
-                "bookings.endDate": { 
-                    $lte: Date.now()
-                }
-            };
-        } else if (availability === "Available Within 1 Week") {
-            // Items that are reserved but will be available within a week
-            const oneWeekLater = new Date();
-            oneWeekLater.setDate(currentDate.getDate() + 7);
-            
-            availabilityFilter = {
-                status: "available",
-                // Assuming you have an endDate field in bookings
-                "bookings.endDate": { 
-                    $gte: currentDate,
-                    $lte: oneWeekLater
-                }
-            };
-        } else if (availability === "Coming Soon") {
-            const oneWeekLater = new Date();
-            oneWeekLater.setDate(currentDate.getDate() + 7);
-            
-            availabilityFilter = {
-                $or: [
-                    { 
-                        status: "rented",
-                        // Items that are rented but will be available after a week
-                        "bookings.endDate": { $gt: oneWeekLater }
-                    },
-                    { 
-                        status: "reserved",
-                        "bookings.endDate": { $gt: oneWeekLater }
-                    }
-                ]
-            };
-        }
-    }
 
-    const items = await Item.find({
-        ...(category && { category }),
+    const categories = category
+        ? (Array.isArray(category) ? category : [category])
+        : [];
+
+    const availableList = availability
+        ? (Array.isArray(availability) ? availability : [availability])
+        : [];
+
+    const availableListMap = {
+        "Available Now": "available",
+        "Available Within 1 Week": "rented",
+        "Coming Soon": "reserved",
+    };
+
+    const availableFilter = availableList.map((a) => availableListMap[a] || a);
+
+    // Build the main filter
+    const filter = {
+        ...(categories.length > 0 && { category: { $in: categories } }),
+        ...(availableFilter.length > 0 && { status: { $in: availableFilter } }),
         ...(location && { location }),
-        ...(availability && availabilityFilter),
         ...(rating && { avgRating: { $gte: rating } }),
+        ...(query && { name: { $regex: query, $options: "i" } }),
         price: { $gte: minPrice, $lte: maxPrice },
-    })
+    };
+
+    const items = await Item.find(filter)
         .populate("owner", "name")
-        .populate("bookings")  // Need to populate bookings to filter by endDate
         .limit(limit * 1)
         .skip((page - 1) * limit);
 
-    res.status(200).json(new ApiResponse(200, "Items fetched successfully", items));
+    const totalItems = await Item.countDocuments(filter);
+
+    res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
 });
+
 
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, availableQuantity, location } = req.body;
     console.log(req.body);
 
-    if (!name || !description || !price || !category ||  !availableQuantity || !location) {
+    if (!name || !description || !price || !category || !availableQuantity || !location) {
         throw new ApiError(400, "All fields are required");
     }
 
-    if(!req.files || !req.files.images || req.files.images.length === 0) {
+    if (!req.files || !req.files.images || req.files.images.length === 0) {
         throw new ApiError(400, "Image is required");
     }
-    
+
     const mediasUrl = await Promise.all(req.files.images.map(async (image) => {
         const link = await uploadOnCloudinary(image.path);
         return link.url;
@@ -130,7 +110,7 @@ export const updateItem = asyncHandler(async (req, res) => {
     }
 
     const itemExists = await Item.findById(id);
-    if (!itemExists) { 
+    if (!itemExists) {
         throw new ApiError(404, "Item not found");
     }
 
@@ -169,7 +149,7 @@ export const updateItem = asyncHandler(async (req, res) => {
 
 export const deleteItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    if(!id) {
+    if (!id) {
         throw new ApiError(400, "Item ID is required");
     }
 
@@ -178,7 +158,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Item not found");
     }
 
-    if(item.owner.toString() !== req.user._id.toString()) {
+    if (item.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "You are not authorized to delete this item");
     }
 
@@ -209,10 +189,23 @@ export const reviewItem = asyncHandler(async (req, res) => {
 
     item.reviews.push({ user: req.user._id, rating, comment });
     item.numReviews = item.reviews.length;
-    
+
     item.avgRating = item.reviews.reduce((acc, review) => acc + review.rating, 0) / item.numReviews;
 
     await item.save();
 
     res.status(201).json(new ApiResponse(201, "Review added successfully", item));
+});
+
+export const getItemByUserId = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if(!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const items = await Item.find({owner: userId});
+    res.status(201).json(new ApiResponse(200, "Items fetched successfully", items));
 });
