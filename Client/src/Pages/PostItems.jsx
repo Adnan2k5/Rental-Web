@@ -49,7 +49,7 @@ import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Label } from "../components/ui/label";
-import { createItems, deleteItem, fetchAllItems } from "../api/items.api";
+import { createItems, deleteItem, fetchByUserId } from "../api/items.api";
 import { toast } from "sonner";
 import { useAuth } from "../Middleware/AuthProvider";
 import { Link } from "react-router-dom";
@@ -60,6 +60,8 @@ export default function Dashboard() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const user = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -91,7 +93,7 @@ export default function Dashboard() {
     uploadedFiles.forEach((image) => {
         formData.append("images", image.file);
       });
-    const res = await createItems(formData);
+    await createItems(formData);
     setIsNewItemDialogOpen(false);
     setUploadedFiles([]);
     toast.success("Item posted successfully!");
@@ -106,13 +108,11 @@ export default function Dashboard() {
     dark: "#455A64", // Blue Grey
   };
 
-  
-
-
   const [fetchItemsfrombackend, setFetchItems] = useState([]);
 
   const fetchItems = async () => {
-    const res = await fetchAllItems();
+
+    const res = await fetchByUserId(user.user._id);
     setFetchItems(res.data.message);
   }
 
@@ -120,8 +120,6 @@ export default function Dashboard() {
     fetchItems();
   }, []);
 
-
-  const user = useAuth();
 
 
   // Animation variants

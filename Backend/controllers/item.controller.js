@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Item } from "../models/item.model.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -192,4 +193,17 @@ export const reviewItem = asyncHandler(async (req, res) => {
     await item.save();
 
     res.status(201).json(new ApiResponse(201, "Review added successfully", item));
+});
+
+export const getItemByUserId = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if(!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const items = await Item.find({owner: userId});
+    res.status(201).json(new ApiResponse(200, "Items fetched successfully", items));
 });

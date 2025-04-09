@@ -4,8 +4,8 @@ export const fetchAllItems = async ({ priceRange, categories, brands, availabili
     const res = await axiosClient.get("/api/item/discover", { 
         withCredentials: true, 
         params: { 
-            minPrice: priceRange[0],
-            maxPrice: priceRange[1],
+            minPrice: priceRange[0] ?? 0,
+            maxPrice: priceRange[1] ?? 9999999,
             category: categories, 
             brands, 
             availability,
@@ -15,6 +15,11 @@ export const fetchAllItems = async ({ priceRange, categories, brands, availabili
             limit
         } 
     });
+    return res;
+}
+
+export const fetchByUserId = async (userId)  => {
+    const res = await axiosClient.get(`/api/item/user/${userId}`);
     return res;
 }
 
