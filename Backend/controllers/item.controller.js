@@ -28,6 +28,8 @@ export const discoverItems = asyncHandler(async (req, res) => {
         page = 1
     } = req.query;
 
+    console.log(req.query);
+
     // Build availability filter
     let availabilityFilter = {};
     if (availability) {

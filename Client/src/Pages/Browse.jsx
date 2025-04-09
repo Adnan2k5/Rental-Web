@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import {
   ArrowUpDown,
   Filter,
-  Grid3X3,
-  LayoutList,
   Search,
   ShoppingCart,
   Star,
@@ -15,12 +13,12 @@ import { Checkbox } from "../components/ui/checkbox";
 import { Slider } from "../components/ui/slider";
 import { Badge } from "../components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
-import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import ProductQuickView from "../Components/Quick-View";
 import { useAuth } from "../Middleware/AuthProvider";
-import { useSelector } from "react-redux";
 import { fetchAllItems } from "../api/items.api";
+
+
 export default function BrowsePage() {
   const [products, setitems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -30,8 +28,8 @@ export default function BrowsePage() {
     if (!user) {
       navigate("/login");
     }
-  }, [user]);
-  const [activeView, setActiveView] = useState("grid");
+  }, [user, navigate]);
+
   const [filters, setFilters] = useState({
     priceRange: [0, 200],
     categories: [],
@@ -88,12 +86,12 @@ export default function BrowsePage() {
   ];
   const FetchProducts = async () => {
     setLoading(true);
-    try{
+    try {
       const res = await fetchAllItems();
       setitems(res.data.message);
     }
-    catch(err){
-      alert("Error fetching products");
+    catch (err) {
+      console.log(err);
     }
     finally {
       setLoading(false);
@@ -411,85 +409,85 @@ export default function BrowsePage() {
               filters.rating !== null ||
               filters.priceRange[0] > 0 ||
               filters.priceRange[1] < 200) && (
-              <div className="mb-6 flex flex-wrap gap-2 items-center">
-                <span className="text-sm text-muted-foreground">
-                  Active filters:
-                </span>
+                <div className="mb-6 flex flex-wrap gap-2 items-center">
+                  <span className="text-sm text-muted-foreground">
+                    Active filters:
+                  </span>
 
-                {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
-                  <Badge variant="outline" className="font-normal">
-                    ${filters.priceRange[0]} - ${filters.priceRange[1]}/month
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 ml-1 p-0"
-                      onClick={() => handlePriceChange([0, 200])}
+                  {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
+                    <Badge variant="outline" className="font-normal">
+                      ${filters.priceRange[0]} - ${filters.priceRange[1]}/month
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1 p-0"
+                        onClick={() => handlePriceChange([0, 200])}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ) : null}
+
+                  {filters.rating !== null && (
+                    <Badge variant="outline" className="font-normal">
+                      {filters.rating}+ Stars
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1 p-0"
+                        onClick={() => handleRatingChange(null)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  )}
+
+                  {filters.categories.map((category) => (
+                    <Badge
+                      key={category}
+                      variant="outline"
+                      className="font-normal"
                     >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ) : null}
+                      {category}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1 p-0"
+                        onClick={() => handleCategoryChange(category)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
 
-                {filters.rating !== null && (
-                  <Badge variant="outline" className="font-normal">
-                    {filters.rating}+ Stars
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 ml-1 p-0"
-                      onClick={() => handleRatingChange(null)}
+                  {filters.availability.map((availability) => (
+                    <Badge
+                      key={availability}
+                      variant="outline"
+                      className="font-normal"
                     >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                )}
+                      {availability}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1 p-0"
+                        onClick={() => handleAvailabilityChange(availability)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
 
-                {filters.categories.map((category) => (
-                  <Badge
-                    key={category}
-                    variant="outline"
-                    className="font-normal"
+                  <Button
+                    variant="a"
+                    size="sm"
+                    className="h-8 px-2 text-xs text-muted-foreground"
+                    onClick={clearFilters}
                   >
-                    {category}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 ml-1 p-0"
-                      onClick={() => handleCategoryChange(category)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-
-                {filters.availability.map((availability) => (
-                  <Badge
-                    key={availability}
-                    variant="outline"
-                    className="font-normal"
-                  >
-                    {availability}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 ml-1 p-0"
-                      onClick={() => handleAvailabilityChange(availability)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-
-                <Button
-                  variant="a"
-                  size="sm"
-                  className="h-8 px-2 text-xs text-muted-foreground"
-                  onClick={clearFilters}
-                >
-                  Clear all
-                </Button>
-              </div>
-            )}
+                    Clear all
+                  </Button>
+                </div>
+              )}
 
             {/* Product count */}
             <p className="text-sm text-muted-foreground mb-6">
@@ -497,77 +495,77 @@ export default function BrowsePage() {
               {filteredProducts.length === 1 ? "product" : "products"}
             </p>
 
-            {!!loading ? (
+            {loading ? (
               <h1>Loading....</h1>
             ) : (
-                <div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
-                      key={index}
-                      variants={fadeIn}
-                      whileHover={{ y: -5 }}
-                      className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group"
-                    >
-                      <div className="relative">
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          width={300}
-                          height={200}
-                          className="w-full h-48 object-cover"
-                        />
-                        <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-                          {/* {product.tags.map((tag, tagIndex) => (
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+              >
+                {filteredProducts.map((product, index) => (
+                  <motion.div
+                    key={index}
+                    variants={fadeIn}
+                    whileHover={{ y: -5 }}
+                    className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group"
+                  >
+                    <div className="relative">
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        width={300}
+                        height={200}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+                        {/* {product.tags.map((tag, tagIndex) => (
                           <Badge key={tagIndex} variant={tag === "New" ? "default" : "secondary"} className="text-xs">
                             {tag}
                           </Badge>
                         ))} */}
-                        </div>
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              openQuickView(product);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition"
-                          >
-                            Quick View
-                          </Button>
-                        </div>
                       </div>
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-muted-foreground">
-                            {product.category}
-                          </span>
-                        </div>
-                        <h3 className="font-medium text-gray-900 mb-1 truncate">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-3">
-                          by {product.brand}
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openQuickView(product);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition"
+                        >
+                          Quick View
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-muted-foreground">
+                          {product.category}
+                        </span>
+                      </div>
+                      <h3 className="font-medium text-gray-900 mb-1 truncate">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        by {product.brand}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold text-primary">
+                          ${product.price}/mo
                         </p>
-                        <div className="flex items-center justify-between">
-                          <p className="font-bold text-primary">
-                            ${product.price}/mo
-                          </p>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 px-3"
-                          >
-                            Add to Cart
-                          </Button>
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 px-3"
+                        >
+                          Add to Cart
+                        </Button>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             )}
 
             {filteredProducts.length === 0 && (
