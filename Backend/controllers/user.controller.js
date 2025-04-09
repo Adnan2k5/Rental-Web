@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { Booking } from "../models/booking.model.js";
 import { Review } from "../models/review.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { Cart } from "../models/cart.model.js";
 
 export const getUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, req.user, "User fetched successfully"));
@@ -91,4 +92,27 @@ export const deleteReviewById = asyncHandler(async (req, res) => {
     await review.remove();
 
     return res.status(200).json(new ApiResponse(200, {}, "Review deleted successfully")); 
+});
+
+export const addItemToCart = asyncHandler(async (req, res) => {
+    const { itemId } = req.body;
+    if (!itemId) {
+        throw new ApiError(400, "Item ID is required");
+    }
+
+    let cart = await Cart.findOne({ user: req.user._id });
+
+    if (!cart) {
+        cart = await Cart.create({ user: req.user._id, items: [] });
+    } 
+
+    const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
+
+    if (itemIndex > -1) {
+        cart.items[itemIndex].quantity += 1;
+    } else {
+        cart.items.push({ item: itemId, quantity: 1 });
+    }
+
+    return res.status(200).json(new ApiResponse(200, user.cart, "Item added to cart successfully"));
 });
