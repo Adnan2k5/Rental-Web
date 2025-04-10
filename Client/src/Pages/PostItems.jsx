@@ -1,14 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useRef, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Plus,
-  Grid,
-  List,
   Search,
   Bell,
-  Home,
   Package,
   Settings,
   LogOut,
@@ -19,17 +16,17 @@ import {
   ChevronDown,
   Sparkles,
   LayoutGrid,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
+} from '../components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -37,25 +34,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
+} from '../components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Separator } from "../components/ui/separator";
-import { Badge } from "../components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Label } from "../components/ui/label";
-import { createItems, deleteItem, fetchByUserId } from "../api/items.api";
-import { toast } from "sonner";
-import { useAuth } from "../Middleware/AuthProvider";
-import { Link } from "react-router-dom";
+} from '../components/ui/select';
+import { Separator } from '../components/ui/separator';
+import { Badge } from '../components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
+import { Label } from '../components/ui/label';
+import { createItems, deleteItem, fetchByUserId } from '../api/items.api';
+import { toast } from 'sonner';
+import { useAuth } from '../Middleware/AuthProvider';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
-  const [viewMode, setViewMode] = useState("grid");
+  const [viewMode, setViewMode] = useState('grid');
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -69,58 +66,52 @@ export default function Dashboard() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      title: "",
-      description: "",
-      category: "Electronics",
-      location: "",
-      price: "",
+      title: '',
+      description: '',
+      category: 'Electronics',
+      location: '',
+      price: '',
       available: true,
       availableQuntity: 1,
     },
   });
 
-
-
   const handlePostItem = async (data) => {
     const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("description", data.description);
-    formData.append("price", data.price);
-    formData.append("category", data.category);
-    formData.append("availableQuantity", data.availableQuantity || 1);
-    formData.append("location", data.location);
-    formData.append("available", data.available);
+    formData.append('name', data.name);
+    formData.append('description', data.description);
+    formData.append('price', data.price);
+    formData.append('category', data.category);
+    formData.append('availableQuantity', data.availableQuantity || 1);
+    formData.append('location', data.location);
+    formData.append('available', data.available);
     uploadedFiles.forEach((image) => {
-      formData.append("images", image.file);
+      formData.append('images', image.file);
     });
     await createItems(formData);
     setIsNewItemDialogOpen(false);
     setUploadedFiles([]);
-    toast.success("Item posted successfully!");
+    toast.success('Item posted successfully!');
     reset();
   };
   // Rental Color Palette
   const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
   };
 
   const [fetchItemsfrombackend, setFetchItems] = useState([]);
-
-
 
   useEffect(() => {
     const fetchItems = async () => {
       const res = await fetchByUserId(user.user._id);
       setFetchItems(res.data.message);
-    }
+    };
     fetchItems();
   }, [user]);
-
-
 
   // Animation variants
   const pageTransition = {
@@ -129,7 +120,7 @@ export default function Dashboard() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.1,
       },
     },
@@ -151,19 +142,19 @@ export default function Dashboard() {
       transition: {
         duration: 6,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
+        ease: 'linear',
       },
     },
   };
@@ -173,7 +164,7 @@ export default function Dashboard() {
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
         damping: 10,
       },
@@ -204,7 +195,7 @@ export default function Dashboard() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
@@ -217,7 +208,7 @@ export default function Dashboard() {
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
     if (files.length + uploadedFiles.length > 5) {
-      alert("You can upload up to 5 images only.");
+      alert('You can upload up to 5 images only.');
       return;
     }
     const newImages = files.map((file) => ({
@@ -260,12 +251,12 @@ export default function Dashboard() {
   const ItemDelte = async (id) => {
     const res = await deleteItem(id);
     if (res.status === 200) {
-      toast.success("Item deleted successfully!");
+      toast.success('Item deleted successfully!');
       fetchItems();
     } else {
-      toast.error("Failed to delete item.");
+      toast.error('Failed to delete item.');
     }
-  }
+  };
 
   return (
     <motion.div
@@ -284,8 +275,8 @@ export default function Dashboard() {
             className="text-2xl font-bold"
             style={{
               background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
             }}
             {...shimmerAnimation}
           >
@@ -300,37 +291,32 @@ export default function Dashboard() {
             </div>
             {[
               {
-                icon: <Home className="h-4 w-4 mr-3" />,
-                label: "Dashboard",
-                active: false,
-              },
-              {
                 icon: <Package className="h-4 w-4 mr-3" />,
-                label: "My Items",
+                label: 'My Dashboard',
                 active: true,
               },
               {
                 icon: <LayoutGrid className="h-4 w-4 mr-3" />,
-                label: "Browse",
+                label: 'Browse',
                 active: false,
-                link: "/browse",
+                link: '/browse',
               },
               {
                 icon: <Settings className="h-4 w-4 mr-3" />,
-                label: "Settings",
+                label: 'Settings',
                 active: false,
-
               },
             ].map((item, index) => (
-              <Link to={item.link || "#"} key={index}>
+              <Link to={item.link || '#'} key={index}>
                 <motion.button
                   key={index}
-                  className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${item.active
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:bg-gray-100"
-                    }`}
+                  className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${
+                    item.active
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-muted-foreground hover:bg-gray-100'
+                  }`}
                   whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400 }}
+                  transition={{ type: 'spring', stiffness: 400 }}
                 >
                   {item.icon}
                   {item.label}
@@ -358,7 +344,7 @@ export default function Dashboard() {
             <motion.button
               className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
               whileHover={{ x: 5 }}
-              transition={{ type: "spring", stiffness: 400 }}
+              transition={{ type: 'spring', stiffness: 400 }}
             >
               <LogOut className="h-4 w-4 mr-3" />
               Logout
@@ -396,8 +382,8 @@ export default function Dashboard() {
                 className="text-xl font-bold"
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                 }}
                 {...shimmerAnimation}
               >
@@ -432,7 +418,9 @@ export default function Dashboard() {
                   >
                     <Avatar>
                       <AvatarImage src={user.avatar} alt={user.user?.email} />
-                      <AvatarFallback>{user.user?.email.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>
+                        {user.user?.email.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="hidden md:block text-sm font-medium">
                       {user.user?.email}
@@ -481,34 +469,6 @@ export default function Dashboard() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <div className="flex items-center space-x-1 bg-white rounded-md p-1 border border-gray-200">
-                  <button
-                    className={`p-1.5 rounded ${viewMode === "grid" ? "bg-gray-100" : ""
-                      }`}
-                    onClick={() => setViewMode("grid")}
-                  >
-                    <Grid className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                  <button
-                    className={`p-1.5 rounded ${viewMode === "list" ? "bg-gray-100" : ""
-                      }`}
-                    onClick={() => setViewMode("list")}
-                  >
-                    <List className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </div>
-
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[140px] bg-white border-gray-200">
-                    <SelectValue placeholder="Filter by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Items</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-
                 <motion.div
                   variants={buttonHover}
                   initial="rest"
@@ -523,8 +483,8 @@ export default function Dashboard() {
                   >
                     <motion.span
                       className="absolute inset-0 bg-white/20 rounded-md"
-                      initial={{ x: "-100%", opacity: 0 }}
-                      whileHover={{ x: "100%", opacity: 0.3 }}
+                      initial={{ x: '-100%', opacity: 0 }}
+                      whileHover={{ x: '100%', opacity: 0.3 }}
                       transition={{ duration: 0.6 }}
                     />
                     <Plus className="h-4 w-4 mr-2" />
@@ -541,12 +501,12 @@ export default function Dashboard() {
             >
               {[
                 {
-                  label: "Total Items",
-                  value: user.itemsPosted,
+                  label: 'Total Items',
+                  value: fetchItemsfrombackend.length,
                   icon: <Package className="h-5 w-5 text-primary" />,
                 },
                 {
-                  label: "Active Listings",
+                  label: 'Active Listings',
                   value: fetchItemsfrombackend.length,
                   icon: <Sparkles className="h-5 w-5 text-primary" />,
                 },
@@ -556,9 +516,9 @@ export default function Dashboard() {
                   className="bg-white rounded-lg p-6 border border-gray-100 relative overflow-hidden"
                   whileHover={{
                     y: -5,
-                    boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                    boxShadow: '0 10px 30px -15px rgba(0,0,0,0.1)',
                   }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-bl-full" />
                   <div className="flex items-center justify-between">
@@ -581,7 +541,7 @@ export default function Dashboard() {
             {/* Items Grid/List */}
             <motion.div variants={itemFadeIn}>
               <AnimatePresence mode="wait">
-                {viewMode === "grid" ? (
+                {viewMode === 'grid' ? (
                   <motion.div
                     key="grid"
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -595,22 +555,22 @@ export default function Dashboard() {
                         className="bg-white rounded-lg overflow-hidden border border-gray-100"
                         whileHover={{
                           y: -5,
-                          boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                          boxShadow: '0 10px 30px -15px rgba(0,0,0,0.1)',
                         }}
-                        transition={{ type: "spring", stiffness: 300 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
                       >
                         <div className="relative h-48 bg-gray-100">
                           <img
-                            src={item.images[0] || "/placeholder.svg"}
+                            src={item.images[0] || '/placeholder.svg'}
                             alt={item.name}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-3 right-3">
                             <Badge
                               variant={
-                                item.status === "active"
-                                  ? "default"
-                                  : "secondary"
+                                item.status === 'active'
+                                  ? 'default'
+                                  : 'secondary'
                               }
                               className="capitalize"
                             >
@@ -641,9 +601,12 @@ export default function Dashboard() {
                               <button className="p-1.5 rounded-md hover:bg-gray-100">
                                 <Edit className="h-4 w-4 text-muted-foreground" />
                               </button>
-                              <button onClick={() => {
-                                ItemDelte(item._id)
-                              }} className="p-1.5 rounded-md hover:bg-gray-100">
+                              <button
+                                onClick={() => {
+                                  ItemDelte(item._id);
+                                }}
+                                className="p-1.5 rounded-md hover:bg-gray-100"
+                              >
                                 <Trash2 className="h-4 w-4 text-muted-foreground" />
                               </button>
                             </div>
@@ -660,28 +623,28 @@ export default function Dashboard() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    {items.map((item) => (
+                    {items?.map((item) => (
                       <motion.div
                         key={item.id}
                         className="bg-white rounded-lg overflow-hidden border border-gray-100 flex"
                         whileHover={{
                           y: -3,
-                          boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                          boxShadow: '0 10px 30px -15px rgba(0,0,0,0.1)',
                         }}
-                        transition={{ type: "spring", stiffness: 300 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
                       >
                         <div className="relative w-32 md:w-48 bg-gray-100">
                           <img
-                            src={item.images[0] || "/placeholder.svg"}
+                            src={item.images[0] || '/placeholder.svg'}
                             alt={item.title}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-2 left-2">
                             <Badge
                               variant={
-                                item.status === "active"
-                                  ? "default"
-                                  : "secondary"
+                                item.status === 'active'
+                                  ? 'default'
+                                  : 'secondary'
                               }
                               className="capitalize"
                             >
@@ -715,13 +678,13 @@ export default function Dashboard() {
                               <div className="text-xs text-muted-foreground">
                                 <span className="font-medium text-dark">
                                   {item.views}
-                                </span>{" "}
+                                </span>{' '}
                                 views
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 <span className="font-medium text-dark">
                                   {item.inquiries}
-                                </span>{" "}
+                                </span>{' '}
                                 inquiries
                               </div>
                               <div className="flex space-x-2">
@@ -769,7 +732,7 @@ export default function Dashboard() {
                     id="name"
                     placeholder="e.g. Professional DSLR Camera"
                     className="mt-1.5"
-                    {...register("name", { required: "Name is required" })}
+                    {...register('name', { required: 'Name is required' })}
                   />
                   {errors.title && (
                     <p className="text-xs text-red-500 mt-1">
@@ -784,8 +747,8 @@ export default function Dashboard() {
                     id="description"
                     placeholder="Describe your item in detail..."
                     className="mt-1.5 min-h-[100px]"
-                    {...register("description", {
-                      required: "Description is required",
+                    {...register('description', {
+                      required: 'Description is required',
                     })}
                   />
                   {errors.description && (
@@ -801,7 +764,7 @@ export default function Dashboard() {
                     <input
                       placeholder="e.g. New York"
                       className="mt-1.5 Input border"
-                      {...register("location")}
+                      {...register('location')}
                     />
                   </div>
                   <div>
@@ -809,8 +772,8 @@ export default function Dashboard() {
                     <Select
                       defaultValue="electronics"
                       onValueChange={(value) => {
-                        const event = { target: { name: "category", value } };
-                        register("category").onChange(event);
+                        const event = { target: { name: 'category', value } };
+                        register('category').onChange(event);
                       }}
                     >
                       <SelectTrigger id="category" className="mt-1.5">
@@ -826,7 +789,7 @@ export default function Dashboard() {
                         <SelectItem value="tools">Tools & Equipment</SelectItem>
                       </SelectContent>
                     </Select>
-                    <input type="hidden" {...register("category")} />
+                    <input type="hidden" {...register('category')} />
                   </div>
                 </div>
 
@@ -838,11 +801,11 @@ export default function Dashboard() {
                       type="number"
                       placeholder="0.00"
                       className="mt-1.5"
-                      {...register("price", {
-                        required: "Price is required",
+                      {...register('price', {
+                        required: 'Price is required',
                         min: {
                           value: 0.01,
-                          message: "Price must be greater than 0",
+                          message: 'Price must be greater than 0',
                         },
                       })}
                     />
@@ -859,10 +822,11 @@ export default function Dashboard() {
               <div>
                 <Label className="block mb-2">Upload Images</Label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
-                      ? "border-primary bg-primary/5"
-                      : "border-gray-200"
-                    }`}
+                  className={`border-2 border-dashed rounded-lg p-6 text-center ${
+                    isDragging
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200'
+                  }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -914,15 +878,13 @@ export default function Dashboard() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{
-                            type: "spring",
+                            type: 'spring',
                             stiffness: 500,
                             damping: 30,
                           }}
                         >
                           <img
-                            src={file.url
-                              || "/placeholder.svg"
-                            }
+                            src={file.url || '/placeholder.svg'}
                             alt={`Preview ${index}`}
                             className="w-full h-full object-cover"
                           />
@@ -964,8 +926,8 @@ export default function Dashboard() {
               >
                 <motion.span
                   className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
+                  initial={{ x: '-100%', opacity: 0 }}
+                  whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative">Post Item</span>

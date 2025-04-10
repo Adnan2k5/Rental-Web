@@ -1,42 +1,45 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Eye, EyeOff, Facebook, Instagram, ArrowRight, Sparkles, LockKeyhole } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Checkbox } from "../components/ui/checkbox"
-import { Separator } from "../components/ui/separator"
-import { motion, AnimatePresence } from "framer-motion"
-import { Link, useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { loginUser } from "../api/auth.api"
-import { useDispatch } from "react-redux"
-import { toast } from "sonner"
-import { useAuth } from "../Middleware/AuthProvider"
+import { useState, useEffect } from 'react';
+import {
+  Eye,
+  EyeOff,
+  Facebook,
+  Instagram,
+  ArrowRight,
+  Sparkles,
+  LockKeyhole,
+} from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Checkbox } from '../components/ui/checkbox';
+import { Separator } from '../components/ui/separator';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { loginUser } from '../api/auth.api';
+import { useDispatch } from 'react-redux';
+import { toast } from 'sonner';
+import { useAuth } from '../Middleware/AuthProvider';
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const {user} = useAuth();
-  useEffect(()=>{
-    if(user){
-      navigate("/browse")
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user) {
+      navigate('/browse');
     }
-  }, [user, navigate])
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
-  const [activeField, setActiveField] = useState(null)
-
-  
+  }, [user, navigate]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [activeField, setActiveField] = useState(null);
 
   // Rental Color Palette
   const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
-  }
-
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
+  };
 
   // Animation variants
   const pageTransition = {
@@ -45,11 +48,11 @@ export default function SignIn() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.2,
       },
     },
-  }
+  };
 
   const floatAnimation = {
     initial: { y: 0 },
@@ -58,22 +61,22 @@ export default function SignIn() {
       transition: {
         duration: 6,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
-  }
+  };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
+        ease: 'linear',
       },
     },
-  }
+  };
 
   const itemFadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -82,7 +85,7 @@ export default function SignIn() {
       y: 0,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   const itemFadeInRight = {
     hidden: { opacity: 0, x: 20 },
@@ -91,27 +94,27 @@ export default function SignIn() {
       x: 0,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   const buttonHover = {
     rest: { scale: 1 },
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
         damping: 10,
       },
     },
-  }
+  };
 
   const handleFieldFocus = (fieldName) => {
-    setActiveField(fieldName)
-  }
+    setActiveField(fieldName);
+  };
 
   const handleFieldBlur = () => {
-    setActiveField(null)
-  }
+    setActiveField(null);
+  };
 
   // Particle effect for the form section
   const Particles = () => {
@@ -137,32 +140,29 @@ export default function SignIn() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
         ))}
       </div>
-    )
-  }
+    );
+  };
   const dispatch = useDispatch();
-  
 
-  const {register, handleSubmit, reset} = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const LoginSubmit = async (data) => {
     try {
       const res = await loginUser(data, dispatch);
-      if(res){
+      if (res) {
         reset();
-        toast.success("Login Successful");
-        navigate("/browse")
-
+        toast.success('Login Successful');
+        navigate('/browse');
       }
-    }
-    catch(err) {
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
   return (
     <motion.div
       className="min-h-screen flex flex-col lg:flex-row bg-light"
@@ -171,7 +171,10 @@ export default function SignIn() {
       variants={pageTransition}
     >
       {/* Left side - Login Form */}
-      <motion.div className="flex-1 flex items-center justify-center p-8 relative" variants={itemFadeIn}>
+      <motion.div
+        className="flex-1 flex items-center justify-center p-8 relative"
+        variants={itemFadeIn}
+      >
         <Particles />
 
         <div className="max-w-md w-full relative z-10">
@@ -180,8 +183,8 @@ export default function SignIn() {
               className="inline-block text-3xl font-bold mb-2"
               style={{
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
               {...shimmerAnimation}
             >
@@ -205,17 +208,26 @@ export default function SignIn() {
             </motion.p>
           </motion.div>
 
-          <motion.form variants={itemFadeIn} onSubmit={handleSubmit(LoginSubmit)} className="space-y-6">
+          <motion.form
+            variants={itemFadeIn}
+            onSubmit={handleSubmit(LoginSubmit)}
+            className="space-y-6"
+          >
             <motion.div
               className="space-y-2"
               whileFocus={{ scale: 1.02 }}
               whileHover={{ y: -2 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <label htmlFor="email" className="text-sm font-medium leading-none text-dark">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium leading-none text-dark"
+              >
                 Email
               </label>
-              <div className={`relative ${activeField === "email" ? "ring-2 ring-primary/50 rounded-md" : ""}`}>
+              <div
+                className={`relative ${activeField === 'email' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
+              >
                 <input
                   id="email"
                   placeholder="name@example.com"
@@ -223,13 +235,13 @@ export default function SignIn() {
                   autoCapitalize="none"
                   autoComplete="email"
                   autoCorrect="off"
-                  {...register("email", {required: true})}
+                  {...register('email', { required: true })}
                   className="border Input bg-white/80 focus:border-primary"
-                  onFocus={() => handleFieldFocus("email")}
+                  onFocus={() => handleFieldFocus('email')}
                   onBlur={handleFieldBlur}
                 />
                 <AnimatePresence>
-                  {activeField === "email" && (
+                  {activeField === 'email' && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -247,14 +259,23 @@ export default function SignIn() {
               className="space-y-2"
               whileFocus={{ scale: 1.02 }}
               whileHover={{ y: -2 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-sm font-medium leading-none text-dark">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium leading-none text-dark"
+                >
                   Password
                 </label>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link href="#" className="text-sm font-medium text-primary hover:text-primary/80 relative">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link
+                    href="#"
+                    className="text-sm font-medium text-primary hover:text-primary/80 relative"
+                  >
                     <span>Forgot password?</span>
                     <motion.span
                       className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
@@ -265,17 +286,19 @@ export default function SignIn() {
                   </Link>
                 </motion.div>
               </div>
-              <div className={`relative ${activeField === "password" ? "ring-2 ring-primary/50 rounded-md" : ""}`}>
+              <div
+                className={`relative ${activeField === 'password' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
+              >
                 <input
                   id="password"
                   placeholder="••••••••"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   autoCapitalize="none"
                   autoComplete="current-password"
                   autoCorrect="off"
-                  {...register("password", {required: true})}
+                  {...register('password', { required: true })}
                   className="border Input bg-white/80 focus:border-primary pr-10"
-                  onFocus={() => handleFieldFocus("password")}
+                  onFocus={() => handleFieldFocus('password')}
                   onBlur={handleFieldBlur}
                 />
                 <Button
@@ -287,20 +310,28 @@ export default function SignIn() {
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={showPassword ? "visible" : "hidden"}
+                      key={showPassword ? 'visible' : 'hidden'}
                       initial={{ opacity: 0, rotate: -10 }}
                       animate={{ opacity: 1, rotate: 0 }}
                       exit={{ opacity: 0, rotate: 10 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </motion.div>
                   </AnimatePresence>
                   <span className="sr-only">Toggle password visibility</span>
                 </Button>
               </div>
             </motion.div>
-            <motion.div variants={buttonHover} initial="rest" whileHover="hover">
+            <motion.div
+              variants={buttonHover}
+              initial="rest"
+              whileHover="hover"
+            >
               <Button
                 type="submit"
                 className="w-full group relative overflow-hidden"
@@ -310,8 +341,8 @@ export default function SignIn() {
               >
                 <motion.span
                   className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
+                  initial={{ x: '-100%', opacity: 0 }}
+                  whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
@@ -319,7 +350,10 @@ export default function SignIn() {
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Number.POSITIVE_INFINITY,
+                    }}
                   >
                     <ArrowRight className="h-4 w-4" />
                   </motion.span>
@@ -334,19 +368,33 @@ export default function SignIn() {
                 <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-light px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-light px-2 text-muted-foreground">
+                  Or continue with
+                </span>
               </div>
             </div>
 
             <div className="mt-6 flex justify-center gap-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" className="h-11 border-muted hover:border-primary hover:bg-primary/5">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="h-11 border-muted hover:border-primary hover:bg-primary/5"
+                >
                   <Facebook className="h-4 w-4 mr-2 text-primary" />
                   Facebook
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" className="h-11 border-muted hover:border-primary hover:bg-primary/5">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="h-11 border-muted hover:border-primary hover:bg-primary/5"
+                >
                   <Instagram className="h-4 w-4 mr-2 text-primary" />
                   Instagram
                 </Button>
@@ -354,8 +402,11 @@ export default function SignIn() {
             </div>
           </motion.div>
 
-          <motion.p variants={itemFadeIn} className="mt-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+          <motion.p
+            variants={itemFadeIn}
+            className="mt-8 text-center text-sm text-muted-foreground"
+          >
+            Don't have an account?{' '}
             <Link
               to="/signup"
               className="font-medium text-primary hover:underline underline-offset-4 relative inline-block"
@@ -375,7 +426,9 @@ export default function SignIn() {
       {/* Right side - Illustration */}
       <motion.div
         className="hidden lg:flex flex-1 p-12 relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})` }}
+        style={{
+          background: `linear-gradient(135deg, ${colors.secondary}, ${colors.primary})`,
+        }}
         variants={itemFadeInRight}
       >
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -388,7 +441,7 @@ export default function SignIn() {
             transition={{
               duration: 20,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+              ease: 'linear',
             }}
           />
           <motion.div
@@ -400,7 +453,7 @@ export default function SignIn() {
             transition={{
               duration: 25,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+              ease: 'linear',
             }}
           />
         </div>
@@ -413,7 +466,7 @@ export default function SignIn() {
             transition={{
               delay: 0.5,
               duration: 0.8,
-              type: "spring",
+              type: 'spring',
               stiffness: 200,
             }}
           >
@@ -425,7 +478,7 @@ export default function SignIn() {
                 transition={{
                   duration: 5,
                   repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
+                  ease: 'easeInOut',
                 }}
               >
                 <LockKeyhole className="h-12 w-12 text-white" />
@@ -448,22 +501,24 @@ export default function SignIn() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 1 }}
           >
-            Sign in to manage your rentals, view your history, and discover new products.
+            Sign in to manage your rentals, view your history, and discover new
+            products.
           </motion.p>
 
           <div className="space-y-8">
             {[
               {
-                title: "Manage Your Rentals",
-                description: "View active rentals and manage your subscription",
+                title: 'Manage Your Rentals',
+                description: 'View active rentals and manage your subscription',
               },
               {
-                title: "Exclusive Offers",
-                description: "Access special deals only available to members",
+                title: 'Exclusive Offers',
+                description: 'Access special deals only available to members',
               },
               {
-                title: "24/7 Support",
-                description: "Get help whenever you need it from our support team",
+                title: '24/7 Support',
+                description:
+                  'Get help whenever you need it from our support team',
               },
             ].map((feature, index) => (
               <motion.div
@@ -475,12 +530,17 @@ export default function SignIn() {
               >
                 <motion.div
                   className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center shrink-0"
-                  whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.3)" }}
+                  whileHover={{
+                    scale: 1.1,
+                    backgroundColor: 'rgba(255,255,255,0.3)',
+                  }}
                 >
                   <span className="text-white font-bold">0{index + 1}</span>
                 </motion.div>
                 <div>
-                  <h3 className="text-white font-semibold text-lg">{feature.title}</h3>
+                  <h3 className="text-white font-semibold text-lg">
+                    {feature.title}
+                  </h3>
                   <p className="text-white/80">{feature.description}</p>
                 </div>
               </motion.div>
@@ -489,6 +549,5 @@ export default function SignIn() {
         </div>
       </motion.div>
     </motion.div>
-  )
+  );
 }
-

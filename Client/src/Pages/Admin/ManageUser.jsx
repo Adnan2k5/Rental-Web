@@ -1,16 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react';
 import {
-  Home,
-  Users,
-  Package,
-  BarChart3,
-  Settings,
-  FileText,
-  LogOut,
-  ChevronDown,
-  Bell,
   Search,
-  Sparkles,
   MoreHorizontal,
   Filter,
   RefreshCw,
@@ -19,17 +9,38 @@ import {
   CheckCircle,
   XCircle,
   Edit,
-} from "lucide-react"
-import { motion } from "framer-motion"
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../components/ui/dropdown-menu"
-import { Separator } from "../../components/ui/separator"
-import { Badge } from "../../components/ui/badge"
-import { Card, CardContent } from "../../components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '../../components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import { Badge } from '../../components/ui/badge';
+import { Card, CardContent } from '../../components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -37,7 +48,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../components/ui/dialog"
+} from '../../components/ui/dialog';
 import {
   Pagination,
   PaginationContent,
@@ -46,132 +57,131 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../components/ui/pagination"
-import { Switch } from "../../components/ui/switch"
-import { Label } from "../../components/ui/label"
+} from '../../components/ui/pagination';
+import { Switch } from '../../components/ui/switch';
+import { Label } from '../../components/ui/label';
 
 export default function ManageUsers() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState("all")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // Rental Color Palette
   const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
   };
 
   // Sample admin data
   const admin = {
-    name: "Sarah Johnson",
-    role: "Super Admin",
-    avatar: "/placeholder.svg?height=40&width=40",
-  }
+    name: 'Sarah Johnson',
+    role: 'Super Admin',
+    avatar: '/placeholder.svg?height=40&width=40',
+  };
 
   // Sample users data
   const users = [
     {
       id: 1,
-      name: "Alex Thompson",
-      email: "alex@example.com",
-      joinDate: "Jan 15, 2023",
+      name: 'Alex Thompson',
+      email: 'alex@example.com',
+      joinDate: 'Jan 15, 2023',
       itemsRented: 8,
       itemsPosted: 3,
-      status: "active",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "2 hours ago",
+      status: 'active',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '2 hours ago',
       verified: true,
     },
     {
       id: 2,
-      name: "Jamie Rodriguez",
-      email: "jamie@example.com",
-      joinDate: "Feb 28, 2023",
+      name: 'Jamie Rodriguez',
+      email: 'jamie@example.com',
+      joinDate: 'Feb 28, 2023',
       itemsRented: 5,
       itemsPosted: 2,
-      status: "active",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "1 day ago",
+      status: 'active',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '1 day ago',
       verified: true,
     },
     {
       id: 3,
-      name: "Taylor Kim",
-      email: "taylor@example.com",
-      joinDate: "Mar 10, 2023",
+      name: 'Taylor Kim',
+      email: 'taylor@example.com',
+      joinDate: 'Mar 10, 2023',
       itemsRented: 12,
       itemsPosted: 7,
-      status: "active",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "Just now",
+      status: 'active',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: 'Just now',
       verified: true,
     },
     {
       id: 4,
-      name: "Morgan Lee",
-      email: "morgan@example.com",
-      joinDate: "Apr 5, 2023",
+      name: 'Morgan Lee',
+      email: 'morgan@example.com',
+      joinDate: 'Apr 5, 2023',
       itemsRented: 3,
       itemsPosted: 0,
-      status: "inactive",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "2 weeks ago",
+      status: 'inactive',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '2 weeks ago',
       verified: true,
     },
     {
       id: 5,
-      name: "Casey Johnson",
-      email: "casey@example.com",
-      joinDate: "May 20, 2023",
+      name: 'Casey Johnson',
+      email: 'casey@example.com',
+      joinDate: 'May 20, 2023',
       itemsRented: 0,
       itemsPosted: 4,
-      status: "suspended",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "1 month ago",
+      status: 'suspended',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '1 month ago',
       verified: false,
     },
     {
       id: 6,
-      name: "Riley Smith",
-      email: "riley@example.com",
-      joinDate: "Jun 12, 2023",
+      name: 'Riley Smith',
+      email: 'riley@example.com',
+      joinDate: 'Jun 12, 2023',
       itemsRented: 7,
       itemsPosted: 2,
-      status: "active",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "3 days ago",
+      status: 'active',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '3 days ago',
       verified: true,
     },
     {
       id: 7,
-      name: "Jordan Williams",
-      email: "jordan@example.com",
-      joinDate: "Jul 8, 2023",
+      name: 'Jordan Williams',
+      email: 'jordan@example.com',
+      joinDate: 'Jul 8, 2023',
       itemsRented: 2,
       itemsPosted: 1,
-      status: "active",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "5 days ago",
+      status: 'active',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '5 days ago',
       verified: true,
     },
     {
       id: 8,
-      name: "Avery Davis",
-      email: "avery@example.com",
-      joinDate: "Aug 17, 2023",
+      name: 'Avery Davis',
+      email: 'avery@example.com',
+      joinDate: 'Aug 17, 2023',
       itemsRented: 4,
       itemsPosted: 0,
-      status: "pending",
-      avatar: "/placeholder.svg?height=40&width=40",
-      lastActive: "1 week ago",
+      status: 'pending',
+      avatar: '/placeholder.svg?height=40&width=40',
+      lastActive: '1 week ago',
       verified: false,
     },
-  ]
+  ];
 
   // Animation variants
   const pageTransition = {
@@ -180,11 +190,11 @@ export default function ManageUsers() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemFadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -193,19 +203,19 @@ export default function ManageUsers() {
       y: 0,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
+        ease: 'linear',
       },
     },
-  }
+  };
 
   // Particle effect component
   const Particles = () => {
@@ -231,56 +241,72 @@ export default function ManageUsers() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   // Filter users based on search query and status
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = selectedStatus === "all" || user.status === selectedStatus
-    return matchesSearch && matchesStatus
-  })
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      selectedStatus === 'all' || user.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   // Handle user edit
   const handleEditUser = (user) => {
-    setSelectedUser(user)
-    setIsUserDialogOpen(true)
-  }
+    setSelectedUser(user);
+    setIsUserDialogOpen(true);
+  };
 
   // Get status badge
   const getStatusBadge = (status) => {
     switch (status) {
-      case "active":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
-      case "inactive":
+      case 'active':
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            Active
+          </Badge>
+        );
+      case 'inactive':
         return (
           <Badge variant="outline" className="text-gray-500">
             Inactive
           </Badge>
-        )
-      case "suspended":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Suspended</Badge>
-      case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Pending</Badge>
+        );
+      case 'suspended':
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            Suspended
+          </Badge>
+        );
+      case 'pending':
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            Pending
+          </Badge>
+        );
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return <Badge variant="outline">{status}</Badge>;
     }
-  }
+  };
 
   return (
-    <motion.div className="min-h-screen bg-light flex" initial="hidden" animate="visible" variants={pageTransition}>
+    <motion.div
+      className="min-h-screen bg-light flex"
+      initial="hidden"
+      animate="visible"
+      variants={pageTransition}
+    >
       {/* Main Content */}
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
-
-
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto relative">
           <Particles />
@@ -330,8 +356,8 @@ export default function ManageUsers() {
                 >
                   <motion.span
                     className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: "-100%", opacity: 0 }}
-                    whileHover={{ x: "100%", opacity: 0.3 }}
+                    initial={{ x: '-100%', opacity: 0 }}
+                    whileHover={{ x: '100%', opacity: 0.3 }}
                     transition={{ duration: 0.6 }}
                   />
                   <UserPlus className="h-4 w-4 mr-2" />
@@ -341,7 +367,10 @@ export default function ManageUsers() {
             </div>
 
             {/* Filters */}
-            <motion.div className="bg-white p-4 rounded-lg border border-gray-100 mb-6" variants={itemFadeIn}>
+            <motion.div
+              className="bg-white p-4 rounded-lg border border-gray-100 mb-6"
+              variants={itemFadeIn}
+            >
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
                   <div className="relative">
@@ -361,7 +390,10 @@ export default function ManageUsers() {
                     <span className="text-sm">Filter:</span>
                   </div>
 
-                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                  >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
@@ -388,8 +420,12 @@ export default function ManageUsers() {
                         <TableHead>User</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Join Date</TableHead>
-                        <TableHead className="text-center">Items Rented</TableHead>
-                        <TableHead className="text-center">Items Posted</TableHead>
+                        <TableHead className="text-center">
+                          Items Rented
+                        </TableHead>
+                        <TableHead className="text-center">
+                          Items Posted
+                        </TableHead>
                         <TableHead className="text-center">Verified</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
@@ -397,23 +433,36 @@ export default function ManageUsers() {
                     <TableBody>
                       {filteredUsers.map((user) => (
                         <TableRow key={user.id} className="hover:bg-gray-50">
-                          <TableCell className="font-medium">{user.id}</TableCell>
+                          <TableCell className="font-medium">
+                            {user.id}
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                <AvatarImage
+                                  src={user.avatar}
+                                  alt={user.name}
+                                />
+                                <AvatarFallback>
+                                  {user.name.charAt(0)}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
                                 <div className="font-medium">{user.name}</div>
-                                <div className="text-sm text-muted-foreground">{user.email}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {user.email}
+                                </div>
                               </div>
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>{user.joinDate}</TableCell>
-                          <TableCell className="text-center">{user.itemsRented}</TableCell>
-                          <TableCell className="text-center">{user.itemsPosted}</TableCell>
+                          <TableCell className="text-center">
+                            {user.itemsRented}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {user.itemsPosted}
+                          </TableCell>
                           <TableCell className="text-center">
                             {user.verified ? (
                               <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
@@ -433,14 +482,24 @@ export default function ManageUsers() {
                               </Button>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                  >
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>View Profile</DropdownMenuItem>
-                                  <DropdownMenuItem>Send Message</DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600">Suspend User</DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    View Profile
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    Send Message
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-red-600">
+                                    Suspend User
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -490,13 +549,18 @@ export default function ManageUsers() {
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>Update user information and permissions</DialogDescription>
+              <DialogDescription>
+                Update user information and permissions
+              </DialogDescription>
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
               <div className="flex items-center justify-center mb-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
+                  <AvatarImage
+                    src={selectedUser.avatar}
+                    alt={selectedUser.name}
+                  />
                   <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
@@ -505,21 +569,32 @@ export default function ManageUsers() {
                 <Label htmlFor="name" className="text-right">
                   Name
                 </Label>
-                <Input id="name" defaultValue={selectedUser.name} className="col-span-3" />
+                <Input
+                  id="name"
+                  defaultValue={selectedUser.name}
+                  className="col-span-3"
+                />
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
                   Email
                 </Label>
-                <Input id="email" defaultValue={selectedUser.email} className="col-span-3" />
+                <Input
+                  id="email"
+                  defaultValue={selectedUser.email}
+                  className="col-span-3"
+                />
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="status" className="text-right">
                   Status
                 </Label>
-                <Select defaultValue={selectedUser.status} className="col-span-3">
+                <Select
+                  defaultValue={selectedUser.status}
+                  className="col-span-3"
+                >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -535,14 +610,24 @@ export default function ManageUsers() {
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Verified</Label>
                 <div className="flex items-center space-x-2 col-span-3">
-                  <Switch id="verified" defaultChecked={selectedUser.verified} />
-                  <Label htmlFor="verified">{selectedUser.verified ? "Verified Account" : "Not Verified"}</Label>
+                  <Switch
+                    id="verified"
+                    defaultChecked={selectedUser.verified}
+                  />
+                  <Label htmlFor="verified">
+                    {selectedUser.verified
+                      ? 'Verified Account'
+                      : 'Not Verified'}
+                  </Label>
                 </div>
               </div>
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsUserDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -557,5 +642,5 @@ export default function ManageUsers() {
         </Dialog>
       )}
     </motion.div>
-  )
+  );
 }

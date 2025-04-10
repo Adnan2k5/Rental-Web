@@ -1,16 +1,8 @@
-import { useState, useRef } from "react";
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
 import {
-  Home,
-  Users,
-  Package,
-  BarChart3,
-  Settings,
-  FileText,
-  LogOut,
-  ChevronDown,
-  Bell,
   Search,
-  Sparkles,
   Grid,
   List,
   Filter,
@@ -20,32 +12,31 @@ import {
   Upload,
   X,
   Tag,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../components/ui/avatar";
+} from '../../components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { Separator } from "../../components/ui/separator";
-import { Badge } from "../../components/ui/badge";
-import { Card, CardContent } from "../../components/ui/card";
+} from '../../components/ui/dropdown-menu';
+import { Badge } from '../../components/ui/badge';
+import { Card, CardContent } from '../../components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -53,7 +44,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../components/ui/dialog";
+} from '../../components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -61,7 +52,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../Components/ui/table";
+} from '../../components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -70,164 +61,63 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../components/ui/pagination";
-import { Switch } from "../../components/ui/switch";
-import { Label } from "../../components/ui/label";
+} from '../../components/ui/pagination';
+import { Switch } from '../../components/ui/switch';
+import { Label } from '../../components/ui/label';
+import { Skeleton } from '../../components/ui/skeleton';
+import { fetchAllItems } from '../../api/items.api';
+import { toast } from 'sonner';
 
 export default function ManageItems() {
-  const [viewMode, setViewMode] = useState("grid");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [viewMode, setViewMode] = useState('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
   const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const [items, setItems] = useState([]);
+  const [selectedColor, setSelectedColor] = useState('#4FC3F7');
+  const [loading, setLoading] = useState(true);
 
   // Rental Color Palette
   const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
-  };
-
-  // Sample admin data
-  const admin = {
-    name: "Sarah Johnson",
-    role: "Super Admin",
-    avatar: "/placeholder.svg?height=40&width=40",
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
   };
 
   // Sample categories
   const categories = [
-    { id: 1, name: "Electronics", count: 245, color: "#4FC3F7" },
-    { id: 2, name: "Furniture", count: 189, color: "#FF8A65" },
-    { id: 3, name: "Clothing", count: 156, color: "#FFB74D" },
-    { id: 4, name: "Sports", count: 132, color: "#9575CD" },
-    { id: 5, name: "Tools", count: 98, color: "#4DB6AC" },
+    { id: 1, name: 'Electronics', color: '#4FC3F7' },
+    { id: 2, name: 'Furniture', color: '#FF8A65' },
+    { id: 3, name: 'Clothing', color: '#FFB74D' },
+    { id: 4, name: 'Sports', color: '#9575CD' },
+    { id: 5, name: 'Tools', color: '#4DB6AC' },
   ];
 
-  // Sample items data
-  const items = [
-    {
-      id: 1,
-      title: "Modern Desk Chair",
-      description: "Ergonomic office chair with lumbar support",
-      price: 25,
-      period: "week",
-      category: "Furniture",
-      categoryId: 2,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "2 weeks ago",
-      views: 45,
-      inquiries: 3,
-      featured: true,
-      owner: {
-        name: "Alex Thompson",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 2,
-      title: "Professional DSLR Camera",
-      description:
-        "Canon EOS with 18-55mm lens, perfect for photography enthusiasts",
-      price: 50,
-      period: "day",
-      category: "Electronics",
-      categoryId: 1,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "5 days ago",
-      views: 120,
-      inquiries: 8,
-      featured: false,
-      owner: {
-        name: "Jamie Rodriguez",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 3,
-      title: "Mountain Bike",
-      description: "All-terrain bike, suitable for trails and city riding",
-      price: 15,
-      period: "day",
-      category: "Sports",
-      categoryId: 4,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "1 month ago",
-      views: 67,
-      inquiries: 5,
-      featured: true,
-      owner: {
-        name: "Taylor Kim",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 4,
-      title: "Portable Projector",
-      description: "HD projector with Bluetooth speaker, ideal for home cinema",
-      price: 35,
-      period: "day",
-      category: "Electronics",
-      categoryId: 1,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "inactive",
-      postedDate: "3 months ago",
-      views: 32,
-      inquiries: 2,
-      featured: false,
-      owner: {
-        name: "Morgan Lee",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 5,
-      title: "Leather Jacket",
-      description: "Vintage style leather jacket, size M, excellent condition",
-      price: 20,
-      period: "day",
-      category: "Clothing",
-      categoryId: 3,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "2 weeks ago",
-      views: 55,
-      inquiries: 4,
-      featured: false,
-      owner: {
-        name: "Casey Johnson",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 6,
-      title: "Power Drill Set",
-      description: "Complete power drill set with various bits and accessories",
-      price: 18,
-      period: "day",
-      category: "Tools",
-      categoryId: 5,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "1 week ago",
-      views: 28,
-      inquiries: 2,
-      featured: false,
-      owner: {
-        name: "Riley Smith",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-    },
-  ];
+  // Fetch items from API
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      setTimeout(async () => {
+        const res = await fetchAllItems();
+        setItems(res.data.message.items);
+        setLoading(false);
+      }, 100);
+    } catch (err) {
+      toast.error('Error Fetching Items');
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
   // Animation variants
   const pageTransition = {
@@ -236,7 +126,7 @@ export default function ManageItems() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.1,
       },
     },
@@ -252,13 +142,13 @@ export default function ManageItems() {
   };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
-        duration: 3,
+        duration: 1.5,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
+        ease: 'linear',
       },
     },
   };
@@ -268,7 +158,7 @@ export default function ManageItems() {
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
         damping: 10,
       },
@@ -299,7 +189,7 @@ export default function ManageItems() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
@@ -311,13 +201,13 @@ export default function ManageItems() {
   // Filter items based on search query, category and status
   const filteredItems = items.filter((item) => {
     const matchesSearch =
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === "all" ||
-      item.category.toLowerCase() === selectedCategory.toLowerCase();
+      selectedCategory === 'all' ||
+      item.category?.toLowerCase() === selectedCategory.toLowerCase();
     const matchesStatus =
-      selectedStatus === "all" || item.status === selectedStatus;
+      selectedStatus === 'all' || item.status === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
@@ -364,8 +254,8 @@ export default function ManageItems() {
   const handleAddItem = (e) => {
     e.preventDefault();
     // Process form data and uploaded files
-    console.log("Form submitted", e.target.elements);
-    console.log("Uploaded files", uploadedFiles);
+    console.log('Form submitted', e.target.elements);
+    console.log('Uploaded files', uploadedFiles);
 
     // Close dialog and reset state
     setIsNewItemDialogOpen(false);
@@ -376,10 +266,127 @@ export default function ManageItems() {
   const handleAddCategory = (e) => {
     e.preventDefault();
     // Process form data
-    console.log("Category form submitted", e.target.elements);
+    console.log('Category form submitted', e.target.elements);
 
     // Close dialog
     setIsNewCategoryDialogOpen(false);
+  };
+
+  // Grid Skeleton Component
+  const GridSkeleton = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-lg overflow-hidden border border-gray-100"
+          >
+            <div className="relative h-48 bg-gray-100">
+              <Skeleton className="w-full h-full" />
+              <div className="absolute top-3 right-3 flex space-x-2">
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+              <div className="absolute bottom-3 left-3">
+                <Skeleton className="h-5 w-20 rounded-md" />
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <Skeleton className="h-6 w-3/4 mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-5/6 mb-3" />
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-16" />
+                <div className="flex space-x-2">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // List Skeleton Component
+  const ListSkeleton = () => {
+    return (
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">ID</TableHead>
+                <TableHead>Item</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-10 w-10 rounded-md" />
+                      <div className="w-full">
+                        <Skeleton className="h-5 w-3/4 mb-1" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20 rounded-md" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Category Skeleton Component
+  const CategorySkeleton = () => {
+    return (
+      <div className="flex space-x-3 pb-2 overflow-x-auto">
+        <Skeleton className="h-9 w-32 rounded-full" />
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-9 w-28 rounded-full" />
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -389,8 +396,11 @@ export default function ManageItems() {
       animate="visible"
       variants={pageTransition}
     >
+      {/* Sidebar */}
       {/* Main Content */}
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
+        {/* Header */}
+        {/* Content */}
         <main className="flex-1 p-6 overflow-auto relative">
           <Particles />
 
@@ -423,18 +433,14 @@ export default function ManageItems() {
               >
                 <div className="flex items-center space-x-1 bg-white rounded-md p-1 border border-gray-200">
                   <button
-                    className={`p-1.5 rounded ${
-                      viewMode === "grid" ? "bg-gray-100" : ""
-                    }`}
-                    onClick={() => setViewMode("grid")}
+                    className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-gray-100' : ''}`}
+                    onClick={() => setViewMode('grid')}
                   >
                     <Grid className="h-4 w-4 text-muted-foreground" />
                   </button>
                   <button
-                    className={`p-1.5 rounded ${
-                      viewMode === "list" ? "bg-gray-100" : ""
-                    }`}
-                    onClick={() => setViewMode("list")}
+                    className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-gray-100' : ''}`}
+                    onClick={() => setViewMode('list')}
                   >
                     <List className="h-4 w-4 text-muted-foreground" />
                   </button>
@@ -458,8 +464,8 @@ export default function ManageItems() {
                 >
                   <motion.span
                     className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: "-100%", opacity: 0 }}
-                    whileHover={{ x: "100%", opacity: 0.3 }}
+                    initial={{ x: '-100%', opacity: 0 }}
+                    whileHover={{ x: '100%', opacity: 0.3 }}
                     transition={{ duration: 0.6 }}
                   />
                   <Plus className="h-4 w-4 mr-2" />
@@ -470,45 +476,46 @@ export default function ManageItems() {
 
             {/* Categories */}
             <motion.div className="mb-6 overflow-x-auto" variants={itemFadeIn}>
-              <div className="flex space-x-3 pb-2">
-                <motion.button
-                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    selectedCategory === "all"
-                      ? "bg-primary text-white"
-                      : "bg-white text-muted-foreground hover:bg-gray-50"
-                  }`}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setSelectedCategory("all")}
-                >
-                  All Categories
-                </motion.button>
-
-                {categories.map((category) => (
+              {loading ? (
+                <CategorySkeleton />
+              ) : (
+                <div className="flex space-x-3 pb-2">
                   <motion.button
-                    key={category.id}
-                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
-                      selectedCategory === category.name.toLowerCase()
-                        ? "bg-primary text-white"
-                        : "bg-white text-muted-foreground hover:bg-gray-50"
+                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                      selectedCategory === 'all'
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-muted-foreground hover:bg-gray-50'
                     }`}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97 }}
-                    onClick={() =>
-                      setSelectedCategory(category.name.toLowerCase())
-                    }
+                    onClick={() => setSelectedCategory('all')}
                   >
-                    <span
-                      className="h-2 w-2 rounded-full mr-2"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    {category.name}
-                    <span className="ml-2 text-xs opacity-70">
-                      ({category.count})
-                    </span>
+                    All Categories
                   </motion.button>
-                ))}
-              </div>
+
+                  {categories.map((category) => (
+                    <motion.button
+                      key={category.id}
+                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
+                        selectedCategory === category.name.toLowerCase()
+                          ? 'bg-primary text-white'
+                          : 'bg-white text-muted-foreground hover:bg-gray-50'
+                      }`}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() =>
+                        setSelectedCategory(category.name.toLowerCase())
+                      }
+                    >
+                      <span
+                        className="h-2 w-2 rounded-full mr-2"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      {category.name}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
             </motion.div>
 
             {/* Filters */}
@@ -543,19 +550,41 @@ export default function ManageItems() {
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="unavailable">Unavailable</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             </motion.div>
 
-            {/* Items Grid/List View */}
+            {/* Items Grid/List View with Skeleton Loading */}
             <motion.div variants={itemFadeIn}>
               <AnimatePresence mode="wait">
-                {viewMode === "grid" ? (
+                {loading ? (
+                  // Show skeleton based on current view mode
+                  viewMode === 'grid' ? (
+                    <motion.div
+                      key="grid-skeleton"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <GridSkeleton />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="list-skeleton"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <ListSkeleton />
+                    </motion.div>
+                  )
+                ) : viewMode === 'grid' ? (
+                  // Grid View
                   <motion.div
                     key="grid"
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -565,18 +594,21 @@ export default function ManageItems() {
                   >
                     {filteredItems.map((item) => (
                       <motion.div
-                        key={item.id}
+                        key={item.id || item._id}
                         className="bg-white rounded-lg overflow-hidden border border-gray-100"
                         whileHover={{
                           y: -5,
-                          boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                          boxShadow: '0 10px 30px -15px rgba(0,0,0,0.1)',
                         }}
-                        transition={{ type: "spring", stiffness: 300 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
                       >
                         <div className="relative h-48 bg-gray-100">
                           <img
-                            src={item.images[0] || "/placeholder.svg"}
-                            alt={item.title}
+                            src={
+                              item.images?.[0] ||
+                              '/placeholder.svg?height=200&width=300'
+                            }
+                            alt={item.name || item.title}
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute top-3 right-3 flex space-x-2">
@@ -587,9 +619,9 @@ export default function ManageItems() {
                             )}
                             <Badge
                               variant={
-                                item.status === "active"
-                                  ? "default"
-                                  : "secondary"
+                                item.status === 'active'
+                                  ? 'default'
+                                  : 'secondary'
                               }
                               className="capitalize"
                             >
@@ -602,7 +634,7 @@ export default function ManageItems() {
                               backgroundColor:
                                 categories.find((c) => c.id === item.categoryId)
                                   ?.color || colors.primary,
-                              color: "white",
+                              color: 'white',
                             }}
                           >
                             {item.category}
@@ -613,23 +645,27 @@ export default function ManageItems() {
                             <div className="flex items-center">
                               <Avatar className="h-6 w-6 mr-2">
                                 <AvatarImage
-                                  src={item.owner.avatar}
-                                  alt={item.owner.name}
+                                  src={item.owner?.avatar}
+                                  alt={item.owner?.name || 'Owner'}
                                 />
                                 <AvatarFallback>
-                                  {item.owner.name.charAt(0)}
+                                  {item.owner?._id?.charAt(0) || 'U'}
                                 </AvatarFallback>
                               </Avatar>
                               <div className="text-xs text-muted-foreground">
-                                {item.owner.name}
+                                {item.owner?.name || 'Unknown'}
                               </div>
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {item.postedDate}
+                              {item.postedDate ||
+                                (item.createdAt &&
+                                  new Date(item.createdAt).toLocaleDateString(
+                                    'en-US'
+                                  ))}
                             </div>
                           </div>
                           <h3 className="font-semibold mb-1 text-dark">
-                            {item.title}
+                            {item.name || item.title}
                           </h3>
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                             {item.description}
@@ -638,7 +674,7 @@ export default function ManageItems() {
                             <div className="text-primary font-semibold">
                               ${item.price}
                               <span className="text-xs text-muted-foreground font-normal">
-                                /{item.period}
+                                /{item.period || 'month'}
                               </span>
                             </div>
                             <div className="flex space-x-2">
@@ -659,9 +695,9 @@ export default function ManageItems() {
                                     Toggle Featured
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
-                                    {item.status === "active"
-                                      ? "Deactivate"
-                                      : "Activate"}
+                                    {item.status === 'active'
+                                      ? 'Deactivate'
+                                      : 'Activate'}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     Delete Item
@@ -675,6 +711,7 @@ export default function ManageItems() {
                     ))}
                   </motion.div>
                 ) : (
+                  // List View
                   <motion.div
                     key="list"
                     initial={{ opacity: 0 }}
@@ -700,26 +737,27 @@ export default function ManageItems() {
                           <TableBody>
                             {filteredItems.map((item) => (
                               <TableRow
-                                key={item.id}
+                                key={item.id || item._id}
                                 className="hover:bg-gray-50"
                               >
                                 <TableCell className="font-medium">
-                                  {item.id}
+                                  {item.id || item._id?.substring(0, 5)}
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100">
                                       <img
                                         src={
-                                          item.images[0] || "/placeholder.svg"
+                                          item.images?.[0] ||
+                                          '/placeholder.svg?height=100&width=100'
                                         }
-                                        alt={item.title}
+                                        alt={item.name || item.title}
                                         className="w-full h-full object-cover"
                                       />
                                     </div>
                                     <div>
                                       <div className="font-medium flex items-center">
-                                        {item.title}
+                                        {item.name || item.title}
                                         {item.featured && (
                                           <Badge className="ml-2 bg-secondary text-white text-xs">
                                             Featured
@@ -740,7 +778,7 @@ export default function ManageItems() {
                                         categories.find(
                                           (c) => c.id === item.categoryId
                                         )?.color || colors.primary,
-                                      color: "white",
+                                      color: 'white',
                                     }}
                                   >
                                     {item.category}
@@ -750,16 +788,16 @@ export default function ManageItems() {
                                   <div className="text-primary font-semibold">
                                     ${item.price}
                                     <span className="text-xs text-muted-foreground font-normal">
-                                      /{item.period}
+                                      /{item.period || 'month'}
                                     </span>
                                   </div>
                                 </TableCell>
                                 <TableCell>
                                   <Badge
                                     variant={
-                                      item.status === "active"
-                                        ? "default"
-                                        : "secondary"
+                                      item.status === 'active'
+                                        ? 'default'
+                                        : 'secondary'
                                     }
                                     className="capitalize"
                                   >
@@ -770,15 +808,15 @@ export default function ManageItems() {
                                   <div className="flex items-center">
                                     <Avatar className="h-6 w-6 mr-2">
                                       <AvatarImage
-                                        src={item.owner.avatar}
-                                        alt={item.owner.name}
+                                        src={item.owner?.avatar}
+                                        alt={item.owner?.name || 'Owner'}
                                       />
                                       <AvatarFallback>
-                                        {item.owner.name.charAt(0)}
+                                        {item.owner?._id?.charAt(0) || 'U'}
                                       </AvatarFallback>
                                     </Avatar>
                                     <span className="text-sm">
-                                      {item.owner.name}
+                                      {item.owner?.name || 'Unknown'}
                                     </span>
                                   </div>
                                 </TableCell>
@@ -809,9 +847,9 @@ export default function ManageItems() {
                                           Toggle Featured
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                          {item.status === "active"
-                                            ? "Deactivate"
-                                            : "Activate"}
+                                          {item.status === 'active'
+                                            ? 'Deactivate'
+                                            : 'Activate'}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="text-red-600">
                                           Delete Item
@@ -831,33 +869,35 @@ export default function ManageItems() {
               </AnimatePresence>
             </motion.div>
 
-            {/* Pagination */}
-            <div className="mt-6 flex justify-center">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#" isActive>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">2</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">3</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext href="#" />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
+            {/* Pagination - Only show when not loading */}
+            {!loading && (
+              <div className="mt-6 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious href="#" />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#" isActive>
+                        1
+                      </PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#">2</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#">3</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext href="#" />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         </main>
       </motion.div>
@@ -989,8 +1029,8 @@ export default function ManageItems() {
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${
                     isDragging
-                      ? "border-primary bg-primary/5"
-                      : "border-gray-200"
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200'
                   }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -1012,7 +1052,7 @@ export default function ManageItems() {
                     transition={{
                       duration: 6,
                       repeat: Number.POSITIVE_INFINITY,
-                      ease: "easeInOut",
+                      ease: 'easeInOut',
                     }}
                   >
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
@@ -1047,14 +1087,14 @@ export default function ManageItems() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{
-                            type: "spring",
+                            type: 'spring',
                             stiffness: 500,
                             damping: 30,
                           }}
                         >
                           <img
                             src={
-                              URL.createObjectURL(file) || "/placeholder.svg"
+                              URL.createObjectURL(file) || '/placeholder.svg'
                             }
                             alt={`Preview ${index}`}
                             className="w-full h-full object-cover"
@@ -1097,8 +1137,8 @@ export default function ManageItems() {
               >
                 <motion.span
                   className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
+                  initial={{ x: '-100%', opacity: 0 }}
+                  whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative">Add Item</span>
@@ -1146,36 +1186,6 @@ export default function ManageItems() {
                 placeholder="Brief description of this category"
                 className="min-h-[80px]"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="categoryColor">Category Color</Label>
-              <div className="grid grid-cols-6 gap-2">
-                {[
-                  "#4FC3F7",
-                  "#FF8A65",
-                  "#FFB74D",
-                  "#9575CD",
-                  "#4DB6AC",
-                  "#F06292",
-                ].map((color, index) => (
-                  <div
-                    key={index}
-                    className="h-8 rounded-md cursor-pointer border-2 transition-all"
-                    style={{
-                      backgroundColor: color,
-                      borderColor: index === 0 ? "white" : "transparent",
-                      boxShadow: index === 0 ? "0 0 0 2px #FF8A65" : "none",
-                    }}
-                  />
-                ))}
-              </div>
-              <input type="hidden" name="categoryColor" value="#4FC3F7" />
-            </div>
-
-            <div className="flex items-center space-x-2 pt-2">
-              <Switch id="isActive" name="isActive" defaultChecked />
-              <Label htmlFor="isActive">Make category active immediately</Label>
             </div>
           </form>
 
