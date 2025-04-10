@@ -1,62 +1,59 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Checkbox } from "../components/ui/checkbox"
-import { Separator } from "../components/ui/separator"
-import { motion, AnimatePresence } from "framer-motion"
-import { Link, useNavigate } from "react-router-dom"
-import "../App.css"
-import { useForm } from "react-hook-form"
-import { Otpresend, userRegister, verifyOtp } from "../api/auth.api"
+import { useEffect, useState } from 'react';
+import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Checkbox } from '../components/ui/checkbox';
+import { Separator } from '../components/ui/separator';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import '../App.css';
+import { useForm } from 'react-hook-form';
+import { Otpresend, userRegister, verifyOtp } from '../api/auth.api';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog"
-import { useAuth } from "../Middleware/AuthProvider"
-import { toast } from "sonner"
+} from '../components/ui/dialog';
+import { useAuth } from '../Middleware/AuthProvider';
+import { toast } from 'sonner';
 
 export default function SignUp() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isChecked, setIsChecked] = useState(false)
-  const [activeField, setActiveField] = useState(null)
-  const {register, handleSubmit, reset} = useForm();
-  const [isOpen, setIsOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [otp, setOtp] = useState("")
-  const [email, setEmail] = useState("")
+  const [showPassword, setShowPassword] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [activeField, setActiveField] = useState(null);
+  const { register, handleSubmit, reset } = useForm();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [email, setEmail] = useState('');
   const navigate = useNavigate();
-  const {user} = useAuth();
-  useEffect(()=>{
-    if(user?.user){
-      navigate("/browse");
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user?.user) {
+      navigate('/browse');
     }
-  }, [user, navigate])
-
+  }, [user, navigate]);
 
   const colors = {
-    primary: "#4D39EE",
-    secondary: "#191B24",
-    accent: "#4FC3F7",
-    light: "#FAFAFA",
-    dark: "#455A64", 
-  }
+    primary: '#4D39EE',
+    secondary: '#191B24',
+    accent: '#4FC3F7',
+    light: '#FAFAFA',
+    dark: '#455A64',
+  };
   const pageTransition = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.2,
       },
     },
-  }
+  };
 
   const floatAnimation = {
     initial: { y: 0 },
@@ -65,22 +62,22 @@ export default function SignUp() {
       transition: {
         duration: 6,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
-  }
+  };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
+        ease: 'linear',
       },
     },
-  }
+  };
 
   const itemFadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -89,60 +86,56 @@ export default function SignUp() {
       y: 0,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   const buttonHover = {
     rest: { scale: 1 },
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
         damping: 10,
       },
     },
-  }
+  };
 
   const handleFieldFocus = (fieldName) => {
-    setActiveField(fieldName)
-  }
+    setActiveField(fieldName);
+  };
 
   const handleFieldBlur = () => {
-    setActiveField(null)
-  }
+    setActiveField(null);
+  };
 
   const registerUser = async (data) => {
     try {
       const res = await userRegister(data);
-      if(res === true){
-         setEmail(data.email);
-         setIsOpen(true);
+      if (res === true) {
+        setEmail(data.email);
+        setIsOpen(true);
+      } else if (res === 409) {
+        alert('Email already exists. Please use a different email.');
       }
-      else if(res === 409){
-        alert("Email already exists. Please use a different email.");
-      }
-    }
-    catch (err) {
-      if(err === 409){
-        alert("Email already exists. Please use a different email.");
+    } catch (err) {
+      if (err === 409) {
+        alert('Email already exists. Please use a different email.');
       }
     }
-  }
+  };
 
   const resendOtp = async () => {
-    try{
-      const res = await Otpresend({email});
-      if(res === true){
-        toast.success("OTP resent successfully");
+    try {
+      const res = await Otpresend({ email });
+      if (res === true) {
+        toast.success('OTP resent successfully');
+      } else {
+        toast.error('Failed to resend OTP');
       }
-      else{
-        toast.error("Failed to resend OTP");
-      }
+    } catch (err) {
+      toast.error('Failed to resend OTP');
     }
-    catch(err){
-      toast.error("Failed to resend OTP");
-    }
-  }
+  };
 
   const Particles = () => {
     return (
@@ -167,34 +160,34 @@ export default function SignUp() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   const handleOtpSubmit = async () => {
     setIsLoading(true);
     try {
-      const data = {email,otp}
-      const res = await verifyOtp( data );
+      const data = { email, otp };
+      const res = await verifyOtp(data);
       if (res === true) {
         reset();
         setIsOpen(false);
-        toast.success("Account created successfully.");
-        navigate("/browse");
+        toast.success('Account created successfully.');
+        navigate('/browse');
       } else {
-        toast.error("Invalid OTP. Please try again.");
+        toast.error('Invalid OTP. Please try again.');
       }
     } catch (err) {
       console.log(err);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -206,7 +199,9 @@ export default function SignUp() {
       {/* Left side - Illustration */}
       <motion.div
         className="hidden lg:flex flex-1 p-12 relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` }}
+        style={{
+          background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+        }}
         variants={itemFadeIn}
       >
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -219,7 +214,7 @@ export default function SignUp() {
             transition={{
               duration: 20,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+              ease: 'linear',
             }}
           />
           <motion.div
@@ -231,7 +226,7 @@ export default function SignUp() {
             transition={{
               duration: 25,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
+              ease: 'linear',
             }}
           />
         </div>
@@ -262,22 +257,25 @@ export default function SignUp() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 1 }}
             >
-              Join our community and experience the freedom of renting instead of buying.
+              Join our community and experience the freedom of renting instead
+              of buying.
             </motion.p>
 
             <div className="space-y-8">
               {[
                 {
-                  title: "Flexible Plans",
-                  description: "Choose rental durations that fit your needs and budget",
+                  title: 'Flexible Plans',
+                  description:
+                    'Choose rental durations that fit your needs and budget',
                 },
                 {
-                  title: "Premium Selection",
-                  description: "Access high-quality products without the commitment",
+                  title: 'Premium Selection',
+                  description:
+                    'Access high-quality products without the commitment',
                 },
                 {
-                  title: "Easy Returns",
-                  description: "Change your mind? Return or swap anytime",
+                  title: 'Easy Returns',
+                  description: 'Change your mind? Return or swap anytime',
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -289,12 +287,17 @@ export default function SignUp() {
                 >
                   <motion.div
                     className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center shrink-0"
-                    whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.3)" }}
+                    whileHover={{
+                      scale: 1.1,
+                      backgroundColor: 'rgba(255,255,255,0.3)',
+                    }}
                   >
                     <span className="text-white font-bold">0{index + 1}</span>
                   </motion.div>
                   <div>
-                    <h3 className="text-white font-semibold text-lg">{feature.title}</h3>
+                    <h3 className="text-white font-semibold text-lg">
+                      {feature.title}
+                    </h3>
                     <p className="text-white/80">{feature.description}</p>
                   </div>
                 </motion.div>
@@ -305,7 +308,10 @@ export default function SignUp() {
       </motion.div>
 
       {/* Right side - Registration Form */}
-      <motion.div className="flex-1 flex items-center justify-center p-8 relative" variants={itemFadeIn}>
+      <motion.div
+        className="flex-1 flex items-center justify-center p-8 relative"
+        variants={itemFadeIn}
+      >
         <Particles />
 
         <div className="max-w-md w-full relative z-10">
@@ -314,8 +320,8 @@ export default function SignUp() {
               className="inline-block text-3xl font-bold mb-2"
               style={{
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
               {...shimmerAnimation}
             >
@@ -339,20 +345,28 @@ export default function SignUp() {
             </motion.p>
           </motion.div>
 
-          <motion.form variants={itemFadeIn} onSubmit={handleSubmit(registerUser)} className="space-y-5">
-            
+          <motion.form
+            variants={itemFadeIn}
+            onSubmit={handleSubmit(registerUser)}
+            className="space-y-5"
+          >
             <motion.div
               className="space-y-2 flex flex-col items-start"
               whileFocus={{ scale: 1.02 }}
               whileHover={{ y: -2 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <label htmlFor="email" className="text-sm font-medium leading-none text-dark">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium leading-none text-dark"
+              >
                 Email
               </label>
-              <div className={`relative w-full ${activeField === "email" ? "ring-2 ring-primary/50 rounded-md" : ""}`}>
+              <div
+                className={`relative w-full ${activeField === 'email' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
+              >
                 <input
-                  {...register("email", { required: true })}
+                  {...register('email', { required: true })}
                   id="email"
                   placeholder="name@example.com"
                   type="email"
@@ -360,7 +374,7 @@ export default function SignUp() {
                   autoComplete="email"
                   autoCorrect="off"
                   className="border w-full Input bg-white/80 focus:border-primary"
-                  onFocus={() => handleFieldFocus("email")}
+                  onFocus={() => handleFieldFocus('email')}
                   onBlur={handleFieldBlur}
                 />
               </div>
@@ -370,21 +384,26 @@ export default function SignUp() {
               className="space-y-2 flex flex-col items-start"
               whileFocus={{ scale: 1.02 }}
               whileHover={{ y: -2 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
-              <label htmlFor="password" className="text-sm font-medium leading-none text-dark">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium leading-none text-dark"
+              >
                 Password
               </label>
-              <div className={`relative w-full ${activeField === "password" ? "ring-2 ring-primary/50 rounded-md" : ""}`}>
+              <div
+                className={`relative w-full ${activeField === 'password' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
+              >
                 <input
-                  {...register("password", { required: true })}
+                  {...register('password', { required: true })}
                   id="password"
                   placeholder="Create a password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   autoCapitalize="none"
                   autoComplete="new-password"
                   className="Input border border-muted shadow-2xl w-full"
-                  onFocus={() => handleFieldFocus("password")} 
+                  onFocus={() => handleFieldFocus('password')}
                   onBlur={handleFieldBlur}
                 />
                 <Button
@@ -396,13 +415,17 @@ export default function SignUp() {
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={showPassword ? "visible" : "hidden"}
+                      key={showPassword ? 'visible' : 'hidden'}
                       initial={{ opacity: 0, rotate: -10 }}
                       animate={{ opacity: 1, rotate: 0 }}
                       exit={{ opacity: 0, rotate: 10 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </motion.div>
                   </AnimatePresence>
                   <span className="sr-only">Toggle password visibility</span>
@@ -416,7 +439,7 @@ export default function SignUp() {
             <motion.div
               className="flex items-center space-x-2"
               whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 400 }}
+              transition={{ type: 'spring', stiffness: 400 }}
             >
               <Checkbox
                 id="terms"
@@ -427,31 +450,43 @@ export default function SignUp() {
                 htmlFor="terms"
                 className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-dark"
               >
-                I agree to the{" "}
-                <Link href="#" className="font-medium text-primary hover:underline underline-offset-4">
+                I agree to the{' '}
+                <Link
+                  href="#"
+                  className="font-medium text-primary hover:underline underline-offset-4"
+                >
                   Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="#" className="font-medium text-primary hover:underline underline-offset-4">
+                </Link>{' '}
+                and{' '}
+                <Link
+                  href="#"
+                  className="font-medium text-primary hover:underline underline-offset-4"
+                >
                   Privacy Policy
                 </Link>
               </label>
             </motion.div>
 
-            <motion.div variants={buttonHover} initial="rest" whileHover="hover">
+            <motion.div
+              variants={buttonHover}
+              initial="rest"
+              whileHover="hover"
+            >
               <Button
                 disabled={!isChecked}
                 type="submit"
                 className="w-full disabled:cursor-not-allowed group relative overflow-hidden"
                 style={{
-                  background: isChecked ? `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` : undefined,
+                  background: isChecked
+                    ? `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`
+                    : undefined,
                   opacity: isChecked ? 1 : 0.7,
                 }}
               >
                 <motion.span
                   className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
+                  initial={{ x: '-100%', opacity: 0 }}
+                  whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
@@ -459,7 +494,10 @@ export default function SignUp() {
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Number.POSITIVE_INFINITY,
+                    }}
                   >
                     <ArrowRight className="h-4 w-4" />
                   </motion.span>
@@ -474,19 +512,33 @@ export default function SignUp() {
                 <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-light px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-light px-2 text-muted-foreground">
+                  Or continue with
+                </span>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5"
+                >
                   <Facebook className="h-4 w-4 mr-2 text-primary" />
                   Facebook
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button variant="outline" className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5"
+                >
                   <Twitter className="h-4 w-4 mr-2 text-primary" />
                   Twitter
                 </Button>
@@ -494,8 +546,11 @@ export default function SignUp() {
             </div>
           </motion.div>
 
-          <motion.p variants={itemFadeIn} className="mt-8 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+          <motion.p
+            variants={itemFadeIn}
+            className="mt-8 text-center text-sm text-muted-foreground"
+          >
+            Already have an account?{' '}
             <Link
               to="/login"
               className="font-medium text-primary hover:underline underline-offset-4 relative inline-block"
@@ -515,7 +570,9 @@ export default function SignUp() {
       {/* Bottom message - Desktop hidden, Mobile visible */}
       <motion.div
         className="lg:hidden py-8 px-4 text-white text-center relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` }}
+        style={{
+          background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+        }}
         initial="hidden"
         animate="visible"
         variants={itemFadeIn}
@@ -523,14 +580,14 @@ export default function SignUp() {
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"
           animate={{
-            x: ["-100%", "100%"],
+            x: ['-100%', '100%'],
             opacity: [0, 0.5, 0],
           }}
           transition={{
             duration: 3,
             repeat: Number.POSITIVE_INFINITY,
-            repeatType: "loop",
-            ease: "linear",
+            repeatType: 'loop',
+            ease: 'linear',
           }}
         />
 
@@ -548,7 +605,8 @@ export default function SignUp() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          Access premium products without commitment. Easy upgrades, flexible returns, and free maintenance included.
+          Access premium products without commitment. Easy upgrades, flexible
+          returns, and free maintenance included.
         </motion.p>
       </motion.div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -571,6 +629,5 @@ export default function SignUp() {
         </DialogContent>
       </Dialog>
     </motion.div>
-  )
+  );
 }
-

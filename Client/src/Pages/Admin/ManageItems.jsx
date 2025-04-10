@@ -1,16 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef } from 'react';
 import {
-  Home,
-  Users,
-  Package,
-  BarChart3,
-  Settings,
-  FileText,
-  LogOut,
-  ChevronDown,
-  Bell,
   Search,
-  Sparkles,
   Grid,
   List,
   Filter,
@@ -20,32 +10,32 @@ import {
   Upload,
   X,
   Tag,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../components/ui/avatar";
+} from '../../components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
-import { Separator } from "../../components/ui/separator";
-import { Badge } from "../../components/ui/badge";
-import { Card, CardContent } from "../../components/ui/card";
+} from '../../components/ui/dropdown-menu';
+import { Separator } from '../../components/ui/separator';
+import { Badge } from '../../components/ui/badge';
+import { Card, CardContent } from '../../components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
+} from '../../components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -53,7 +43,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../components/ui/dialog";
+} from '../../components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -61,7 +51,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../Components/ui/table";
+} from '../../Components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -70,15 +60,15 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../components/ui/pagination";
-import { Switch } from "../../components/ui/switch";
-import { Label } from "../../components/ui/label";
+} from '../../components/ui/pagination';
+import { Switch } from '../../components/ui/switch';
+import { Label } from '../../components/ui/label';
 
 export default function ManageItems() {
-  const [viewMode, setViewMode] = useState("grid");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [viewMode, setViewMode] = useState('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
   const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -87,144 +77,136 @@ export default function ManageItems() {
 
   // Rental Color Palette
   const colors = {
-    primary: "#4D39EE", // Coral
-    secondary: "#191B24", // Amber
-    accent: "#4FC3F7", // Light Blue
-    light: "#FAFAFA", // Almost White
-    dark: "#455A64", // Blue Grey
+    primary: '#4D39EE',
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
   };
 
-  // Sample admin data
-  const admin = {
-    name: "Sarah Johnson",
-    role: "Super Admin",
-    avatar: "/placeholder.svg?height=40&width=40",
-  };
-
-  // Sample categories
   const categories = [
-    { id: 1, name: "Electronics", count: 245, color: "#4FC3F7" },
-    { id: 2, name: "Furniture", count: 189, color: "#FF8A65" },
-    { id: 3, name: "Clothing", count: 156, color: "#FFB74D" },
-    { id: 4, name: "Sports", count: 132, color: "#9575CD" },
-    { id: 5, name: "Tools", count: 98, color: "#4DB6AC" },
+    { id: 1, name: 'Electronics', count: 245, color: '#4FC3F7' },
+    { id: 2, name: 'Furniture', count: 189, color: '#FF8A65' },
+    { id: 3, name: 'Clothing', count: 156, color: '#FFB74D' },
+    { id: 4, name: 'Sports', count: 132, color: '#9575CD' },
+    { id: 5, name: 'Tools', count: 98, color: '#4DB6AC' },
   ];
 
   // Sample items data
   const items = [
     {
       id: 1,
-      title: "Modern Desk Chair",
-      description: "Ergonomic office chair with lumbar support",
+      title: 'Modern Desk Chair',
+      description: 'Ergonomic office chair with lumbar support',
       price: 25,
-      period: "week",
-      category: "Furniture",
+      period: 'week',
+      category: 'Furniture',
       categoryId: 2,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "2 weeks ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'active',
+      postedDate: '2 weeks ago',
       views: 45,
       inquiries: 3,
       featured: true,
       owner: {
-        name: "Alex Thompson",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Alex Thompson',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
     {
       id: 2,
-      title: "Professional DSLR Camera",
+      title: 'Professional DSLR Camera',
       description:
-        "Canon EOS with 18-55mm lens, perfect for photography enthusiasts",
+        'Canon EOS with 18-55mm lens, perfect for photography enthusiasts',
       price: 50,
-      period: "day",
-      category: "Electronics",
+      period: 'day',
+      category: 'Electronics',
       categoryId: 1,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "5 days ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'active',
+      postedDate: '5 days ago',
       views: 120,
       inquiries: 8,
       featured: false,
       owner: {
-        name: "Jamie Rodriguez",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Jamie Rodriguez',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
     {
       id: 3,
-      title: "Mountain Bike",
-      description: "All-terrain bike, suitable for trails and city riding",
+      title: 'Mountain Bike',
+      description: 'All-terrain bike, suitable for trails and city riding',
       price: 15,
-      period: "day",
-      category: "Sports",
+      period: 'day',
+      category: 'Sports',
       categoryId: 4,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "1 month ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'active',
+      postedDate: '1 month ago',
       views: 67,
       inquiries: 5,
       featured: true,
       owner: {
-        name: "Taylor Kim",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Taylor Kim',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
     {
       id: 4,
-      title: "Portable Projector",
-      description: "HD projector with Bluetooth speaker, ideal for home cinema",
+      title: 'Portable Projector',
+      description: 'HD projector with Bluetooth speaker, ideal for home cinema',
       price: 35,
-      period: "day",
-      category: "Electronics",
+      period: 'day',
+      category: 'Electronics',
       categoryId: 1,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "inactive",
-      postedDate: "3 months ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'inactive',
+      postedDate: '3 months ago',
       views: 32,
       inquiries: 2,
       featured: false,
       owner: {
-        name: "Morgan Lee",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Morgan Lee',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
     {
       id: 5,
-      title: "Leather Jacket",
-      description: "Vintage style leather jacket, size M, excellent condition",
+      title: 'Leather Jacket',
+      description: 'Vintage style leather jacket, size M, excellent condition',
       price: 20,
-      period: "day",
-      category: "Clothing",
+      period: 'day',
+      category: 'Clothing',
       categoryId: 3,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "2 weeks ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'active',
+      postedDate: '2 weeks ago',
       views: 55,
       inquiries: 4,
       featured: false,
       owner: {
-        name: "Casey Johnson",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Casey Johnson',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
     {
       id: 6,
-      title: "Power Drill Set",
-      description: "Complete power drill set with various bits and accessories",
+      title: 'Power Drill Set',
+      description: 'Complete power drill set with various bits and accessories',
       price: 18,
-      period: "day",
-      category: "Tools",
+      period: 'day',
+      category: 'Tools',
       categoryId: 5,
-      images: ["/placeholder.svg?height=200&width=300"],
-      status: "active",
-      postedDate: "1 week ago",
+      images: ['/placeholder.svg?height=200&width=300'],
+      status: 'active',
+      postedDate: '1 week ago',
       views: 28,
       inquiries: 2,
       featured: false,
       owner: {
-        name: "Riley Smith",
-        avatar: "/placeholder.svg?height=40&width=40",
+        name: 'Riley Smith',
+        avatar: '/placeholder.svg?height=40&width=40',
       },
     },
   ];
@@ -236,7 +218,7 @@ export default function ManageItems() {
       opacity: 1,
       transition: {
         duration: 0.6,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.1,
       },
     },
@@ -251,24 +233,12 @@ export default function ManageItems() {
     },
   };
 
-  const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
-    animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "linear",
-      },
-    },
-  };
-
   const buttonHover = {
     rest: { scale: 1 },
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
         damping: 10,
       },
@@ -299,7 +269,7 @@ export default function ManageItems() {
             transition={{
               duration: Math.random() * 10 + 10,
               repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
+              ease: 'easeInOut',
               delay: Math.random() * 5,
             }}
           />
@@ -314,10 +284,10 @@ export default function ManageItems() {
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === "all" ||
+      selectedCategory === 'all' ||
       item.category.toLowerCase() === selectedCategory.toLowerCase();
     const matchesStatus =
-      selectedStatus === "all" || item.status === selectedStatus;
+      selectedStatus === 'all' || item.status === selectedStatus;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
@@ -364,8 +334,8 @@ export default function ManageItems() {
   const handleAddItem = (e) => {
     e.preventDefault();
     // Process form data and uploaded files
-    console.log("Form submitted", e.target.elements);
-    console.log("Uploaded files", uploadedFiles);
+    console.log('Form submitted', e.target.elements);
+    console.log('Uploaded files', uploadedFiles);
 
     // Close dialog and reset state
     setIsNewItemDialogOpen(false);
@@ -376,7 +346,7 @@ export default function ManageItems() {
   const handleAddCategory = (e) => {
     e.preventDefault();
     // Process form data
-    console.log("Category form submitted", e.target.elements);
+    console.log('Category form submitted', e.target.elements);
 
     // Close dialog
     setIsNewCategoryDialogOpen(false);
@@ -424,17 +394,17 @@ export default function ManageItems() {
                 <div className="flex items-center space-x-1 bg-white rounded-md p-1 border border-gray-200">
                   <button
                     className={`p-1.5 rounded ${
-                      viewMode === "grid" ? "bg-gray-100" : ""
+                      viewMode === 'grid' ? 'bg-gray-100' : ''
                     }`}
-                    onClick={() => setViewMode("grid")}
+                    onClick={() => setViewMode('grid')}
                   >
                     <Grid className="h-4 w-4 text-muted-foreground" />
                   </button>
                   <button
                     className={`p-1.5 rounded ${
-                      viewMode === "list" ? "bg-gray-100" : ""
+                      viewMode === 'list' ? 'bg-gray-100' : ''
                     }`}
-                    onClick={() => setViewMode("list")}
+                    onClick={() => setViewMode('list')}
                   >
                     <List className="h-4 w-4 text-muted-foreground" />
                   </button>
@@ -458,8 +428,8 @@ export default function ManageItems() {
                 >
                   <motion.span
                     className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: "-100%", opacity: 0 }}
-                    whileHover={{ x: "100%", opacity: 0.3 }}
+                    initial={{ x: '-100%', opacity: 0 }}
+                    whileHover={{ x: '100%', opacity: 0.3 }}
                     transition={{ duration: 0.6 }}
                   />
                   <Plus className="h-4 w-4 mr-2" />
@@ -473,13 +443,13 @@ export default function ManageItems() {
               <div className="flex space-x-3 pb-2">
                 <motion.button
                   className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                    selectedCategory === "all"
-                      ? "bg-primary text-white"
-                      : "bg-white text-muted-foreground hover:bg-gray-50"
+                    selectedCategory === 'all'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-muted-foreground hover:bg-gray-50'
                   }`}
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => setSelectedCategory("all")}
+                  onClick={() => setSelectedCategory('all')}
                 >
                   All Categories
                 </motion.button>
@@ -489,8 +459,8 @@ export default function ManageItems() {
                     key={category.id}
                     className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
                       selectedCategory === category.name.toLowerCase()
-                        ? "bg-primary text-white"
-                        : "bg-white text-muted-foreground hover:bg-gray-50"
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-muted-foreground hover:bg-gray-50'
                     }`}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97 }}
@@ -555,7 +525,7 @@ export default function ManageItems() {
             {/* Items Grid/List View */}
             <motion.div variants={itemFadeIn}>
               <AnimatePresence mode="wait">
-                {viewMode === "grid" ? (
+                {viewMode === 'grid' ? (
                   <motion.div
                     key="grid"
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -569,13 +539,13 @@ export default function ManageItems() {
                         className="bg-white rounded-lg overflow-hidden border border-gray-100"
                         whileHover={{
                           y: -5,
-                          boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                          boxShadow: '0 10px 30px -15px rgba(0,0,0,0.1)',
                         }}
-                        transition={{ type: "spring", stiffness: 300 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
                       >
                         <div className="relative h-48 bg-gray-100">
                           <img
-                            src={item.images[0] || "/placeholder.svg"}
+                            src={item.images[0] || '/placeholder.svg'}
                             alt={item.title}
                             className="w-full h-full object-cover"
                           />
@@ -587,9 +557,9 @@ export default function ManageItems() {
                             )}
                             <Badge
                               variant={
-                                item.status === "active"
-                                  ? "default"
-                                  : "secondary"
+                                item.status === 'active'
+                                  ? 'default'
+                                  : 'secondary'
                               }
                               className="capitalize"
                             >
@@ -602,7 +572,7 @@ export default function ManageItems() {
                               backgroundColor:
                                 categories.find((c) => c.id === item.categoryId)
                                   ?.color || colors.primary,
-                              color: "white",
+                              color: 'white',
                             }}
                           >
                             {item.category}
@@ -659,9 +629,9 @@ export default function ManageItems() {
                                     Toggle Featured
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
-                                    {item.status === "active"
-                                      ? "Deactivate"
-                                      : "Activate"}
+                                    {item.status === 'active'
+                                      ? 'Deactivate'
+                                      : 'Activate'}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     Delete Item
@@ -711,7 +681,7 @@ export default function ManageItems() {
                                     <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100">
                                       <img
                                         src={
-                                          item.images[0] || "/placeholder.svg"
+                                          item.images[0] || '/placeholder.svg'
                                         }
                                         alt={item.title}
                                         className="w-full h-full object-cover"
@@ -740,7 +710,7 @@ export default function ManageItems() {
                                         categories.find(
                                           (c) => c.id === item.categoryId
                                         )?.color || colors.primary,
-                                      color: "white",
+                                      color: 'white',
                                     }}
                                   >
                                     {item.category}
@@ -757,9 +727,9 @@ export default function ManageItems() {
                                 <TableCell>
                                   <Badge
                                     variant={
-                                      item.status === "active"
-                                        ? "default"
-                                        : "secondary"
+                                      item.status === 'active'
+                                        ? 'default'
+                                        : 'secondary'
                                     }
                                     className="capitalize"
                                   >
@@ -809,9 +779,9 @@ export default function ManageItems() {
                                           Toggle Featured
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
-                                          {item.status === "active"
-                                            ? "Deactivate"
-                                            : "Activate"}
+                                          {item.status === 'active'
+                                            ? 'Deactivate'
+                                            : 'Activate'}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="text-red-600">
                                           Delete Item
@@ -989,8 +959,8 @@ export default function ManageItems() {
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${
                     isDragging
-                      ? "border-primary bg-primary/5"
-                      : "border-gray-200"
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200'
                   }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -1012,7 +982,7 @@ export default function ManageItems() {
                     transition={{
                       duration: 6,
                       repeat: Number.POSITIVE_INFINITY,
-                      ease: "easeInOut",
+                      ease: 'easeInOut',
                     }}
                   >
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
@@ -1047,14 +1017,14 @@ export default function ManageItems() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{
-                            type: "spring",
+                            type: 'spring',
                             stiffness: 500,
                             damping: 30,
                           }}
                         >
                           <img
                             src={
-                              URL.createObjectURL(file) || "/placeholder.svg"
+                              URL.createObjectURL(file) || '/placeholder.svg'
                             }
                             alt={`Preview ${index}`}
                             className="w-full h-full object-cover"
@@ -1097,8 +1067,8 @@ export default function ManageItems() {
               >
                 <motion.span
                   className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
+                  initial={{ x: '-100%', opacity: 0 }}
+                  whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative">Add Item</span>
@@ -1152,20 +1122,20 @@ export default function ManageItems() {
               <Label htmlFor="categoryColor">Category Color</Label>
               <div className="grid grid-cols-6 gap-2">
                 {[
-                  "#4FC3F7",
-                  "#FF8A65",
-                  "#FFB74D",
-                  "#9575CD",
-                  "#4DB6AC",
-                  "#F06292",
+                  '#4FC3F7',
+                  '#FF8A65',
+                  '#FFB74D',
+                  '#9575CD',
+                  '#4DB6AC',
+                  '#F06292',
                 ].map((color, index) => (
                   <div
                     key={index}
                     className="h-8 rounded-md cursor-pointer border-2 transition-all"
                     style={{
                       backgroundColor: color,
-                      borderColor: index === 0 ? "white" : "transparent",
-                      boxShadow: index === 0 ? "0 0 0 2px #FF8A65" : "none",
+                      borderColor: index === 0 ? 'white' : 'transparent',
+                      boxShadow: index === 0 ? '0 0 0 2px #FF8A65' : 'none',
                     }}
                   />
                 ))}

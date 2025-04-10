@@ -1,7 +1,16 @@
-import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { motion } from "framer-motion"
-import { Home, Users, Package, BarChart3, Settings, FileText, LogOut, Compass } from "lucide-react"
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Home,
+  Users,
+  Package,
+  BarChart3,
+  Settings,
+  FileText,
+  LogOut,
+  Compass,
+} from 'lucide-react';
 
 import {
   Sidebar,
@@ -12,45 +21,73 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "../../components/ui/sidebar"
+} from '../../components/ui/sidebar';
 
 export function SidebarNav() {
-  const location = useLocation()
-  const pathname = location.pathname
-  const [isMounted, setIsMounted] = useState(false)
+  const location = useLocation();
+  const pathname = location.pathname;
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
   const colors = {
-    primary: "#FF8A65",
-    secondary: "#FFB74D",
-  }
+    primary: '#FF8A65',
+    secondary: '#FFB74D',
+  };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "linear",
+        ease: 'linear',
       },
     },
-  }
+  };
 
   const navItems = [
-    { icon: <Home className="h-4 w-4" />, label: "Dashboard", path: "/admin/dashboard" },
-    { icon: <Users className="h-4 w-4" />, label: "Manage Users", path: "/admin/users" },
-    { icon: <Package className="h-4 w-4" />, label: "Manage Items", path: "/admin/items" },
-    { icon: <Compass className="h-4 w-4" />, label: "Adventures", path: "/admin/adventures" },
-    { icon: <BarChart3 className="h-4 w-4" />, label: "Analytics", path: "/admin/analytics" },
-    { icon: <FileText className="h-4 w-4" />, label: "Reports", path: "/admin/reports" },
-    { icon: <Settings className="h-4 w-4" />, label: "Settings", path: "/admin/settings" },
-  ]
+    {
+      icon: <Home className="h-4 w-4" />,
+      label: 'Dashboard',
+      path: '/admin/dashboard',
+    },
+    {
+      icon: <Users className="h-4 w-4" />,
+      label: 'Manage Users',
+      path: '/admin/users',
+    },
+    {
+      icon: <Package className="h-4 w-4" />,
+      label: 'Manage Items',
+      path: '/admin/items',
+    },
+    {
+      icon: <Compass className="h-4 w-4" />,
+      label: 'Adventures',
+      path: '/admin/adventures',
+    },
+    {
+      icon: <BarChart3 className="h-4 w-4" />,
+      label: 'Analytics',
+      path: '/admin/analytics',
+    },
+    {
+      icon: <FileText className="h-4 w-4" />,
+      label: 'Reports',
+      path: '/admin/reports',
+    },
+    {
+      icon: <Settings className="h-4 w-4" />,
+      label: 'Settings',
+      path: '/admin/settings',
+    },
+  ];
 
-  if (!isMounted) return null
+  if (!isMounted) return null;
 
   return (
     <Sidebar>
@@ -66,8 +103,8 @@ export function SidebarNav() {
                   className="flex flex-col gap-0.5 leading-none"
                   style={{
                     background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
                   }}
                   {...shimmerAnimation}
                 >
@@ -75,31 +112,31 @@ export function SidebarNav() {
                   <span>v1.0.0</span>
                 </motion.div>
                 <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <motion.button
-                    className="flex items-center space-x-2"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Avatar>
-                      <AvatarImage src={admin.avatar} alt={admin.name} />
-                      <AvatarFallback>{admin.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="hidden md:block text-left">
-                      <div className="text-sm font-medium">{admin.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {admin.role}
+                  <DropdownMenuTrigger asChild>
+                    <motion.button
+                      className="flex items-center space-x-2"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Avatar>
+                        <AvatarImage src={admin.avatar} alt={admin.name} />
+                        <AvatarFallback>{admin.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="hidden md:block text-left">
+                        <div className="text-sm font-medium">{admin.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {admin.role}
+                        </div>
                       </div>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  </motion.button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    </motion.button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Settings</DropdownMenuItem>
+                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
@@ -108,7 +145,9 @@ export function SidebarNav() {
 
       <SidebarContent>
         <div className="px-3 mb-6">
-          <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">MANAGEMENT</div>
+          <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">
+            MANAGEMENT
+          </div>
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.path}>
@@ -152,7 +191,7 @@ export function SidebarNav() {
             transition={{
               duration: 6,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           >
             <div className="flex items-center mb-3">
@@ -160,7 +199,8 @@ export function SidebarNav() {
               <span className="text-sm font-medium">Admin Tips</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Check the analytics section for detailed insights on user behavior and revenue trends.
+              Check the analytics section for detailed insights on user behavior
+              and revenue trends.
             </p>
           </motion.div>
         </div>
@@ -168,5 +208,5 @@ export function SidebarNav() {
 
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

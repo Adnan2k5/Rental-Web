@@ -1,14 +1,23 @@
-import { useState } from "react"
-import { AlertCircle, ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2, Truck } from "lucide-react"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Separator } from "../components/ui/separator"
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group"
-import { Label } from "../components/ui/label"
-import { motion } from "framer-motion"
-import { Link } from "react-router-dom"
-import { useAuth } from "../Middleware/AuthProvider"
+import { useState } from 'react';
+import {
+  AlertCircle,
+  ChevronRight,
+  CreditCard,
+  Minus,
+  Plus,
+  ShoppingCart,
+  Trash2,
+  Truck,
+} from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Separator } from '../components/ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import { Label } from '../components/ui/label';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../Middleware/AuthProvider';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([
@@ -17,15 +26,15 @@ export default function CartPage() {
       name: 'MacBook Pro 16"',
       price: 35,
       duration: 1,
-      image: "/placeholder.svg?height=80&width=80",
+      image: '/placeholder.svg?height=80&width=80',
       quantity: 1,
     },
     {
       id: 3,
-      name: "Sony PlayStation 5",
+      name: 'Sony PlayStation 5',
       price: 29,
       duration: 3,
-      image: "/placeholder.svg?height=80&width=80",
+      image: '/placeholder.svg?height=80&width=80',
       quantity: 1,
     },
     {
@@ -33,20 +42,20 @@ export default function CartPage() {
       name: 'Samsung 75" QLED 4K TV',
       price: 65,
       duration: 1,
-      image: "/placeholder.svg?height=80&width=80",
+      image: '/placeholder.svg?height=80&width=80',
       quantity: 1,
     },
-  ])
+  ]);
 
-  const [promoCode, setPromoCode] = useState("")
-  const [shippingMethod, setShippingMethod] = useState("standard")
-  const [checkoutStep, setCheckoutStep] = useState(1)
+  const [promoCode, setPromoCode] = useState('');
+  const [shippingMethod, setShippingMethod] = useState('standard');
+  const [checkoutStep, setCheckoutStep] = useState(1);
 
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
-  }
+  };
 
   const staggerChildren = {
     hidden: { opacity: 0 },
@@ -56,33 +65,44 @@ export default function CartPage() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   // Cart actions
   const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id))
-  }
+    setCartItems(cartItems.filter((item) => item.id !== id));
+  };
 
   const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return
+    if (newQuantity < 1) return;
 
-    setCartItems(cartItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
-  }
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
 
   const updateDuration = (id, newDuration) => {
-    if (newDuration < 1) return
+    if (newDuration < 1) return;
 
-    setCartItems(cartItems.map((item) => (item.id === id ? { ...item, duration: newDuration } : item)))
-  }
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, duration: newDuration } : item
+      )
+    );
+  };
 
   // Calculate totals
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity * item.duration, 0)
-  const shippingCost = shippingMethod === "express" ? 15 : 0
-  const discount = 0 // In a real app, this would calculate discounts from promo codes
-  const total = subtotal + shippingCost - discount
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity * item.duration,
+    0
+  );
+  const shippingCost = shippingMethod === 'express' ? 15 : 0;
+  const discount = 0; // In a real app, this would calculate discounts from promo codes
+  const total = subtotal + shippingCost - discount;
 
   // Is cart empty
-  const isCartEmpty = cartItems.length === 0
+  const isCartEmpty = cartItems.length === 0;
 
   const user = useAuth();
 
@@ -98,40 +118,61 @@ export default function CartPage() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-1">
-            <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary">
+            <Link
+              to="/"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
+            >
               Home
             </Link>
-            <Link to="/browse" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary">
+            <Link
+              to="/browse"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
+            >
               Browse
             </Link>
-            <Link to="#" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary">
+            <Link
+              to="#"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
+            >
               How It Works
             </Link>
-            <Link to="#" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary">
+            <Link
+              to="#"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
+            >
               About
             </Link>
           </div>
 
           <div className="flex items-center space-x-4">
-          {user.user ? (
-            <Link to="/profile">
-              <Button variant="ghost" className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white" size="sm">
-                {user.user.email.charAt(0).toUpperCase()}
-              </Button>
-            </Link>
-              ) : (
+            {user.user ? (
+              <Link to="/profile">
+                <Button
+                  variant="ghost"
+                  className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
+                  size="sm"
+                >
+                  {user.user.email.charAt(0).toUpperCase()}
+                </Button>
+              </Link>
+            ) : (
               <Link to="/login">
                 <Button variant="ghost" size="sm">
                   Sign In
                 </Button>
               </Link>
-              )}
+            )}
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <motion.div className="mb-8" initial="hidden" animate="visible" variants={fadeIn}>
+        <motion.div
+          className="mb-8"
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+        >
           <div className="flex items-center text-sm text-muted-foreground">
             <Link to="/" className="hover:text-primary">
               Home
@@ -169,12 +210,23 @@ export default function CartPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items Column */}
-            <motion.div className="lg:col-span-2" initial="hidden" animate="visible" variants={staggerChildren}>
+            <motion.div
+              className="lg:col-span-2"
+              initial="hidden"
+              animate="visible"
+              variants={staggerChildren}
+            >
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">Cart Items ({cartItems.length})</h2>
-                    <Button variant="ghost" size="sm" className="text-sm text-muted-foreground">
+                    <h2 className="text-xl font-semibold">
+                      Cart Items ({cartItems.length})
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-sm text-muted-foreground"
+                    >
                       Clear All
                     </Button>
                   </div>
@@ -190,7 +242,7 @@ export default function CartPage() {
                     >
                       <div className="h-20 w-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={item.image || "/placeholder.svg"}
+                          src={item.image || '/placeholder.svg'}
                           alt={item.name}
                           width={80}
                           height={80}
@@ -206,11 +258,16 @@ export default function CartPage() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">${item.price}/month per unit</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          ${item.price}/month per unit
+                        </p>
 
                         <div className="flex flex-wrap gap-6 mt-2">
                           <div>
-                            <Label htmlFor={`quantity-${item.id}`} className="text-xs text-muted-foreground mb-1 block">
+                            <Label
+                              htmlFor={`quantity-${item.id}`}
+                              className="text-xs text-muted-foreground mb-1 block"
+                            >
                               Quantity
                             </Label>
                             <div className="flex items-center">
@@ -218,7 +275,9 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
                                 disabled={item.quantity <= 1}
                               >
                                 <Minus className="h-3 w-3" />
@@ -230,7 +289,9 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -238,7 +299,10 @@ export default function CartPage() {
                           </div>
 
                           <div>
-                            <Label htmlFor={`duration-${item.id}`} className="text-xs text-muted-foreground mb-1 block">
+                            <Label
+                              htmlFor={`duration-${item.id}`}
+                              className="text-xs text-muted-foreground mb-1 block"
+                            >
                               Duration (months)
                             </Label>
                             <div className="flex items-center">
@@ -246,7 +310,9 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
-                                onClick={() => updateDuration(item.id, item.duration - 1)}
+                                onClick={() =>
+                                  updateDuration(item.id, item.duration - 1)
+                                }
                                 disabled={item.duration <= 1}
                               >
                                 <Minus className="h-3 w-3" />
@@ -258,7 +324,9 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
-                                onClick={() => updateDuration(item.id, item.duration + 1)}
+                                onClick={() =>
+                                  updateDuration(item.id, item.duration + 1)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -283,7 +351,9 @@ export default function CartPage() {
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium mb-2">Have a promo code? //Later Part</h3>
+                  <h3 className="font-medium mb-2">
+                    Have a promo code? //Later Part
+                  </h3>
                   <div className="flex">
                     <Input
                       type="text"
@@ -317,7 +387,11 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span>{shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}</span>
+                    <span>
+                      {shippingCost === 0
+                        ? 'Free'
+                        : `$${shippingCost.toFixed(2)}`}
+                    </span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
@@ -334,8 +408,11 @@ export default function CartPage() {
                   </div>
 
                   <div className="text-sm text-muted-foreground">
-                    You'll be charged ${total.toFixed(2)} today, and then ${subtotal.toFixed(2)} per month starting next
-                    month. <br/>  <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
+                    You'll be charged ${total.toFixed(2)} today, and then $
+                    {subtotal.toFixed(2)} per month starting next month. <br />{' '}
+                    <span className="font-bold">
+                      Deposite amount should be paid directly to the owner.
+                    </span>
                   </div>
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
@@ -355,7 +432,9 @@ export default function CartPage() {
       <footer className="bg-gray-50 border-t border-gray-200 py-8 mt-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-500">© {new Date().getFullYear()} Rental. All rights reserved.</p>
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} Rental. All rights reserved.
+            </p>
             <div className="mt-4 md:mt-0 flex space-x-4">
               <Link to="#" className="text-sm text-gray-500 hover:text-primary">
                 Terms
@@ -371,5 +450,5 @@ export default function CartPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

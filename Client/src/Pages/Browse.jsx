@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   ArrowUpDown,
   Filter,
@@ -6,19 +6,19 @@ import {
   ShoppingCart,
   Star,
   X,
-} from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Checkbox } from "../components/ui/checkbox";
-import { Slider } from "../components/ui/slider";
-import { Badge } from "../components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
-import { Link, useNavigate } from "react-router-dom";
-import ProductQuickView from "../Components/Quick-View";
-import { useAuth } from "../Middleware/AuthProvider";
-import { fetchAllItems } from "../api/items.api";
+} from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Checkbox } from '../components/ui/checkbox';
+import { Slider } from '../components/ui/slider';
+import { Badge } from '../components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
+import { Link, useNavigate } from 'react-router-dom';
+import ProductQuickView from '../Components/Quick-View';
+import { useAuth } from '../Middleware/AuthProvider';
+import { fetchAllItems } from '../api/items.api';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 export default function BrowsePage() {
   const [products, setitems] = useState([]);
@@ -31,7 +31,7 @@ export default function BrowsePage() {
     brands: [],
     availability: [],
     rating: null,
-    query: "",
+    query: '',
     page: 1,
     limit: 10,
   });
@@ -41,25 +41,25 @@ export default function BrowsePage() {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const categories = [
-    "Electronics",
-    "Furniture",
-    "Appliances",
-    "Fitness Equipment",
-    "Home Office",
-    "Kitchen",
-    "Gaming",
-    "Cameras",
+    'Electronics',
+    'Furniture',
+    'Appliances',
+    'Fitness Equipment',
+    'Home Office',
+    'Kitchen',
+    'Gaming',
+    'Cameras',
   ];
 
   const availability = [
-    "Available Now",
-    "Available Within 1 Week",
-    "Coming Soon",
+    'Available Now',
+    'Available Within 1 Week',
+    'Coming Soon',
   ];
 
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate('/login');
     }
   }, [user, navigate]);
 
@@ -94,11 +94,9 @@ export default function BrowsePage() {
         const res = await fetchAllItems(filters);
         setitems(res.data.message.items);
         setCountItems(res.data.message.totalItems);
-      }
-      catch (err) {
+      } catch (err) {
         console.log(err);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -113,17 +111,16 @@ export default function BrowsePage() {
       categories: prev.categories.includes(category)
         ? prev.categories.filter((c) => c !== category)
         : [...prev.categories, category],
-      page: 1
+      page: 1,
     }));
   };
-
   const handleAvailabilityChange = (status) => {
     setFilters((prev) => ({
       ...prev,
       availability: prev.availability.includes(status)
         ? prev.availability.filter((a) => a !== status)
         : [...prev.availability, status],
-      page: 1
+      page: 1,
     }));
   };
 
@@ -131,7 +128,7 @@ export default function BrowsePage() {
     setFilters((prev) => ({
       ...prev,
       priceRange: value,
-      page: 1
+      page: 1,
     }));
   };
 
@@ -139,7 +136,7 @@ export default function BrowsePage() {
     setFilters((prev) => ({
       ...prev,
       rating,
-      page: 1
+      page: 1,
     }));
   };
 
@@ -156,7 +153,7 @@ export default function BrowsePage() {
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({
       ...prev,
-      page: newPage
+      page: newPage,
     }));
     // Scroll to top when changing pages
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -242,7 +239,7 @@ export default function BrowsePage() {
             {[4, 3, 2, 1].map((rating) => (
               <Button
                 key={rating}
-                variant={filters.rating === rating ? "default" : "outline"}
+                variant={filters.rating === rating ? 'default' : 'outline'}
                 size="sm"
                 onClick={() =>
                   handleRatingChange(filters.rating === rating ? null : rating)
@@ -309,7 +306,7 @@ export default function BrowsePage() {
                 className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
                 size="sm"
               >
-                {user ? user.email.charAt(0).toUpperCase() : ""}
+                {user ? user.email.charAt(0).toUpperCase() : ''}
               </Button>
             </Link>
           </div>
@@ -381,7 +378,7 @@ export default function BrowsePage() {
                         query: value,
                       }));
                     }}
-                    value={filters.query || ""}
+                    value={filters.query || ''}
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 </div>
@@ -395,98 +392,96 @@ export default function BrowsePage() {
               filters.rating !== null ||
               filters.priceRange[0] > 0 ||
               filters.priceRange[1] < 200) && (
-                <div className="mb-6 flex flex-wrap gap-2 items-center">
-                  <span className="text-sm text-muted-foreground">
-                    Active filters:
-                  </span>
+              <div className="mb-6 flex flex-wrap gap-2 items-center">
+                <span className="text-sm text-muted-foreground">
+                  Active filters:
+                </span>
 
-                  {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
-                    <Badge variant="outline" className="font-normal">
-                      ${filters.priceRange[0]} - ${filters.priceRange[1]}/month
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 ml-1 p-0"
-                        onClick={() => handlePriceChange([0, 200])}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ) : null}
-
-                  {filters.rating !== null && (
-                    <Badge variant="outline" className="font-normal">
-                      {filters.rating}+ Stars
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 ml-1 p-0"
-                        onClick={() => handleRatingChange(null)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  )}
-
-                  {filters.categories.map((category) => (
-                    <Badge
-                      key={category}
-                      variant="outline"
-                      className="font-normal"
+                {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
+                  <Badge variant="outline" className="font-normal">
+                    ${filters.priceRange[0]} - ${filters.priceRange[1]}/month
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 ml-1 p-0"
+                      onClick={() => handlePriceChange([0, 200])}
                     >
-                      {category}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 ml-1 p-0"
-                        onClick={() => handleCategoryChange(category)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ))}
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ) : null}
 
-                  {filters.availability.map((availability) => (
-                    <Badge
-                      key={availability}
-                      variant="outline"
-                      className="font-normal"
+                {filters.rating !== null && (
+                  <Badge variant="outline" className="font-normal">
+                    {filters.rating}+ Stars
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 ml-1 p-0"
+                      onClick={() => handleRatingChange(null)}
                     >
-                      {availability}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 ml-1 p-0"
-                        onClick={() => handleAvailabilityChange(availability)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ))}
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                )}
 
-                  <Button
-                    variant="a"
-                    size="sm"
-                    className="h-8 px-2 text-xs text-muted-foreground"
-                    onClick={clearFilters}
+                {filters.categories.map((category) => (
+                  <Badge
+                    key={category}
+                    variant="outline"
+                    className="font-normal"
                   >
-                    Clear all
-                  </Button>
-                </div>
-              )}
+                    {category}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 ml-1 p-0"
+                      onClick={() => handleCategoryChange(category)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+
+                {filters.availability.map((availability) => (
+                  <Badge
+                    key={availability}
+                    variant="outline"
+                    className="font-normal"
+                  >
+                    {availability}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 ml-1 p-0"
+                      onClick={() => handleAvailabilityChange(availability)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+
+                <Button
+                  variant="a"
+                  size="sm"
+                  className="h-8 px-2 text-xs text-muted-foreground"
+                  onClick={clearFilters}
+                >
+                  Clear all
+                </Button>
+              </div>
+            )}
 
             {/* Product count */}
             <p className="text-sm text-muted-foreground mb-6">
-              Showing {products.length}{" "}
-              {products.length === 1 ? "product" : "products"}
+              Showing {products.length}{' '}
+              {products.length === 1 ? 'product' : 'products'}
             </p>
 
             {loading ? (
               <h1>Loading....</h1>
             ) : (
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product, index) => (
                   <motion.div
                     key={index}
@@ -581,7 +576,9 @@ export default function BrowsePage() {
                     variant="outline"
                     size="sm"
                     className="h-8 px-2"
-                    onClick={() => handlePageChange(Math.max(1, filters.page - 1))}
+                    onClick={() =>
+                      handlePageChange(Math.max(1, filters.page - 1))
+                    }
                     disabled={filters.page <= 1}
                   >
                     Previous
@@ -589,12 +586,21 @@ export default function BrowsePage() {
 
                   {/* Page numbers */}
                   {(() => {
-                    const totalPages = Math.max(1, Math.ceil(countItems / filters.limit));
+                    const totalPages = Math.max(
+                      1,
+                      Math.ceil(countItems / filters.limit)
+                    );
                     const pageNumbers = [];
                     const maxVisiblePages = 5;
 
-                    let startPage = Math.max(1, filters.page - Math.floor(maxVisiblePages / 2));
-                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                    let startPage = Math.max(
+                      1,
+                      filters.page - Math.floor(maxVisiblePages / 2)
+                    );
+                    let endPage = Math.min(
+                      totalPages,
+                      startPage + maxVisiblePages - 1
+                    );
 
                     if (endPage - startPage + 1 < maxVisiblePages) {
                       startPage = Math.max(1, endPage - maxVisiblePages + 1);
@@ -604,7 +610,7 @@ export default function BrowsePage() {
                       pageNumbers.push(
                         <Button
                           key={1}
-                          variant={filters.page === 1 ? "default" : "ghost"}
+                          variant={filters.page === 1 ? 'default' : 'ghost'}
                           size="sm"
                           className="h-8 w-8 p-0"
                           onClick={() => handlePageChange(1)}
@@ -613,7 +619,11 @@ export default function BrowsePage() {
                         </Button>
                       );
                       if (startPage > 2) {
-                        pageNumbers.push(<span key="ellipsis-start" className="px-1">...</span>);
+                        pageNumbers.push(
+                          <span key="ellipsis-start" className="px-1">
+                            ...
+                          </span>
+                        );
                       }
                     }
 
@@ -621,7 +631,7 @@ export default function BrowsePage() {
                       pageNumbers.push(
                         <Button
                           key={i}
-                          variant={filters.page === i ? "default" : "ghost"}
+                          variant={filters.page === i ? 'default' : 'ghost'}
                           size="sm"
                           className="h-8 w-8 p-0"
                           onClick={() => handlePageChange(i)}
@@ -633,12 +643,18 @@ export default function BrowsePage() {
 
                     if (endPage < totalPages) {
                       if (endPage < totalPages - 1) {
-                        pageNumbers.push(<span key="ellipsis-end" className="px-1">...</span>);
+                        pageNumbers.push(
+                          <span key="ellipsis-end" className="px-1">
+                            ...
+                          </span>
+                        );
                       }
                       pageNumbers.push(
                         <Button
                           key={totalPages}
-                          variant={filters.page === totalPages ? "default" : "ghost"}
+                          variant={
+                            filters.page === totalPages ? 'default' : 'ghost'
+                          }
                           size="sm"
                           className="h-8 w-8 p-0"
                           onClick={() => handlePageChange(totalPages)}
@@ -657,7 +673,9 @@ export default function BrowsePage() {
                     size="sm"
                     className="h-8 px-2"
                     onClick={() => handlePageChange(filters.page + 1)}
-                    disabled={filters.page >= Math.ceil(countItems / filters.limit)}
+                    disabled={
+                      filters.page >= Math.ceil(countItems / filters.limit)
+                    }
                   >
                     Next
                   </Button>

@@ -17,13 +17,24 @@ import {
   SidebarGroupContent,
 } from '../../components/ui/sidebar';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "../../components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
-import { BarChart3, Bell, ChevronDown,  FileCheck, LogOut, Mountain, Package, TicketCheck, Users } from 'lucide-react';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '../../components/ui/avatar';
+import {
+  FileCheck,
+  Home,
+  LogOut,
+  Package,
+  TicketCheck,
+  Users,
+} from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { motion } from 'framer-motion';
 export default function AdminLayout() {
@@ -40,47 +51,44 @@ export default function AdminLayout() {
   }
 
   const colors = {
-    primary: "#FF8A65",
-    secondary: "#FFB74D",
-  }
-
-  const admin = {
-    name: "Sarah Johnson",
-    role: "Super Admin",
-    avatar: "/placeholder.svg?height=40&width=40",
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
   };
 
+  const admin = {
+    name: 'Sarah Johnson',
+    role: 'Super Admin',
+    avatar: '/placeholder.svg?height=40&width=40',
+  };
 
   const shimmerAnimation = {
-    initial: { backgroundPosition: "0 0" },
+    initial: { backgroundPosition: '0 0' },
     animate: {
-      backgroundPosition: ["0 0", "100% 100%"],
+      backgroundPosition: ['0 0', '100% 100%'],
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "linear",
+        ease: 'linear',
       },
     },
-  }
-
+  };
 
   return (
     <SidebarProvider>
       <div className="flex h-screen overflow-hidden">
         <AdminSidebar pathname={pathname} />
-        <SidebarInset className="bg-muted/40">
-          <div className="flex h-16 items-center gap-4 border-b bg-background px-6">
-            <SidebarTrigger />
-          </div>
-          <header className="bg-white border-b border-gray-100 py-4 px-6">
+        <header className="bg-white border-b border-gray-100 py-4 px-6">
           <div className="flex items-center justify-between">
             <div className="md:hidden">
               <motion.div
                 className="text-xl font-bold"
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                 }}
                 {...shimmerAnimation}
               >
@@ -89,21 +97,50 @@ export default function AdminLayout() {
             </div>
           </div>
         </header>
-          <main className="lg:w-[83vw] w-full flex-1  overflow-y-auto p-6">
-            <Outlet />
-          </main>
-        </SidebarInset>
+        <main className="lg:w-[100vw] w-full flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
       </div>
     </SidebarProvider>
   );
 }
 
 function AdminSidebar({ pathname }) {
+  const colors = {
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
+  };
+
+  const shimmerAnimation = {
+    initial: { backgroundPosition: '0 0' },
+    animate: {
+      backgroundPosition: ['0 0', '100% 100%'],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: 'linear',
+      },
+    },
+  };
+
   return (
     <Sidebar>
       <SidebarHeader className="flex h-16 items-center justify-center border-b px-6">
-        <div className="flex items-items gap-2 font-semibold justify-center">
-          <span>Rental Admin</span>
+        <div className="p-6">
+          <motion.div
+            className="text-2xl font-bold"
+            style={{
+              background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+            {...shimmerAnimation}
+          >
+            Rental Admin
+          </motion.div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -112,9 +149,9 @@ function AdminSidebar({ pathname }) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/admin"}>
+                <SidebarMenuButton asChild isActive={pathname === '/admin'}>
                   <Link to="/admin">
-                    <BarChart3 className="h-4 w-4" />
+                    <Home className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
@@ -129,7 +166,10 @@ function AdminSidebar({ pathname }) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/admin/items"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/items'}
+                >
                   <Link to="/admin/items">
                     <Package className="h-4 w-4" />
                     <span>Items Management</span>
@@ -137,7 +177,10 @@ function AdminSidebar({ pathname }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/admin/users"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/users'}
+                >
                   <Link to="/admin/users">
                     <Users className="h-4 w-4" />
                     <span>User Management</span>
@@ -145,7 +188,10 @@ function AdminSidebar({ pathname }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/admin/tickets"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/tickets'}
+                >
                   <Link to="/admin/tickets">
                     <TicketCheck className="h-4 w-4" />
                     <span>Tickets & Support</span>
@@ -153,7 +199,10 @@ function AdminSidebar({ pathname }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/admin/terms"}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/terms'}
+                >
                   <Link to="/admin/terms">
                     <FileCheck className="h-4 w-4" />
                     <span>Terms & Condition</span>
@@ -163,7 +212,7 @@ function AdminSidebar({ pathname }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
+
         {/* Continue with other sidebar groups */}
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
