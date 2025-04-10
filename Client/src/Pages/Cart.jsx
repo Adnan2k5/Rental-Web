@@ -1,19 +1,15 @@
 import { useState } from 'react';
 import {
-  AlertCircle,
   ChevronRight,
   CreditCard,
   Minus,
   Plus,
   ShoppingCart,
   Trash2,
-  Truck,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Separator } from '../components/ui/separator';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
 import { Label } from '../components/ui/label';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
