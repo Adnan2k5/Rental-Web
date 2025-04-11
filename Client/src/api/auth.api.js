@@ -66,3 +66,34 @@ export const Otpresend = async (data) => {
     return false;
   }
 };
+
+export const resetPassword = async (data) => {
+  console.log('data', data);
+  try {
+    const res = await axiosClient.post('/api/auth/forgotPassword', data);
+    if (res.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+    return err.response.status;
+  }
+};
+
+export const updatePassword = async (data) => {
+  try {
+    const res = await axiosClient.post('/api/auth/updatePassword', data, {
+      withCredentials: true,
+    });
+    if (res.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+    return err.response.status;
+  }
+};

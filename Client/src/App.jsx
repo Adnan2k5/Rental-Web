@@ -12,6 +12,7 @@ import AdminDashboard from './Pages/Admin/AdminDashboard';
 import AdminLayout from './Pages/Admin/Layout';
 import ManageItems from './Pages/Admin/ManageItems';
 import ManageUsers from './Pages/Admin/ManageUser';
+import Chat from './Pages/Chat/Chat';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/dashboard" element={<ItemDashboard />} />
+            <Route path='/chat' element={<Chat />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />

@@ -50,6 +50,9 @@ import { createItems, deleteItem, fetchByUserId } from '../api/items.api';
 import { toast } from 'sonner';
 import { useAuth } from '../Middleware/AuthProvider';
 import { Link } from 'react-router-dom';
+import { colors } from '../assets/Color';
+import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../assets/Animations';
+import { Particles } from '../Components/Particles';
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState('grid');
@@ -94,14 +97,7 @@ export default function Dashboard() {
     toast.success('Item posted successfully!');
     reset();
   };
-  // Rental Color Palette
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
+
 
   const [fetchItemsfrombackend, setFetchItems] = useState([]);
 
@@ -113,98 +109,6 @@ export default function Dashboard() {
     fetchItems();
   }, [user]);
 
-  // Animation variants
-  const pageTransition = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        when: 'beforeChildren',
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemFadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const floatAnimation = {
-    initial: { y: 0 },
-    animate: {
-      y: [-5, 5, -5],
-      transition: {
-        duration: 6,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'easeInOut',
-      },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
-    },
-  };
-
-  const buttonHover = {
-    rest: { scale: 1 },
-    hover: {
-      scale: 1.05,
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-  };
-
-  // Particle effect component
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-primary/10 to-secondary/10"
-            style={{
-              width: Math.random() * 40 + 10,
-              height: Math.random() * 40 + 10,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  // Handle file upload
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
     if (files.length + uploadedFiles.length > 5) {
@@ -310,11 +214,10 @@ export default function Dashboard() {
               <Link to={item.link || '#'} key={index}>
                 <motion.button
                   key={index}
-                  className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${
-                    item.active
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${item.active
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-gray-100'
+                    }`}
                   whileHover={{ x: 5 }}
                   transition={{ type: 'spring', stiffness: 400 }}
                 >
@@ -822,11 +725,10 @@ export default function Dashboard() {
               <div>
                 <Label className="block mb-2">Upload Images</Label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                    isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-200'
-                  }`}
+                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200'
+                    }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
