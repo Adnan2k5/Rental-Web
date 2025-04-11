@@ -21,7 +21,9 @@ export const loginUser = async (data, dispatch) => {
 
 export const userRegister = async (data) => {
   try {
-    const res = await axiosClient.post('/api/auth/signUp', data);
+    const res = await axiosClient.post('/api/auth/signUp', data, {
+      withCredentials: true,
+    });
     if (res.status === 201) {
       return true;
     } else if (res.status === 409) {
