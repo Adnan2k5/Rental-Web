@@ -6,12 +6,11 @@ import { addItemToCartApi } from '../../api/carts.api';
 
 export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
 
-
     const addItemToCart = async (e) => {
         try {
             e.preventDefault();
             e.stopPropagation();
-            await addItemToCartApi(product._id, 1);
+            await addItemToCartApi(product._id, 1, 1);
             toast.success("Item added to cart successfully");
         }
         catch(e) {

@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../Middleware/AuthProvider';
 import { addItemToCartApi, fetchCartItemsApi } from '../api/carts.api';
 import { toast } from 'sonner';
+import { add } from 'date-fns';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -54,8 +55,8 @@ export default function CartPage() {
 
   // Cart actions
   const removeItem = async (id) => {
-    try {
-      await addItemToCartApi(id, 0);
+    try {;
+      await addItemToCartApi(id, 0, 0);
       setRefreshCart(!refreshCart);
       toast.success('Item removed from cart', { description: 'Item has been removed from your cart.' });
     }
@@ -64,18 +65,20 @@ export default function CartPage() {
     }
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const updateQuantity = async (id, newQuantity) => {
+    if (newQuantity < 1) {
+      removeItem(id);
+      return;
+    }
+    await addItemToCartApi(id, newQuantity, null);
+    setRefreshCart(!refreshCart);
   };
 
   const updateDuration = (id, newDuration) => {
-    if (newDuration < 1) return;
+    if (newDuration < 1) {
+      removeItem(id);
+      return;
+    }
 
     setCartItems(
       cartItems.map((item) =>
@@ -268,7 +271,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
                                 onClick={() =>
-                                  updateQuantity(item.item.id, item.item.quantity - 1)
+                                  updateQuantity(item.item._id, item.quantity - 1)
                                 }
                                 disabled={item.item.quantity <= 1}
                               >
@@ -282,7 +285,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
                                 onClick={() =>
-                                  updateQuantity(item.item.id, item.quantity + 1)
+                                  updateQuantity(item.item._id, item.quantity + 1)
                                 }
                               >
                                 <Plus className="h-3 w-3" />
@@ -292,7 +295,7 @@ export default function CartPage() {
 
                           <div>
                             <Label
-                              htmlFor={`duration-${item.item.id}`}
+                              htmlFor={`duration-${item.item._id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
                               Duration (months)
@@ -303,7 +306,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
                                 onClick={() =>
-                                  updateDuration(item.item.id, item.duration - 1) //TODO:: IMPLEMENT DURATION
+                                  updateDuration(item.item._id, item.duration - 1) //TODO:: IMPLEMENT DURATION
                                 }
                                 disabled={item.duration <= 1}
                               >
@@ -317,7 +320,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
                                 onClick={() =>
-                                  updateDuration(item.item.id, item.duration + 1)
+                                  updateDuration(item.item._id, item.duration + 1)
                                 }
                               >
                                 <Plus className="h-3 w-3" />
@@ -331,7 +334,7 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                          onClick={() => removeItem(item.item.id)}
+                          onClick={() => removeItem(item.item._id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

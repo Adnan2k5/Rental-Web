@@ -13,13 +13,13 @@ export const getCart = asyncHandler(async (req, res) => {
 });
 
 export const addItemToCart = asyncHandler(async (req, res) => {
-    const { itemId, quantity } = req.body;
+    const { itemId, quantity, duration } = req.body;
     if (!itemId) {
         throw new ApiError(400, "Item ID is required");
     }
-
-    if (!quantity || quantity < 0) {
-        throw new ApiError(400, "Quantity must be at least 1");
+    
+    if (quantity === undefined && duration === undefined) {
+        throw new ApiError(400, "Quantity or Duration are required");
     }
 
     let cart = await Cart.findOne({ user: req.user._id });
@@ -29,14 +29,19 @@ export const addItemToCart = asyncHandler(async (req, res) => {
     } 
 
     const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
-
-    if( itemIndex !== -1 && quantity === 0) {
+    if(itemIndex !== -1 && ((quantity !== undefined && quantity <= 0) && (duration !== undefined && duration <= 0))) {
         cart.items.splice(itemIndex, 1);
     }
     else if (itemIndex > -1) {
-        cart.items[itemIndex].quantity = quantity;
+        if(quantity !== null && quantity !== undefined) {
+            cart.items[itemIndex].quantity = quantity;
+        }
+        if(duration !== null && duration !== undefined) {
+            console.log("duration", duration);
+            cart.items[itemIndex].duration = duration;
+        }
     } else {
-        cart.items.push({ item: itemId, quantity: quantity });
+        cart.items.push({ item: itemId, quantity: quantity, duration: duration });
     }
 
     await cart.save();
