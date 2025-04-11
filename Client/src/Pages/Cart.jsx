@@ -17,16 +17,7 @@ import { useAuth } from '../Middleware/AuthProvider';
 import { fetchCartItemsApi } from '../api/carts.api';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      price: 35,
-      duration: 1,
-      image: '/placeholder.svg?height=80&width=80',
-      quantity: 1,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
 
   const [promoCode, setPromoCode] = useState('');
   const [shippingMethod, setShippingMethod] = useState('standard');
@@ -226,15 +217,15 @@ export default function CartPage() {
                 <div className="divide-y divide-gray-100">
                   {cartItems.map((item) => (
                     <motion.div
-                      key={item.id}
+                      key={item.item._id}
                       className="p-6 flex flex-col sm:flex-row items-start gap-4"
                       variants={fadeIn}
                       layout
                     >
                       <div className="h-20 w-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={item.image || '/placeholder.svg'}
-                          alt={item.name}
+                          src={item.item.images[0] || '/placeholder.svg'}
+                          alt={item.item.name}
                           width={80}
                           height={80}
                           className="h-full w-full object-cover"
@@ -242,21 +233,21 @@ export default function CartPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <h3 className="font-medium text-lg">{item.name}</h3>
+                          <h3 className="font-medium text-lg">{item.item.name}</h3>
                           <div className="flex items-center">
                             <span className="font-bold text-lg text-primary">
-                              ${item.price * item.quantity * item.duration}
+                              ${item.item.price * item.quantity} // TODO:: IMPLEMENT DURATION
                             </span>
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">
-                          ${item.price}/month per unit
+                          ${item.item.price}/month per unit
                         </p>
 
                         <div className="flex flex-wrap gap-6 mt-2">
                           <div>
                             <Label
-                              htmlFor={`quantity-${item.id}`}
+                              htmlFor={`quantity-${item.item.id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
                               Quantity
@@ -267,9 +258,9 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
                                 onClick={() =>
-                                  updateQuantity(item.id, item.quantity - 1)
+                                  updateQuantity(item.item.id, item.item.quantity - 1)
                                 }
-                                disabled={item.quantity <= 1}
+                                disabled={item.item.quantity <= 1}
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
@@ -281,7 +272,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
                                 onClick={() =>
-                                  updateQuantity(item.id, item.quantity + 1)
+                                  updateQuantity(item.item.id, item.quantity + 1)
                                 }
                               >
                                 <Plus className="h-3 w-3" />
@@ -291,7 +282,7 @@ export default function CartPage() {
 
                           <div>
                             <Label
-                              htmlFor={`duration-${item.id}`}
+                              htmlFor={`duration-${item.item.id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
                               Duration (months)
@@ -302,7 +293,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
                                 onClick={() =>
-                                  updateDuration(item.id, item.duration - 1)
+                                  updateDuration(item.item.id, item.duration - 1) //TODO:: IMPLEMENT DURATION
                                 }
                                 disabled={item.duration <= 1}
                               >
@@ -316,7 +307,7 @@ export default function CartPage() {
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
                                 onClick={() =>
-                                  updateDuration(item.id, item.duration + 1)
+                                  updateDuration(item.item.id, item.duration + 1)
                                 }
                               >
                                 <Plus className="h-3 w-3" />
@@ -343,7 +334,7 @@ export default function CartPage() {
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
                   <h3 className="font-medium mb-2">
-                    Have a promo code? //Later Part
+                    Have a promo code?
                   </h3>
                   <div className="flex">
                     <Input

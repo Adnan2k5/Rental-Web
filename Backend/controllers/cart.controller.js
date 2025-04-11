@@ -13,9 +13,13 @@ export const getCart = asyncHandler(async (req, res) => {
 });
 
 export const addItemToCart = asyncHandler(async (req, res) => {
-    const { itemId } = req.body;
+    const { itemId, quantity } = req.body;
     if (!itemId) {
         throw new ApiError(400, "Item ID is required");
+    }
+
+    if (!quantity || quantity < 0) {
+        throw new ApiError(400, "Quantity must be at least 1");
     }
 
     let cart = await Cart.findOne({ user: req.user._id });
@@ -26,48 +30,17 @@ export const addItemToCart = asyncHandler(async (req, res) => {
 
     const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
 
-    if (itemIndex > -1) {
-        cart.items[itemIndex].quantity += 1;
+    if( itemIndex !== -1 && quantity === 0) {
+        cart.items.splice(itemIndex, 1);
+    }
+    else if (itemIndex > -1) {
+        cart.items[itemIndex].quantity = quantity;
     } else {
-        cart.items.push({ item: itemId, quantity: 1 });
-    }
-
-    return res.status(200).json(new ApiResponse(200, user.cart, "Item added to cart successfully"));
-});
-
-export const removeItemFromCart = asyncHandler(async (req, res) => {
-    const { itemId, del } = req.body;
-
-    if (!itemId) {
-        throw new ApiError(400, "Item ID is required");
-    }
-
-    const cart = await Cart.findOne({ user: req.user._id });
-
-    if (!cart) {
-        throw new ApiError(404, "Cart not found");
-    }
-
-    const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
-
-    if (itemIndex > -1) {
-
-        if(del === "true") {
-            cart.items.splice(itemIndex, 1);
-            return res.status(200).json(new ApiResponse(200, user.cart, "Item removed from cart successfully"));
-        }
-
-        cart.items[itemIndex].quantity -= 1;
-
-        if (cart.items[itemIndex].quantity <= 0) {
-            cart.items.splice(itemIndex, 1);
-        }
-        
-    } else {
-        throw new ApiError(404, "Item not found in cart");
+        cart.items.push({ item: itemId, quantity: quantity });
     }
 
     await cart.save();
 
-    return res.status(200).json(new ApiResponse(200, user.cart, "Item removed from cart successfully"));
+    return res.status(200).json(new ApiResponse(200, cart, "Item added to cart successfully"));
 });
+

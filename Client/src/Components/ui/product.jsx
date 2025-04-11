@@ -1,9 +1,25 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Button } from './button';
-
+import { toast } from 'sonner';
+import { addItemToCartApi } from '../../api/carts.api';
 
 export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
+
+
+    const addItemToCart = async (e) => {
+        try {
+            e.preventDefault();
+            e.stopPropagation();
+            await addItemToCartApi(product._id, 1);
+            toast.success("Item added to cart successfully");
+        }
+        catch(e) {
+            toast.error("Failed to add item to cart");
+        }
+    }
+
+
     return <motion.div
         key={index}
         variants={fadeIn}
@@ -60,6 +76,7 @@ export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
+                    onClick={addItemToCart}
                 >
                     Add to Cart
                 </Button>

@@ -6,3 +6,10 @@ export const fetchCartItemsApi = async (userId) => {
   });
   return res;
 }
+
+export const addItemToCartApi = async (itemId, quantity) => {
+  const res = await axiosClient.post(`/api/cart`, { itemId, quantity }, {
+    withCredentials: true,
+  });
+  return res;
+}
