@@ -12,10 +12,13 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Link } from 'react-router-dom';
+import { addItemToCartApi } from '../api/carts.api';
+import { toast } from 'sonner';
 
 export default function ProductQuickView({ isOpen, onClose, product }) {
   const [quantity, setQuantity] = useState(1);
   const [duration, setDuration] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const updateQuantity = (value) => {
     if (value >= 1) {
@@ -26,6 +29,23 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
   const updateDuration = (value) => {
     if (value >= 1) {
       setDuration(value);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      setIsLoading(true);
+      await addItemToCartApi(product._id, quantity, duration);
+      toast.success("Item added to cart successfully", {
+        description: `${quantity} ${quantity > 1 ? 'items' : 'item'} for ${duration} ${duration > 1 ? 'months' : 'month'}`
+      });
+      onClose(); // Close the dialog after adding to cart
+    } catch (error) {
+      toast.error("Failed to add item to cart", {
+        description: error.message || "Please try again later"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,7 +208,9 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                <Button className="flex-1">Add to Cart</Button>
+                <Button className="flex-1" onClick={handleAddToCart} disabled={isLoading}>
+                  {isLoading ? 'Adding...' : 'Add to Cart'}
+                </Button>
                 <Link to={`/product/${product.id}`} className="flex-1">
                   <Button variant="outline" className="w-full">
                     View Full Details
