@@ -18,6 +18,9 @@ import {
 } from '../components/ui/dialog';
 import { useAuth } from '../Middleware/AuthProvider';
 import { toast } from 'sonner';
+import { colors } from '../assets/Color';
+import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../assets/Animations';
+import { Particles } from '../Components/Particles';
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,69 +39,6 @@ export default function SignUp() {
     }
   }, [user, navigate]);
 
-  const colors = {
-    primary: '#4D39EE',
-    secondary: '#191B24',
-    accent: '#4FC3F7',
-    light: '#FAFAFA',
-    dark: '#455A64',
-  };
-  const pageTransition = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        when: 'beforeChildren',
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const floatAnimation = {
-    initial: { y: 0 },
-    animate: {
-      y: [-10, 10, -10],
-      transition: {
-        duration: 6,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'easeInOut',
-      },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
-    },
-  };
-
-  const itemFadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const buttonHover = {
-    rest: { scale: 1 },
-    hover: {
-      scale: 1.05,
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-  };
 
   const handleFieldFocus = (fieldName) => {
     setActiveField(fieldName);
@@ -137,37 +77,6 @@ export default function SignUp() {
     }
   };
 
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className={`absolute rounded-full bg-gradient-to-r from-[#4D39EE] to-[#191B24]`}
-            style={{
-              width: Math.random() * 60 + 20,
-              height: Math.random() * 60 + 20,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    );
-  };
 
   const handleOtpSubmit = async () => {
     setIsLoading(true);
