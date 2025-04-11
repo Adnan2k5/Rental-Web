@@ -81,9 +81,6 @@ export default function CartPage() {
       
       // Send API request
       await addItemToCartApi(id, newQuantity, null);
-      
-      // Refresh cart data from server to ensure consistency
-      setRefreshCart(!refreshCart);
     } catch (err) {
       toast.error("Failed to update quantity", { description: err.message });
       // Refresh to get correct data if there was an error
@@ -107,9 +104,6 @@ export default function CartPage() {
       
       // Send API request
       await addItemToCartApi(id, null, newDuration);
-      
-      // Refresh cart data from server
-      setRefreshCart(!refreshCart);
     } catch (err) {
       toast.error("Failed to update duration", { description: err.message });
       // Refresh to get correct data if there was an error
