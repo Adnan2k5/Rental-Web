@@ -14,13 +14,16 @@ import { Label } from '../components/ui/label';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Middleware/AuthProvider';
-import { fetchCartItemsApi } from '../api/carts.api';
+import { addItemToCartApi, fetchCartItemsApi } from '../api/carts.api';
+import { toast } from 'sonner';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
 
   const [promoCode, setPromoCode] = useState('');
   const [shippingMethod, setShippingMethod] = useState('standard');
+  const [refreshCart, setRefreshCart] = useState(false);
+
   const [checkoutStep, setCheckoutStep] = useState(1);
 
   useEffect(() => {
@@ -31,7 +34,7 @@ export default function CartPage() {
     };
 
     fetchCartItems();
-  }, []);
+  }, [refreshCart]);
 
   // Animation variants
   const fadeIn = {
@@ -50,8 +53,15 @@ export default function CartPage() {
   };
 
   // Cart actions
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+  const removeItem = async (id) => {
+    try {
+      await addItemToCartApi(id, 0);
+      setRefreshCart(!refreshCart);
+      toast.success('Item removed from cart', { description: 'Item has been removed from your cart.' });
+    }
+    catch(e) {
+      toast.error("Error removing item from cart", { description: e.message });
+    }
   };
 
   const updateQuantity = (id, newQuantity) => {
@@ -236,7 +246,7 @@ export default function CartPage() {
                           <h3 className="font-medium text-lg">{item.item.name}</h3>
                           <div className="flex items-center">
                             <span className="font-bold text-lg text-primary">
-                              ${item.item.price * item.quantity} // TODO:: IMPLEMENT DURATION
+                              ${item.item.price * item.quantity * item.duration}
                             </span>
                           </div>
                         </div>
@@ -321,7 +331,7 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.item.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
