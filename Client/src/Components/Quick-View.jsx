@@ -72,9 +72,9 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
             {/* Product Image */}
             <div className="relative rounded-lg overflow-hidden bg-gray-50 aspect-square">
               <img
-                src={product.image || '/placeholder.svg'}
+                src={product.images[0] || '/placeholder.svg'}
                 alt={product.name}
-                fill
+                fill ="true"
                 className="object-cover"
               />
               <div className="absolute top-3 left-3 flex flex-wrap gap-1">
@@ -83,7 +83,7 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                     key={index}
                     variant={tag === 'New' ? 'default' : 'secondary'}
                     className="text-xs"
-                  >
+                  > 
                     {tag}
                   </Badge>
                 ))}
