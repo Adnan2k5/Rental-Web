@@ -2,6 +2,7 @@ import { useAuth } from '../Middleware/AuthProvider'
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
+import { ShoppingCart } from 'lucide-react';
 export const Navbar = () => {
     const user = useAuth();
     return (
@@ -36,8 +37,11 @@ export const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
+                    <Link to="/cart">
+                        <ShoppingCart />
+                    </Link>
                     {user.user ? (
-                        <Link to="/profile">
+                        <Link to="/dashboard">
                             <Button
                                 variant="ghost"
                                 className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"

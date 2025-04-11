@@ -229,7 +229,6 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
-    console.log(req.body)
     const { email } = req.body;
 
     if (email?.trim() === "" || !email) {
