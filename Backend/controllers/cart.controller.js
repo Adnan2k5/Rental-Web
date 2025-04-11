@@ -37,7 +37,6 @@ export const addItemToCart = asyncHandler(async (req, res) => {
             cart.items[itemIndex].quantity = quantity;
         }
         if(duration !== null && duration !== undefined) {
-            console.log("duration", duration);
             cart.items[itemIndex].duration = duration;
         }
     } else {

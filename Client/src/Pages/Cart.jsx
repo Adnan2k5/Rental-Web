@@ -55,7 +55,7 @@ export default function CartPage() {
 
   // Cart actions
   const removeItem = async (id) => {
-    try {;
+    try {
       await addItemToCartApi(id, 0, 0);
       setRefreshCart(!refreshCart);
       toast.success('Item removed from cart', { description: 'Item has been removed from your cart.' });
@@ -70,21 +70,70 @@ export default function CartPage() {
       removeItem(id);
       return;
     }
-    await addItemToCartApi(id, newQuantity, null);
-    setRefreshCart(!refreshCart);
+    
+    try {
+      // Optimistically update UI
+      setCartItems(
+        cartItems.map((item) =>
+          item.item._id === id ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      
+      // Send API request
+      await addItemToCartApi(id, newQuantity, null);
+      
+      // Refresh cart data from server to ensure consistency
+      setRefreshCart(!refreshCart);
+    } catch (err) {
+      toast.error("Failed to update quantity", { description: err.message });
+      // Refresh to get correct data if there was an error
+      setRefreshCart(!refreshCart);
+    }
   };
 
-  const updateDuration = (id, newDuration) => {
+  const updateDuration = async (id, newDuration) => {
     if (newDuration < 1) {
       removeItem(id);
       return;
     }
+    
+    try {
+      // Optimistically update UI
+      setCartItems(
+        cartItems.map((item) =>
+          item.item._id === id ? { ...item, duration: newDuration } : item
+        )
+      );
+      
+      // Send API request
+      await addItemToCartApi(id, null, newDuration);
+      
+      // Refresh cart data from server
+      setRefreshCart(!refreshCart);
+    } catch (err) {
+      toast.error("Failed to update duration", { description: err.message });
+      // Refresh to get correct data if there was an error
+      setRefreshCart(!refreshCart);
+    }
+  };
 
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, duration: newDuration } : item
-      )
-    );
+  // Clear all items from cart
+  const clearCart = async () => {
+    try {
+      // Clear local state first for immediate UI feedback
+      setCartItems([]);
+      
+      // Clear each item via API
+      await Promise.all(cartItems.map(item => 
+        addItemToCartApi(item.item._id, 0, 0)
+      ));
+      
+      toast.success('Cart cleared successfully');
+      setRefreshCart(!refreshCart);
+    } catch (err) {
+      toast.error("Error clearing cart", { description: err.message });
+      setRefreshCart(!refreshCart);
+    }
   };
 
   // Calculate totals
@@ -221,6 +270,7 @@ export default function CartPage() {
                       variant="ghost"
                       size="sm"
                       className="text-sm text-muted-foreground"
+                      onClick={clearCart}
                     >
                       Clear All
                     </Button>
