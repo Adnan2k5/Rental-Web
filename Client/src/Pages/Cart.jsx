@@ -16,7 +16,6 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../Middleware/AuthProvider';
 import { addItemToCartApi, fetchCartItemsApi } from '../api/carts.api';
 import { toast } from 'sonner';
-import { add } from 'date-fns';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
