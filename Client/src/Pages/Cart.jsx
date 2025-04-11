@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ChevronRight,
   CreditCard,
@@ -14,6 +14,7 @@ import { Label } from '../components/ui/label';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Middleware/AuthProvider';
+import { fetchCartItemsApi } from '../api/carts.api';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([
@@ -25,27 +26,21 @@ export default function CartPage() {
       image: '/placeholder.svg?height=80&width=80',
       quantity: 1,
     },
-    {
-      id: 3,
-      name: 'Sony PlayStation 5',
-      price: 29,
-      duration: 3,
-      image: '/placeholder.svg?height=80&width=80',
-      quantity: 1,
-    },
-    {
-      id: 5,
-      name: 'Samsung 75" QLED 4K TV',
-      price: 65,
-      duration: 1,
-      image: '/placeholder.svg?height=80&width=80',
-      quantity: 1,
-    },
   ]);
 
   const [promoCode, setPromoCode] = useState('');
   const [shippingMethod, setShippingMethod] = useState('standard');
   const [checkoutStep, setCheckoutStep] = useState(1);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const response = await fetchCartItemsApi(); 
+      const storedItems = response.data.data;
+      setCartItems(storedItems);
+    };
+
+    fetchCartItems();
+  }, []);
 
   // Animation variants
   const fadeIn = {
