@@ -13,7 +13,7 @@ import { Separator } from '../components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { loginUser } from '../api/auth.api';
+import { loginUser, resetPassword, updatePassword, verifyOtp } from '../api/auth.api';
 import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import { useAuth } from '../Middleware/AuthProvider';
@@ -25,6 +25,7 @@ import {
   DialogDescription,
 } from '../Components/ui/dialog';
 import { colors } from '../assets/Color';
+import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover, itemFadeInRight } from '../assets/Animations';
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -38,77 +39,35 @@ export default function SignIn() {
   const [activeField, setActiveField] = useState(null);
   const [passReset, setPassReset] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [verified, setVerified] = useState(false);
+  const [loading, setloading] = useState(false);
+  const [sent, setsent] = useState(false);
 
-  const handleRestPass = async () => {
-    const res = await resetPassword(email);
+  const handleRestPass = async (e) => {
+    e.preventDefault();
+    setloading(true);
+    try {
+      const res = await resetPassword({ email });
+      if (res) {
+        toast.success('Otp sent to your email');
+        setsent(true);
+        setloading(false);
+      }
+    }
+    catch (err) {
+      console.log(err);
+      toast.error('User not found');
+    }
+    finally {
+      setloading(false);
+    }
   };
 
-  // Animation variants
-  const pageTransition = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        when: 'beforeChildren',
-        staggerChildren: 0.2,
-      },
-    },
-  };
 
-  const floatAnimation = {
-    initial: { y: 0 },
-    animate: {
-      y: [-10, 10, -10],
-      transition: {
-        duration: 6,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'easeInOut',
-      },
-    },
-  };
 
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
-    },
-  };
 
-  const itemFadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const itemFadeInRight = {
-    hidden: { opacity: 0, x: 20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const buttonHover = {
-    rest: { scale: 1 },
-    hover: {
-      scale: 1.05,
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-  };
 
   const handleFieldFocus = (fieldName) => {
     setActiveField(fieldName);
@@ -132,6 +91,37 @@ export default function SignIn() {
       console.log(err);
     }
   };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await verifyOtp({ email, otp });
+      if (res) {
+        toast.success('Otp verified');
+        setVerified(true);
+        setsent(false);
+      } else {
+        toast.error('Invalid Otp');
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await updatePassword({ email, password });
+      if (res) {
+        toast.success('Password updated');
+        setPassReset(false);
+        navigate('/browse');
+      } else {
+        toast.error('Error updating password');
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
   return (
     <motion.div
       className="min-h-screen flex flex-col lg:flex-row bg-light"
@@ -399,7 +389,7 @@ export default function SignIn() {
           <DialogDescription>
             Enter your registered email address to recieve Otp
           </DialogDescription>
-          <form onSubmit={handleRestPass}>
+          <form className='flex flex-col space-y-2' onSubmit={handleRestPass}>
             <input
               placeholder="Email"
               type="email"
@@ -408,12 +398,55 @@ export default function SignIn() {
                 setEmail(e.target.value);
               }}
             />
-            <Button
-              type="submit"
-              className={`${email === '' ? 'hidden' : 'mt-2 items-center'}`}
-            >
-              Verify
-            </Button>
+            {sent ? (
+              <input
+                placeholder="Otp"
+                type="text"
+                className="border Input bg-white/80 focus:border-primary"
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                }}
+              />
+            ) : null
+            }
+            {verified ? (
+              <input
+                placeholder="New Password"
+                type="password"
+                className="border Input bg-white/80 focus:border-primary"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            ) : null
+            }
+            {
+              sent ? (
+                <Button
+                  type="submit"
+                  onClick={handleOtpSubmit}
+                  className={`${otp === '' ? 'hidden' : 'mt-2 items-center'}`}
+                >
+                  Verify
+                </Button>
+              ) : <Button
+                type="submit"
+                className={`${email === '' && sent ? 'hidden' : 'mt-2 items-center'}`}
+              >
+                Submit
+              </Button>
+            }
+            {
+              verified ? (
+                <Button
+                  type="submit"
+                  onClick={handlePasswordUpdate}
+                  className={`${otp === '' ? 'hidden' : 'mt-2 items-center'}`}
+                >
+                  Update Password
+                </Button>
+              ) : null
+            }
           </form>
         </DialogContent>
       </Dialog>
