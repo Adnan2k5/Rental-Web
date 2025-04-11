@@ -21,8 +21,6 @@ const getOAuthClient = () => {
     return client;
 };
 
-
-
 const generateAccessAndRefreshTokens = async (user) => {
     try {
         const accessToken = user.generateAccessToken();

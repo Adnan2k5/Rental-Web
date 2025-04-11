@@ -11,6 +11,7 @@ import connectDB from "./config/db.config.js";
 import authRoute from "./routes/auth.routes.js"
 import userRoute from "./routes/user.routes.js"
 import itemRoute from "./routes/item.routes.js"
+import cartRoute from "./routes/cart.routes.js"
 import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 
@@ -37,6 +38,7 @@ initSocketIO(io);
 app.use("/api/auth", authRoute);
 app.use("/api/item", itemRoute);
 app.use("/api/user", userRoute);
+app.use("/api/cart", cartRoute);
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
