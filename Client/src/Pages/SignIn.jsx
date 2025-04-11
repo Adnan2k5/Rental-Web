@@ -9,8 +9,6 @@ import {
   LockKeyhole,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Checkbox } from '../components/ui/checkbox';
 import { Separator } from '../components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -19,6 +17,14 @@ import { loginUser } from '../api/auth.api';
 import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import { useAuth } from '../Middleware/AuthProvider';
+import { Particles } from '../Components/Particles';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogDescription,
+} from '../Components/ui/dialog';
+import { colors } from '../assets/Color';
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -29,16 +35,12 @@ export default function SignIn() {
     }
   }, [user, navigate]);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [activeField, setActiveField] = useState(null);
+  const [passReset, setPassReset] = useState(false);
+  const [email, setEmail] = useState('');
 
-  // Rental Color Palette
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
+  const handleRestPass = async () => {
+    const res = await resetPassword(email);
   };
 
   // Animation variants
@@ -114,39 +116,6 @@ export default function SignIn() {
 
   const handleFieldBlur = () => {
     setActiveField(null);
-  };
-
-  // Particle effect for the form section
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-primary/20 to-secondary/20"
-            style={{
-              width: Math.random() * 60 + 20,
-              height: Math.random() * 60 + 20,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    );
   };
   const dispatch = useDispatch();
 
@@ -272,18 +241,19 @@ export default function SignIn() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link
-                    href="#"
-                    className="text-sm font-medium text-primary hover:text-primary/80 relative"
+                  <button
+                    onClick={() => {
+                      setPassReset(true);
+                    }}
                   >
-                    <span>Forgot password?</span>
-                    <motion.span
-                      className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
-                      initial={{ scaleX: 0, originX: 0 }}
-                      whileHover={{ scaleX: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </Link>
+                    Forgot password?
+                  </button>
+                  <motion.span
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
+                    initial={{ scaleX: 0, originX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </motion.div>
               </div>
               <div
@@ -422,6 +392,31 @@ export default function SignIn() {
           </motion.p>
         </div>
       </motion.div>
+
+      <Dialog open={passReset} onOpenChange={setPassReset}>
+        <DialogContent>
+          <DialogTitle>Reset Password</DialogTitle>
+          <DialogDescription>
+            Enter your registered email address to recieve Otp
+          </DialogDescription>
+          <form onSubmit={handleRestPass}>
+            <input
+              placeholder="Email"
+              type="email"
+              className="border Input bg-white/80 focus:border-primary"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <Button
+              type="submit"
+              className={`${email === '' ? 'hidden' : 'mt-2 items-center'}`}
+            >
+              Verify
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Right side - Illustration */}
       <motion.div
