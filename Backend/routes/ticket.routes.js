@@ -8,7 +8,7 @@ import {
     getAllTickets
 } from "../controllers/ticket.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { isAdmin } from "../middlewares/admin.middleware.js";
+import { verifyAdmin } from "../middlewares/admin.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
@@ -24,6 +24,6 @@ router.post("/:ticketId/respond", addTicketResponse);
 router.patch("/:ticketId/status", updateTicketStatus);
 
 // Admin routes
-router.get("/", isAdmin, getAllTickets);
+router.get("/", verifyAdmin, getAllTickets);
 
 export default router;
