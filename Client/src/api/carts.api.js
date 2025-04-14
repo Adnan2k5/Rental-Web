@@ -7,8 +7,8 @@ export const fetchCartItemsApi = async (userId) => {
   return res;
 }
 
-export const addItemToCartApi = async (itemId, quantity, duration) => {
-  const res = await axiosClient.post(`/api/cart`, { itemId, quantity, duration }, {
+export const addItemToCartApi = async (itemId, quantity, duration, all) => {
+  const res = await axiosClient.post(`/api/cart`, { itemId, quantity, duration, all }, {
     withCredentials: true,
   });
   return res;

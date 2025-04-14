@@ -119,9 +119,7 @@ export default function CartPage() {
       setCartItems([]);
       
       // Clear each item via API
-      await Promise.all(cartItems.map(item => 
-        addItemToCartApi(item.item._id, 0, 0)
-      ));
+      await addItemToCartApi(undefined, undefined, undefined, true); // Assuming this API call clears the cart
       
       toast.success('Cart cleared successfully');
       setRefreshCart(!refreshCart);

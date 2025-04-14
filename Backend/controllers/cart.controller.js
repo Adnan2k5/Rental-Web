@@ -13,12 +13,13 @@ export const getCart = asyncHandler(async (req, res) => {
 });
 
 export const addItemToCart = asyncHandler(async (req, res) => {
-    const { itemId, quantity, duration } = req.body;
-    if (!itemId) {
+    const { itemId, quantity, duration, all } = req.body;
+
+    if (!itemId && all === undefined) {
         throw new ApiError(400, "Item ID is required");
     }
     
-    if (quantity === undefined && duration === undefined) {
+    if (quantity === undefined && duration === undefined && all === undefined) {
         throw new ApiError(400, "Quantity or Duration are required");
     }
 
@@ -27,6 +28,12 @@ export const addItemToCart = asyncHandler(async (req, res) => {
     if (!cart) {
         cart = await Cart.create({ user: req.user._id, items: [] });
     } 
+
+    if(all) {
+        cart.items = [];
+        await cart.save();
+        return res.status(200).json(new ApiResponse(200, cart, "Items removed from cart successfully"));
+    }
 
     const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
     if(itemIndex !== -1 && ((quantity !== undefined && quantity <= 0) && (duration !== undefined && duration <= 0))) {
