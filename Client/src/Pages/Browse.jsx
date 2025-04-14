@@ -168,10 +168,10 @@ export default function BrowsePage() {
           <h4 className="font-medium mb-3">Price Range ($/month)</h4>
           <div className="px-2">
             <Slider
-              defaultValue={[0, 200]}
+              defaultValue={50}
               value={filters.priceRange}
               max={200}
-              step={5}
+              step={1}
               onValueChange={handlePriceChange}
               className="my-6"
             />

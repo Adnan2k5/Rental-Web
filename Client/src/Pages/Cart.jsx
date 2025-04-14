@@ -28,7 +28,7 @@ export default function CartPage() {
 
   useEffect(() => {
     const fetchCartItems = async () => {
-      const response = await fetchCartItemsApi(); 
+      const response = await fetchCartItemsApi();
       const storedItems = response.data.data;
       setCartItems(storedItems);
     };
@@ -59,7 +59,7 @@ export default function CartPage() {
       setRefreshCart(!refreshCart);
       toast.success('Item removed from cart', { description: 'Item has been removed from your cart.' });
     }
-    catch(e) {
+    catch (e) {
       toast.error("Error removing item from cart", { description: e.message });
     }
   };
@@ -69,7 +69,7 @@ export default function CartPage() {
       removeItem(id);
       return;
     }
-    
+
     try {
       // Optimistically update UI
       setCartItems(
@@ -77,7 +77,7 @@ export default function CartPage() {
           item.item._id === id ? { ...item, quantity: newQuantity } : item
         )
       );
-      
+
       // Send API request
       await addItemToCartApi(id, newQuantity, null);
     } catch (err) {
@@ -92,14 +92,14 @@ export default function CartPage() {
       removeItem(id);
       return;
     }
-    
+
     try {
       setCartItems(
         cartItems.map((item) =>
           item.item._id === id ? { ...item, duration: newDuration } : item
         )
       );
-      
+
       // Send API request
       await addItemToCartApi(id, null, newDuration);
     } catch (err) {
@@ -114,10 +114,11 @@ export default function CartPage() {
     try {
       // Clear local state first for immediate UI feedback
       setCartItems([]);
-      
+
       // Clear each item via API
+
       await addItemToCartApi(undefined, undefined, undefined, true); // Assuming this API call clears the cart
-      
+   
       toast.success('Cart cleared successfully');
       setRefreshCart(!refreshCart);
     } catch (err) {
@@ -363,14 +364,6 @@ export default function CartPage() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Shipping</span>
-                    <span>
-                      {shippingCost === 0
-                        ? 'Free'
-                        : `$${shippingCost.toFixed(2)}`}
-                    </span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">

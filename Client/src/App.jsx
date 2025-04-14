@@ -7,12 +7,13 @@ import CartPage from './Pages/Cart';
 import BrowsePage from './Pages/Browse';
 import { Toaster } from 'sonner';
 import { AuthProvider } from './Middleware/AuthProvider';
-import ItemDashboard from './Pages/PostItems';
+import ItemDashboard from './Pages/User/PostItems';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import AdminLayout from './Pages/Admin/Layout';
 import ManageItems from './Pages/Admin/ManageItems';
 import ManageUsers from './Pages/Admin/ManageUser';
 import Chat from './Pages/Chat/Chat';
+import UserItems from './Pages/User/UserItems';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/dashboard" element={<ItemDashboard />} />
+            <Route path='/dashboard/myitems' element={<UserItems />} />
             <Route path='/chat' element={<Chat />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />

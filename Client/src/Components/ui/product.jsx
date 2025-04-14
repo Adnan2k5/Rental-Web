@@ -4,7 +4,7 @@ import { Button } from './button';
 import { toast } from 'sonner';
 import { addItemToCartApi } from '../../api/carts.api';
 
-export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
+export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
 
     const addItemToCart = async (e) => {
         try {
@@ -13,7 +13,7 @@ export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
             await addItemToCartApi(product._id, 1, 1);
             toast.success("Item added to cart successfully");
         }
-        catch(e) {
+        catch (e) {
             toast.error("Failed to add item to cart");
         }
     }
@@ -64,13 +64,25 @@ export const ProductCard = ({index, fadeIn, product, onQuickView}) => {
             <h3 className="font-medium text-gray-900 mb-1 truncate">
                 {product.name}
             </h3>
-            <p className="text-sm text-muted-foreground mb-3">
-                by {product.brand}
-            </p>
+            <div className="div flex items-center justify-between mb-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                    by {product.brand}
+                </p>
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 px-3"
+                    onClick={addItemToCart}
+                >
+                    Chat
+                </Button>
+            </div>
+
             <div className="flex items-center justify-between">
                 <p className="font-bold text-primary">
                     ${product.price}/mo
                 </p>
+
                 <Button
                     size="sm"
                     variant="outline"
