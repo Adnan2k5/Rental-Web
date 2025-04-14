@@ -1,4 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
 
 export const verifyAdmin = asyncHandler(async (req, _, next) => {
     const user = req.user;
