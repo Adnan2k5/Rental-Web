@@ -48,3 +48,13 @@ export const addItemToCart = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, cart, "Item added to cart successfully"));
 });
 
+export const getCartCount = asyncHandler(async (req, res) => {
+    const cart = await Cart.findOne({ user: req.user._id });
+    if (!cart) {
+        throw new ApiError(404, "Cart not found");
+    }
+
+    const itemCount = cart.items.reduce((total, item) => total + (item.quantity || 0), 0);
+    return res.status(200).json(new ApiResponse(200, {count: itemCount}, "Cart count retrieved successfully"));
+});
+

@@ -13,3 +13,10 @@ export const addItemToCartApi = async (itemId, quantity, duration) => {
   });
   return res;
 }
+
+export const getCartCountApi = async () => {
+  const res = await axiosClient.get(`/api/cart/count`, {
+    withCredentials: true,
+  });
+  return res;
+}

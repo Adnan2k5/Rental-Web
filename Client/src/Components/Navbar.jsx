@@ -1,10 +1,32 @@
 import { useAuth } from '../Middleware/AuthProvider'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import { ShoppingCart } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { getCartCountApi } from '../api/carts.api';
+
 export const Navbar = () => {
-    const user = useAuth();
+    const { user } = useAuth();
+    const [cartCount, setCartCount] = useState(0);
+
+    useEffect(() => {
+        const fetchCartCount = async () => {
+            if (user) {
+                try {
+                    const response = await getCartCountApi();
+                    if (response.data.data && response.data.data.count !== undefined) {
+                        setCartCount(response.data.data.count);
+                    }
+                } catch (error) {
+                    console.error("Error fetching cart count:", error);
+                }
+            }
+        };
+
+        fetchCartCount();
+    }, [user]);
+
     return (
         <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -37,17 +59,25 @@ export const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <Link to="/cart">
-                        <ShoppingCart />
+                    <Link to="/cart" className="relative">
+                        <ShoppingCart className="h-5 w-5" />
+                        {cartCount > 0 && (
+                            <Badge 
+                                variant="outline" 
+                                className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-black text-white border-black"
+                            >
+                                {cartCount}
+                            </Badge>
+                        )}
                     </Link>
-                    {user.user ? (
+                    {user ? (
                         <Link to="/dashboard">
                             <Button
                                 variant="ghost"
                                 className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
                                 size="sm"
                             >
-                                {user.user.email.charAt(0).toUpperCase()}
+                                {user.email.charAt(0).toUpperCase()}
                             </Button>
                         </Link>
                     ) : (
