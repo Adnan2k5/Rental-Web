@@ -67,6 +67,7 @@ export default function BrowsePage() {
     }
   }, [user, navigate]);
 
+
   const openQuickView = (product) => {
     setQuickViewProduct(product);
   };
@@ -250,14 +251,22 @@ export default function BrowsePage() {
 
       <main className="container mx-auto px-4 py-8">
         <motion.div
-          className="mb-8"
+          className="mb-8 flex justify-between items-center"
           initial="hidden"
           animate="visible"
           variants={fadeIn}
         >
-          <p className="text-gray-600">
-            Find the perfect items to rent for your needs
-          </p>
+          <div>
+            <p className="text-gray-600">
+              Find the perfect items to rent for your needs
+            </p>
+          </div>
+          <Link to="/cart" className="relative">
+            <Button variant="outline" className="flex items-center gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              <span>Cart</span>
+            </Button>
+          </Link>
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-8">
