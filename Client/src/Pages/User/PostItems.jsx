@@ -16,17 +16,18 @@ import {
   ChevronDown,
   Sparkles,
   LayoutGrid,
+  Box,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+} from '../../components/ui/dropdown-menu';
 import {
   Dialog,
   DialogContent,
@@ -34,25 +35,25 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
+} from '../../components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
-import { Separator } from '../components/ui/separator';
-import { Badge } from '../components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { Label } from '../components/ui/label';
-import { createItems, deleteItem, fetchByUserId } from '../api/items.api';
+} from '../../components/ui/select';
+import { Separator } from '../../components/ui/separator';
+import { Badge } from '../../components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Label } from '../../components/ui/label';
+import { createItems, deleteItem, fetchByUserId } from '../../api/items.api';
 import { toast } from 'sonner';
-import { useAuth } from '../Middleware/AuthProvider';
+import { useAuth } from '../../Middleware/AuthProvider';
 import { Link } from 'react-router-dom';
-import { colors } from '../assets/Color';
-import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../assets/Animations';
-import { Particles } from '../Components/Particles';
+import { colors } from '../../assets/Color';
+import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../../assets/Animations';
+import { Particles } from '../../Components/Particles';
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState('grid');
@@ -198,6 +199,12 @@ export default function Dashboard() {
                 icon: <Package className="h-4 w-4 mr-3" />,
                 label: 'My Dashboard',
                 active: true,
+              },
+              {
+                icon: <Box className="h-4 w-4 mr-3" />,
+                label: 'My Items',
+                active: false,
+                link: '/dashboard/myitems',
               },
               {
                 icon: <LayoutGrid className="h-4 w-4 mr-3" />,
