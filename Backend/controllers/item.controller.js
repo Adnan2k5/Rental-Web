@@ -70,7 +70,6 @@ export const discoverItems = asyncHandler(async (req, res) => {
 
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, availableQuantity, location } = req.body;
-    console.log(req.body);
 
     if (!name || !description || !price || !category || !availableQuantity || !location) {
         throw new ApiError(400, "All fields are required");

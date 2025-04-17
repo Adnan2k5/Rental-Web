@@ -11,11 +11,6 @@ const initSocketIO = (io) => {
             userSocketMap.set(userId, socket.id);
             socket.join(userId);
             console.log(`User ${userId} joined room: ${socket.id}`);
-
-            const pendingMessages = await Message.find({ to: userId, isRead: false });
-            if (pendingMessages.length > 0) {
-                socket.emit("pendingMessage", pendingMessages);
-            }
         }));
 
         // Listen for user disconnecting
