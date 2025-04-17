@@ -3,10 +3,10 @@ import AxiosClient from "../Middleware/AxiosClient.js";
 const BASE_URL = "/api/messages";
 
 // Get chat history with a specific user
-export const getChatHistory = async (userId) => {
+export const getChatHistoryApi = async (userId) => {
   try {
-    const response = await AxiosClient.get(`${BASE_URL}?with=${userId}`);
-    return response.data;
+    const response = await AxiosClient.get(`${BASE_URL}?with=${userId}`, {withCredentials: true});
+    return response.data.data;
   } catch (error) {
     throw error;
   }

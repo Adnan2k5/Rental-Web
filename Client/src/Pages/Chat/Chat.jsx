@@ -5,6 +5,7 @@ import io from "socket.io-client"
 import Header from "./Header"
 import ChatInterface from "./ChatInterface"
 import MessageInput from "./MessageInput"
+import { getChatHistoryApi } from "../../api/messages.api"
 
 // Create socket instance
 const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:8080")
@@ -28,16 +29,27 @@ export default function Chat() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
-    const sendMessage = (message) => {
-        const newMessage = {
-            sender: user._id,
-            recipient: owner._id,
-            text: message,
+    const sendMessage = (content) => {
+        const message = {
+            from: user._id,
+            to: owner._id,
+            content: content,
             timestamp: new Date(),
         }
-        setMessages((prevMessages) => [...prevMessages, newMessage])
-        socket.emit("sendMessage", newMessage)
+        setMessages((prevMessages) => [...prevMessages, message])
+        socket.emit("sendMessage", { userId: owner._id, message })
     }
+
+    useEffect(() => {
+        const getChatHistory = async () => {
+            const history = await getChatHistoryApi(owner._id);
+            console.log(history);
+            setMessages(history);
+        }
+
+        getChatHistory();
+    }, []);
+
 
     return (
         <div className="flex flex-col h-[100dvh] bg-[#0E0F15]">

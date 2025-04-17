@@ -24,7 +24,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
   const groupedMessages = groupMessagesByDate(messages);
   
   // Check if a message is from the current user
-  const isCurrentUser = (senderId) => senderId === currentUserId;
+  const isCurrentUser = (from) => from === currentUserId;
 
   // Format date header
   const formatDateHeader = (dateString) => {
@@ -70,7 +70,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
           </div>
           
           {groupedMessages[dateKey].map((message, index) => {
-            const isSender = isCurrentUser(message.sender);
+            const isSender = isCurrentUser(message.from);
             return (
               <div 
                 key={index} 
@@ -92,7 +92,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
                         : 'bg-[#212330] text-white rounded-tl-none'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                    <p className="whitespace-pre-wrap break-words">{message.content}</p>
                   </div>
                   <div className={`text-xs mt-1 text-gray-400 ${isSender ? 'text-right mr-1' : 'ml-1'}`}>
                     {format(new Date(message.timestamp), 'h:mm a')}
