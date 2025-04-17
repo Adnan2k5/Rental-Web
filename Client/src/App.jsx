@@ -13,6 +13,7 @@ import AdminLayout from './Pages/Admin/Layout';
 import ManageItems from './Pages/Admin/ManageItems';
 import ManageUsers from './Pages/Admin/ManageUser';
 import Chat from './Pages/Chat/Chat';
+import ChatInbox from './Pages/Chat/ChatInbox';
 import UserItems from './Pages/User/UserItems';
 
 function App() {
@@ -30,6 +31,8 @@ function App() {
             <Route path="/dashboard" element={<ItemDashboard />} />
             <Route path='/dashboard/myitems' element={<UserItems />} />
             <Route path='/chat' element={<Chat />} />
+            <Route path='/chat/:itemId' element={<Chat />} />
+            <Route path='/messages' element={<ChatInbox />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />
