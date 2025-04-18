@@ -64,8 +64,6 @@ const initSocketIO = (io) => {
                 } else {
                     message.attachments = [];
                 }
-                
-                console.log(message.attachments);
 
                 await Message.create({
                     from: message.from,
