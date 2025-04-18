@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { Star } from 'lucide-react'
 import { motion } from "framer-motion"
 import { Button } from "../../Components/ui/button"
 import { Badge } from "../../Components/ui/badge"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../../Components/ui/dialog"
-import { fetchByUserId, fetchUserBookings } from "../../api/items.api"
+import { fetchByUserId, fetchUserBookings, postItemReview } from "../../api/items.api"
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { itemFadeIn } from "../../assets/Animations"
@@ -28,12 +28,13 @@ export default function UserItems() {
     const [hover, setHover] = useState(0)
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
+    const [comment, setComment] = useState("")
     const ITEMS_PER_PAGE = 10
 
-    // Fetch user items
     const fetchItems = async () => {
         try {
-            const res = await fetchUserBookings(user?.user?._id)
+            const res = await fetchUserBookings(user?._id)
+            console.log(res)
             setFetchItems(res.data.message)
             setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))
         } catch (error) {
@@ -41,15 +42,29 @@ export default function UserItems() {
             toast.error("Failed to fetch items")
         }
     }
-
     useEffect(() => {
-        if (user?.user?._id) {
+        if (user?._id) {
             fetchItems()
         }
     }, [user])
 
-    const handleReviewSubmit = async () => {
 
+    const handleReviewSubmit = async (id, rating, comment) => {
+        try {
+            const data = { id, rating, comment }
+            const res = await postItemReview(data)
+            if (res.status === 200) {
+                toast.success("Review posted successfully")
+                setRating(0)
+                setComment("")
+                setReview(false)
+            } else {
+                toast.error("Failed to post review")
+            }
+        }
+        catch (error) {
+            toast.error("Error posting review")
+        }
     }
 
     // Get current items for pagination
@@ -229,13 +244,13 @@ export default function UserItems() {
                         ))}
                         {rating > 0 && <span className="text-sm text-gray-600 ml-2">{rating} / 5</span>}
                     </div>
-                    <input className="Input" type="text" placeholder="Write your review here" />
+                    <input className="Input" type="text" onChange={(e) => { setComment(e.target.value) }} placeholder="Write your review here" />
                     {rating > 0 && (
                         <Button
                             variant="primary"
                             className="mr-2 bg-black text-white w-full mt-4"
                             onClick={() => {
-
+                                handleReviewSubmit(item._id, rating, comment)
                                 setRating(0)
                                 setReview(false)
                             }}

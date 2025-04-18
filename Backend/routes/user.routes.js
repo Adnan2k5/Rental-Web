@@ -10,6 +10,7 @@ import {
     updateReviewById,
     deleteReviewById
 } from '../controllers/user.controller.js';
+import { reviewItem } from '../controllers/item.controller.js';
 
 const router = express.Router();
 
@@ -24,7 +25,6 @@ router.get('/reviews', verifyJWT, getUserReviews);
 router.route('/reviews/:id')
     .get(verifyJWT, getReviewDetailsById)
     .put(verifyJWT, updateReviewById)
-    .delete(verifyJWT, deleteReviewById);
-
-
+    .delete(verifyJWT, deleteReviewById)
+    .post(verifyJWT, reviewItem);
 export default router;

@@ -19,8 +19,9 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 export const getUserBookings = asyncHandler(async (req, res) => {
-    await req.user.select("-password -refreshToken -reviews").populate("bookings");
-    return res.status(200).json(new ApiResponse(200, req.user.bookings, "User fetched successfully"));
+    const id = req.user._id;
+    const user = await User.findById(id).select("-password -refreshToken -reviews").populate("bookings");
+    return res.status(200).json(new ApiResponse(200, user.bookings, "User fetched successfully"));
 });
 
 export const getUserReviews = asyncHandler(async (req, res) => {
