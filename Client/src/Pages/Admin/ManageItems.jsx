@@ -1,27 +1,12 @@
-'use client';
-
 import { useState, useRef, useEffect } from 'react';
-import {
-  Search,
-  Grid,
-  List,
-  Filter,
-  Plus,
-  Edit,
-  MoreHorizontal,
-  Upload,
-  X,
-  Tag,
-} from 'lucide-react';
+import { Search, Grid, List, Filter, Plus, Edit, MoreHorizontal, Upload, X, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { colors } from '../../assets/Color';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '../../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { pageTransition, itemFadeIn, shimmerAnimation, buttonHover } from '../../assets/Animations';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,6 +52,10 @@ import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
+import { Particles } from '../../Components/Particles';
+import { GridSkeleton } from '../../Components/GridSkeleton';
+import { ListSkeleton } from '../../Components/ListSkeleton';
+import { CategorySkeleton } from '../../Components/CategorySkeleton';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -79,19 +68,9 @@ export default function ManageItems() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [items, setItems] = useState([]);
-  const [selectedColor, setSelectedColor] = useState('#4FC3F7');
   const [loading, setLoading] = useState(true);
 
-  // Rental Color Palette
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
 
-  // Sample categories
   const categories = [
     { id: 1, name: 'Electronics', color: '#4FC3F7' },
     { id: 2, name: 'Furniture', color: '#FF8A65' },
@@ -118,85 +97,6 @@ export default function ManageItems() {
   useEffect(() => {
     fetchItems();
   }, []);
-
-  // Animation variants
-  const pageTransition = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        when: 'beforeChildren',
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemFadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 1.5,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
-    },
-  };
-
-  const buttonHover = {
-    rest: { scale: 1 },
-    hover: {
-      scale: 1.05,
-      transition: {
-        type: 'spring',
-        stiffness: 400,
-        damping: 10,
-      },
-    },
-  };
-
-  // Particle effect component
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-primary/10 to-secondary/10"
-            style={{
-              width: Math.random() * 40 + 10,
-              height: Math.random() * 40 + 10,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    );
-  };
 
   // Filter items based on search query, category and status
   const filteredItems = items.filter((item) => {
@@ -272,123 +172,6 @@ export default function ManageItems() {
     setIsNewCategoryDialogOpen(false);
   };
 
-  // Grid Skeleton Component
-  const GridSkeleton = () => {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-lg overflow-hidden border border-gray-100"
-          >
-            <div className="relative h-48 bg-gray-100">
-              <Skeleton className="w-full h-full" />
-              <div className="absolute top-3 right-3 flex space-x-2">
-                <Skeleton className="h-5 w-16 rounded-full" />
-              </div>
-              <div className="absolute bottom-3 left-3">
-                <Skeleton className="h-5 w-20 rounded-md" />
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center">
-                  <Skeleton className="h-6 w-6 rounded-full mr-2" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-                <Skeleton className="h-4 w-16" />
-              </div>
-              <Skeleton className="h-6 w-3/4 mb-1" />
-              <Skeleton className="h-4 w-full mb-1" />
-              <Skeleton className="h-4 w-5/6 mb-3" />
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-16" />
-                <div className="flex space-x-2">
-                  <Skeleton className="h-8 w-8 rounded-md" />
-                  <Skeleton className="h-8 w-8 rounded-md" />
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // List Skeleton Component
-  const ListSkeleton = () => {
-    return (
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">ID</TableHead>
-                <TableHead>Item</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[...Array(5)].map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton className="h-4 w-8" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                      <div className="w-full">
-                        <Skeleton className="h-5 w-3/4 mb-1" />
-                        <Skeleton className="h-4 w-full" />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-6 w-20 rounded-md" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Skeleton className="h-6 w-6 rounded-full mr-2" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  // Category Skeleton Component
-  const CategorySkeleton = () => {
-    return (
-      <div className="flex space-x-3 pb-2 overflow-x-auto">
-        <Skeleton className="h-9 w-32 rounded-full" />
-        {[...Array(5)].map((_, index) => (
-          <Skeleton key={index} className="h-9 w-28 rounded-full" />
-        ))}
-      </div>
-    );
-  };
-
   return (
     <motion.div
       className="min-h-screen bg-light flex"
@@ -396,11 +179,7 @@ export default function ManageItems() {
       animate="visible"
       variants={pageTransition}
     >
-      {/* Sidebar */}
-      {/* Main Content */}
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
-        {/* Header */}
-        {/* Content */}
         <main className="flex-1 p-6 overflow-auto relative">
           <Particles />
 
@@ -481,11 +260,10 @@ export default function ManageItems() {
               ) : (
                 <div className="flex space-x-3 pb-2">
                   <motion.button
-                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                      selectedCategory === 'all'
-                        ? 'bg-primary text-white'
-                        : 'bg-white text-muted-foreground hover:bg-gray-50'
-                    }`}
+                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${selectedCategory === 'all'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-muted-foreground hover:bg-gray-50'
+                      }`}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setSelectedCategory('all')}
@@ -496,11 +274,10 @@ export default function ManageItems() {
                   {categories.map((category) => (
                     <motion.button
                       key={category.id}
-                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
-                        selectedCategory === category.name.toLowerCase()
-                          ? 'bg-primary text-white'
-                          : 'bg-white text-muted-foreground hover:bg-gray-50'
-                      }`}
+                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-muted-foreground hover:bg-gray-50'
+                        }`}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() =>
@@ -1027,11 +804,10 @@ export default function ManageItems() {
               <div>
                 <Label className="block mb-2">Upload Images</Label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                    isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-200'
-                  }`}
+                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200'
+                    }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -1074,8 +850,6 @@ export default function ManageItems() {
                     </Button>
                   </motion.div>
                 </div>
-
-                {/* Preview uploaded files */}
                 {uploadedFiles.length > 0 && (
                   <div className="mt-4 grid grid-cols-3 gap-3">
                     <AnimatePresence>
@@ -1157,7 +931,6 @@ export default function ManageItems() {
           <DialogHeader>
             <DialogTitle>Add New Category</DialogTitle>
             <DialogDescription>
-              Create a new category for organizing rental items
             </DialogDescription>
           </DialogHeader>
 

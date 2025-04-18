@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { colors } from '../assets/Color';
 import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../assets/Animations';
 import { Particles } from '../Components/Particles';
+import { useDispatch } from 'react-redux';
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +33,7 @@ export default function SignUp() {
   const [otp, setOtp] = useState('');
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { user } = useAuth();
   useEffect(() => {
     if (user?.user) {
@@ -82,7 +84,7 @@ export default function SignUp() {
     setIsLoading(true);
     try {
       const data = { email, otp };
-      const res = await verifyOtp(data);
+      const res = await verifyOtp(data, dispatch);
       if (res === true) {
         reset();
         setIsOpen(false);
