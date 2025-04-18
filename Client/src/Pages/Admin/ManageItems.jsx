@@ -67,7 +67,8 @@ import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
-import { createCategoryApi, fetchCategoriesApi } from '../../api/category.api';
+import { createCategoryApi } from '../../api/category.api';
+import {useCategories} from '../../hooks/useCategories';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -81,8 +82,10 @@ export default function ManageItems() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [items, setItems] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { categories, setCategories } = useCategories();
+
 
   // Rental Color Palette
   const colors = {
@@ -105,21 +108,11 @@ export default function ManageItems() {
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const res = await fetchCategoriesApi();
-      setCategories(res);
-    }
-    catch (err) {
-      toast.error('Error Fetching Categories');
-    }
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await Promise.all([fetchItems(), fetchCategories()]);
+        await fetchItems();
       } catch (err) {
       }
       setLoading(false);
@@ -146,18 +139,6 @@ export default function ManageItems() {
       opacity: 1,
       y: 0,
       transition: { duration: 0.5 },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 1.5,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
     },
   };
 
@@ -278,6 +259,11 @@ export default function ManageItems() {
     // Process form data
     try {
       await createCategoryApi(categoryName);
+      setCategories((prev) => [
+        ...prev,
+        { id: Date.now(), name: categoryName, color: colors.primary },
+      ]);
+      console.log(categories);
       toast.success('Category created successfully!');
     }
     catch(e) {
@@ -510,7 +496,7 @@ export default function ManageItems() {
                     All Categories
                   </motion.button>
 
-                  {categories.map((category) => (
+                  {categories && categories.length > 0 && categories.map((category) => (
                     <motion.button
                       key={category.id}
                       className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
@@ -967,7 +953,7 @@ export default function ManageItems() {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((category) => (
+                        {categories && categories.length > 0 && categories.map((category) => (
                           <SelectItem
                             key={category.id}
                             value={category.name.toLowerCase()}
