@@ -29,7 +29,7 @@ export const getAllChats = async () => {
     const response = await AxiosClient.get(`${BASE_URL}/chats`, {
       withCredentials: true,
     });
-    return response.data.chats;
+    return response.data;
   } catch (error) {
     throw error;
   }

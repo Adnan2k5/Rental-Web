@@ -11,9 +11,6 @@ const getChatHistory = asyncHandler(async (req, res) => {
     const { with: otherUserId } = req.query;
     const currentUserId = req.user._id;
 
-    console.log("Current User ID:", currentUserId);
-    console.log("Other User ID:", otherUserId);
-
     if (!otherUserId) {
         throw new ApiError(400, "Other user ID is required");
     }

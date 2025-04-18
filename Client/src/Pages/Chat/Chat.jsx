@@ -42,7 +42,7 @@ export default function Chat() {
 
     useEffect(() => {
         if(product.owner._id !== "") {
-            startConversation({_id: product.owner._id, name: product.owner.name || product.name, avatar: product.images[0]});
+            startConversation({_id: product.owner._id, name: product.owner.name || product.owner._id, avatar: product.images[0]});
         }
     }, []);
 
@@ -118,7 +118,9 @@ export default function Chat() {
             try {
                 setLoading(true);
                 const response = await getAllChats();
-                let allContacts = response;
+                let allContacts = response.data;
+
+                console.log(allContacts);
 
                 // Add product owner to contacts list if not already there
                 if (product.owner && product.owner._id) {
@@ -181,6 +183,21 @@ export default function Chat() {
         }
     }, [user]);
 
+    useEffect(() => {
+        const fetchChatHistory = async () => {
+            if (selectedContact) {
+                try {
+                    const chatHistory = await getChatHistoryApi(selectedContact._id);
+                    setMessages(chatHistory);
+                } catch (error) {
+                    console.error("Error fetching chat history:", error);
+                }
+            }
+        };
+
+        fetchChatHistory();
+    }, [selectedContact]);
+
     return (
         <div className="flex flex-col h-[100dvh] bg-[#0E0F15]">
             <div className="border-b border-[#2A2D3A] py-3 px-4">
@@ -218,7 +235,7 @@ export default function Chat() {
                                 <div
                                     key={contact._id}
                                     onClick={() => setSelectedContact({
-                                        _id: contact.user._id,
+                                        _id: contact._id,
                                         name: contact.user.name,
                                         avatar: contact.user.avatar
                                     })}
