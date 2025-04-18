@@ -193,11 +193,6 @@ export default function DateRangePicker({ startDate, endDate, onChange, classNam
                     <Button variant="outline" className="w-full justify-start text-left font-normal h-10">
                         <Calendar className="mr-2 h-4 w-4" />
                         <span>{formatDateRange()}</span>
-                        {selectedStartDate && selectedEndDate && (
-                            <span className="ml-auto bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                                {calculateDurationInMonths()} {calculateDurationInMonths() === 1 ? "month" : "months"}
-                            </span>
-                        )}
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -221,9 +216,7 @@ export default function DateRangePicker({ startDate, endDate, onChange, classNam
                                 </div>
                             ))}
                         </div>
-
                         <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
-
                         {selectedStartDate && (
                             <div className="mt-3 text-xs text-muted-foreground">
                                 {selectedEndDate ? (
