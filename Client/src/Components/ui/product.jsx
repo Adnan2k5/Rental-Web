@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import { Button } from './button';
 import { toast } from 'sonner';
 import { addItemToCartApi } from '../../api/carts.api';
+import { useNavigate } from 'react-router-dom';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
+
+    const navigate = useNavigate();
 
     const addItemToCart = async (e) => {
         try {
@@ -15,6 +18,22 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
         }
         catch (e) {
             toast.error("Failed to add item to cart");
+        }
+    }
+
+    const goToChat = async (e) => {
+        try {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(product);
+            navigate(`/chat`, {
+                state: {
+                    product,
+                },
+            });
+        }
+        catch (e) {
+            toast.error("Failed to go to chat");
         }
     }
 
@@ -72,6 +91,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
+                    onClick={goToChat}
                 >
                     Chat
                 </Button>

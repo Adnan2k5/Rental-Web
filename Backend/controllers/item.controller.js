@@ -63,14 +63,12 @@ export const discoverItems = asyncHandler(async (req, res) => {
         .skip((page - 1) * limit);
 
     const totalItems = await Item.countDocuments(filter);
-
     res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
 });
 
 
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, availableQuantity, location } = req.body;
-    console.log(req.body);
 
     if (!name || !description || !price || !category || !availableQuantity || !location) {
         throw new ApiError(400, "All fields are required");

@@ -18,7 +18,7 @@ export const addItemToCart = asyncHandler(async (req, res) => {
     if (!itemId && all === undefined) {
         throw new ApiError(400, "Item ID is required");
     }
-    
+
     if (quantity === undefined && duration === undefined && all === undefined) {
         throw new ApiError(400, "Quantity or Duration are required");
     }
@@ -27,23 +27,23 @@ export const addItemToCart = asyncHandler(async (req, res) => {
 
     if (!cart) {
         cart = await Cart.create({ user: req.user._id, items: [] });
-    } 
+    }
 
-    if(all) {
+    if (all) {
         cart.items = [];
         await cart.save();
         return res.status(200).json(new ApiResponse(200, cart, "Items removed from cart successfully"));
     }
 
     const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
-    if(itemIndex !== -1 && ((quantity !== undefined && quantity <= 0) && (duration !== undefined && duration <= 0))) {
+    if (itemIndex !== -1 && ((quantity !== undefined && quantity <= 0) && (duration !== undefined && duration <= 0))) {
         cart.items.splice(itemIndex, 1);
     }
     else if (itemIndex > -1) {
-        if(quantity !== null && quantity !== undefined) {
+        if (quantity !== null && quantity !== undefined) {
             cart.items[itemIndex].quantity = quantity;
         }
-        if(duration !== null && duration !== undefined) {
+        if (duration !== null && duration !== undefined) {
             cart.items[itemIndex].duration = duration;
         }
     } else {
@@ -58,10 +58,10 @@ export const addItemToCart = asyncHandler(async (req, res) => {
 export const getCartCount = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id });
     if (!cart) {
-        throw new ApiError(404, "Cart not found");
+        return res.status(200).json(new ApiResponse(200, [], "Cart is empty"));
     }
 
     const itemCount = cart.items.reduce((total, item) => total + (item.quantity || 0), 0);
-    return res.status(200).json(new ApiResponse(200, {count: itemCount}, "Cart count retrieved successfully"));
+    return res.status(200).json(new ApiResponse(200, { count: itemCount }, "Cart count retrieved successfully"));
 });
 
