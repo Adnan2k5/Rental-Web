@@ -13,7 +13,6 @@ const messageSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        required: true,
     },
     timestamp: {
         type: Date,
@@ -23,6 +22,11 @@ const messageSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    attachments: [
+        {
+            type: String,
+        },
+    ],
 });
 
 messageSchema.index({ to: 1, isRead: 1 });

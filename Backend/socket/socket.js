@@ -35,11 +35,42 @@ const initSocketIO = (io) => {
             try {
                 const isOnline = userSocketMap.has(userId);
 
+                if((message.content.length === '' || message.content === null) && (attachments === null || attachments.length === 0)) {
+                    return;
+                }
+
+                if (message.attachments) {
+                    if (typeof message.attachments === 'string') {
+                        message.attachments = [message.attachments];
+                    } else if (Array.isArray(message.attachments)) {
+                        // Process each item in the array properly
+                        message.attachments = message.attachments
+                            .filter(item => item !== null && item !== undefined)
+                            .map(item => {
+                                if (typeof item === 'object' && item !== null) {
+                                    return JSON.stringify(item); // Convert objects to JSON strings
+                                }
+                                return String(item);
+                            });
+                    } else if (typeof message.attachments === 'object' && message.attachments !== null) {
+                        // For object type attachments, serialize to JSON string
+                        message.attachments = [JSON.stringify(message.attachments)];
+                    } else if (message.attachments !== null) {
+                        // Any other non-null type
+                        message.attachments = [String(message.attachments)];
+                    } else {
+                        message.attachments = [];
+                    }
+                } else {
+                    message.attachments = [];
+                }
+
                 await Message.create({
                     from: message.from,
                     to: userId,
                     content: message.content,
                     timestamp: new Date(),
+                    attachments: message.attachments,
                     isRead: false,
                 });
         
