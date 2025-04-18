@@ -4,7 +4,6 @@ export const fetchCategoriesApi = async () => {
   const res = await axiosClient.get(`/api/category`, {
     withCredentials: true,
   });
-  console.log(res);
   return res.data.message;
 }
 
