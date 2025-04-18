@@ -232,9 +232,8 @@ export default function SignIn() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <button
-                    onClick={() => {
-                      setPassReset(true);
-                    }}
+                    type='button'
+                    onClick={() => setPassReset(true)}
                   >
                     Forgot password?
                   </button>

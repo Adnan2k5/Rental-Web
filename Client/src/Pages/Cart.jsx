@@ -1,46 +1,40 @@
-import { useEffect, useState } from 'react';
-import {
-  ChevronRight,
-  CreditCard,
-  Minus,
-  Plus,
-  ShoppingCart,
-  Trash2,
-} from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Separator } from '../components/ui/separator';
-import { Label } from '../components/ui/label';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../Middleware/AuthProvider';
-import { addItemToCartApi, fetchCartItemsApi } from '../api/carts.api';
-import { toast } from 'sonner';
-import { Navbar } from '../Components/Navbar';
-import { fadeIn, staggerChildren } from '../assets/Animations';
+"use client"
+
+import { useEffect, useState } from "react"
+import { ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react"
+import { Button } from "../components/ui/button"
+import { Input } from "../components/ui/input"
+import { Separator } from "../components/ui/separator"
+import { Label } from "../components/ui/label"
+import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
+import { useAuth } from "../Middleware/AuthProvider"
+import { addItemToCartApi, fetchCartItemsApi } from "../api/carts.api"
+import { toast } from "sonner"
+import { Navbar } from "../Components/Navbar"
+import DateRangePicker from "../Components/DateRangePicker"
+import { format, formatDate } from "date-fns"
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([]);
-
-  const [promoCode, setPromoCode] = useState('');
-  const [shippingMethod, setShippingMethod] = useState('standard');
-  const [refreshCart, setRefreshCart] = useState(false);
+  const [cartItems, setCartItems] = useState([])
+  const [promoCode, setPromoCode] = useState("")
+  const [refreshCart, setRefreshCart] = useState(false)
 
   useEffect(() => {
     const fetchCartItems = async () => {
-      const response = await fetchCartItemsApi();
-      const storedItems = response.data.data;
-      setCartItems(storedItems);
-    };
+      const response = await fetchCartItemsApi()
+      const storedItems = response.data.data
+      setCartItems(storedItems)
+    }
 
-    fetchCartItems();
-  }, [refreshCart]);
+    fetchCartItems()
+  }, [refreshCart])
 
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
-  };
+  }
 
   const staggerChildren = {
     hidden: { opacity: 0 },
@@ -50,108 +44,105 @@ export default function CartPage() {
         staggerChildren: 0.1,
       },
     },
-  };
+  }
 
   // Cart actions
   const removeItem = async (id) => {
     try {
-      await addItemToCartApi(id, 0, 0);
-      setRefreshCart(!refreshCart);
-      toast.success('Item removed from cart', { description: 'Item has been removed from your cart.' });
+      await addItemToCartApi(id, 0, 0)
+      setRefreshCart(!refreshCart)
+      toast.success("Item removed from cart", { description: "Item has been removed from your cart." })
+    } catch (e) {
+      toast.error("Error removing item from cart", { description: e.message })
     }
-    catch (e) {
-      toast.error("Error removing item from cart", { description: e.message });
-    }
-  };
+  }
 
   const updateQuantity = async (id, newQuantity) => {
     if (newQuantity < 1) {
-      removeItem(id);
-      return;
+      removeItem(id)
+      return
     }
 
     try {
       // Optimistically update UI
-      setCartItems(
-        cartItems.map((item) =>
-          item.item._id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      setCartItems(cartItems.map((item) => (item.item._id === id ? { ...item, quantity: newQuantity } : item)))
 
       // Send API request
-      await addItemToCartApi(id, newQuantity, null);
+      await addItemToCartApi(id, newQuantity, null)
     } catch (err) {
-      toast.error("Failed to update quantity", { description: err.message });
+      toast.error("Failed to update quantity", { description: err.message })
       // Refresh to get correct data if there was an error
-      setRefreshCart(!refreshCart);
+      setRefreshCart(!refreshCart)
     }
-  };
+  }
 
-  const updateDuration = async (id, newDuration) => {
-    if (newDuration < 1) {
-      removeItem(id);
-      return;
-    }
-
+  // Fixed updateDuration function
+  const updateDuration = async (id, startDate, endDate, newDuration) => {
     try {
+      // Optimistically update UI
       setCartItems(
         cartItems.map((item) =>
-          item.item._id === id ? { ...item, duration: newDuration } : item
-        )
-      );
+          item.item._id === id
+            ? {
+              ...item,
+              duration: newDuration,
+              startDate: startDate,
+              endDate: endDate
+            }
+            : item,
+        ),
+      )
 
       // Send API request
-      await addItemToCartApi(id, null, newDuration);
+      // await addItemToCartApi(id, null, newDuration, startDate, endDate)
+      console.log("API call to update duration", id, null, newDuration, startDate, endDate)
     } catch (err) {
-      toast.error("Failed to update duration", { description: err.message });
-      // Refresh to get correct data if there was an error
-      setRefreshCart(!refreshCart);
+      toast.error("Failed to update duration", { description: err.message })
+      setRefreshCart(!refreshCart)
     }
-  };
+  }
 
   // Clear all items from cart
   const clearCart = async () => {
     try {
-      // Clear local state first for immediate UI feedback
-      setCartItems([]);
-
-      // Clear each item via API
-
-      await addItemToCartApi(undefined, undefined, undefined, true); // Assuming this API call clears the cart
-   
-      toast.success('Cart cleared successfully');
-      setRefreshCart(!refreshCart);
+      setCartItems([])
+      await addItemToCartApi(undefined, undefined, undefined, true) // Assuming this API call clears the cart
+      toast.success("Cart cleared successfully")
+      setRefreshCart(!refreshCart)
     } catch (err) {
-      toast.error("Error clearing cart", { description: err.message });
-      setRefreshCart(!refreshCart);
+      toast.error("Error clearing cart", { description: err.message })
+      setRefreshCart(!refreshCart)
     }
-  };
+  }
 
   // Calculate totals
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.item.price * item.quantity * item.duration,
-    0
-  );
-  const shippingCost = shippingMethod === 'express' ? 15 : 0;
-  const discount = 0; // In a real app, this would calculate discounts from promo codes
-  const total = subtotal + shippingCost - discount;
+
 
   // Is cart empty
-  const isCartEmpty = cartItems.length === 0;
+  const isCartEmpty = cartItems.length === 0
 
-  const user = useAuth();
+  const user = useAuth()
+
+  // Calculate months between two dates
+  const calculateMonthsBetween = (startDate, endDate) => {
+    if (!startDate || !endDate) return 1
+
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    const daysDiff = end.getDate() - start.getDate()
+    return daysDiff
+  }
+
+  const subtotal = cartItems.reduce((total, item) => total + item.item.price * item.quantity * item.duration, 0)
+  const discount = 0
+  const total = subtotal
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Navbar />
 
       <main className="container mx-auto px-4 py-8">
-        <motion.div
-          className="mb-8"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-        >
+        <motion.div className="mb-8" initial="hidden" animate="visible" variants={fadeIn}>
           <div className="flex items-center text-sm text-muted-foreground">
             <Link to="/" className="hover:text-primary">
               Home
@@ -189,24 +180,12 @@ export default function CartPage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items Column */}
-            <motion.div
-              className="lg:col-span-2"
-              initial="hidden"
-              animate="visible"
-              variants={staggerChildren}
-            >
+            <motion.div className="lg:col-span-2" initial="hidden" animate="visible" variants={staggerChildren}>
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">
-                      Cart Items ({cartItems.length})
-                    </h2>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-sm text-muted-foreground"
-                      onClick={clearCart}
-                    >
+                    <h2 className="text-xl font-semibold">Cart Items ({cartItems.length})</h2>
+                    <Button variant="ghost" size="sm" className="text-sm text-muted-foreground" onClick={clearCart}>
                       Clear All
                     </Button>
                   </div>
@@ -222,7 +201,7 @@ export default function CartPage() {
                     >
                       <div className="h-20 w-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={item.item.images[0] || '/placeholder.svg'}
+                          src={item.item.images[0] || "/placeholder.svg"}
                           alt={item.item.name}
                           width={80}
                           height={80}
@@ -238,14 +217,12 @@ export default function CartPage() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          ${item.item.price}/month per unit
-                        </p>
+                        <p className="text-sm text-muted-foreground mb-4">${item.item.price}/day per unit</p>
 
                         <div className="flex flex-wrap gap-6 mt-2">
                           <div>
                             <Label
-                              htmlFor={`quantity-${item.item.id}`}
+                              htmlFor={`quantity-${item.item._id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
                               Quantity
@@ -255,10 +232,8 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-r-none"
-                                onClick={() =>
-                                  updateQuantity(item.item._id, item.quantity - 1)
-                                }
-                                disabled={item.item.quantity <= 1}
+                                onClick={() => updateQuantity(item.item._id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
@@ -269,9 +244,7 @@ export default function CartPage() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-l-none"
-                                onClick={() =>
-                                  updateQuantity(item.item._id, item.quantity + 1)
-                                }
+                                onClick={() => updateQuantity(item.item._id, item.quantity + 1)}
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -283,34 +256,20 @@ export default function CartPage() {
                               htmlFor={`duration-${item.item._id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
-                              Duration (months)
+                              Rental Period
                             </Label>
-                            <div className="flex items-center">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-r-none"
-                                onClick={() =>
-                                  updateDuration(item.item._id, item.duration - 1) //TODO:: IMPLEMENT DURATION
+                            <DateRangePicker
+                              startDate={item.startDate ? new Date(item.startDate) : null}
+                              endDate={item.endDate ? new Date(item.endDate) : null}
+                              onChange={(start, end) => {
+                                if (start && end) {
+                                  // Calculate duration in months
+                                  const newDuration = calculateMonthsBetween(start, end)
+                                  updateDuration(item.item._id, start, end, newDuration)
                                 }
-                                disabled={item.duration <= 1}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <div className="h-8 w-10 flex items-center justify-center border-y border-input">
-                                {item.duration}
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-l-none"
-                                onClick={() =>
-                                  updateDuration(item.item._id, item.duration + 1)
-                                }
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </div>
+                              }}
+                              className="w-[300px]"
+                            />
                           </div>
                         </div>
                       </div>
@@ -331,9 +290,7 @@ export default function CartPage() {
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium mb-2">
-                    Have a promo code?
-                  </h3>
+                  <h3 className="font-medium mb-2">Have a promo code?</h3>
                   <div className="flex">
                     <Input
                       type="text"
@@ -380,11 +337,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="text-sm text-muted-foreground">
-                    You'll be charged ${total.toFixed(2)} today, and then $
-                    {subtotal.toFixed(2)} per month starting next month. <br />{' '}
-                    <span className="font-bold">
-                      Deposite amount should be paid directly to the owner.
-                    </span>
+                    <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
                   </div>
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
@@ -404,9 +357,7 @@ export default function CartPage() {
       <footer className="bg-gray-50 border-t border-gray-200 py-8 mt-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Rental. All rights reserved.
-            </p>
+            <p className="text-sm text-gray-500">© {new Date().getFullYear()} Rental. All rights reserved.</p>
             <div className="mt-4 md:mt-0 flex space-x-4">
               <Link to="#" className="text-sm text-gray-500 hover:text-primary">
                 Terms
@@ -422,5 +373,5 @@ export default function CartPage() {
         </div>
       </footer>
     </div>
-  );
+  )
 }
