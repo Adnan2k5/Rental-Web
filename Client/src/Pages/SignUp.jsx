@@ -269,6 +269,35 @@ export default function SignUp() {
                 htmlFor="email"
                 className="text-sm font-medium leading-none text-dark"
               >
+                Name
+              </label>
+              <div
+                className={`relative w-full ${activeField === 'name' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
+              >
+                <input
+                  {...register('name', { required: true })}
+                  id="name"
+                  placeholder="Full Name"
+                  type="text"
+                  autoCapitalize="none"
+                  autoComplete="name"
+                  autoCorrect="off"
+                  className="border w-full Input bg-white/80 focus:border-primary"
+                  onFocus={() => handleFieldFocus('name')}
+                  onBlur={handleFieldBlur}
+                />
+              </div>
+            </motion.div>
+            <motion.div
+              className="space-y-2 flex flex-col items-start"
+              whileFocus={{ scale: 1.02 }}
+              whileHover={{ y: -2 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <label
+                htmlFor="email"
+                className="text-sm font-medium leading-none text-dark"
+              >
                 Email
               </label>
               <div

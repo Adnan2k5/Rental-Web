@@ -15,6 +15,7 @@ import ManageUsers from './Pages/Admin/ManageUser';
 import Chat from './Pages/Chat/Chat';
 import ChatInbox from './Pages/Chat/ChatInbox';
 import UserItems from './Pages/User/UserItems';
+import Settings from './Pages/User/Settings';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/dashboard" element={<ItemDashboard />} />
             <Route path='/dashboard/myitems' element={<UserItems />} />
+            <Route path='/dashboard/settings' element={<Settings />} />
             <Route path='/chat' element={<Chat />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
