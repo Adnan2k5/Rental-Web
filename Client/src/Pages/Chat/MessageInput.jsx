@@ -59,7 +59,6 @@ export default function MessageInput({ onSendMessage }) {
   // Basic emoji picker options
   const emojiOptions = ["😊", "👍", "❤️", "🙏", "😂", "🎉", "👋", "🤔", "👌", "🔥"];
 
-
   return (
     <div className="p-3 bg-[#191B24] border-t border-[#4D39EE]/20">
       {/* Attachments preview */}

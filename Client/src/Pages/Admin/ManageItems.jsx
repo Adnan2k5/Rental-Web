@@ -1,27 +1,12 @@
-'use client';
-
 import { useState, useRef, useEffect } from 'react';
-import {
-  Search,
-  Grid,
-  List,
-  Filter,
-  Plus,
-  Edit,
-  MoreHorizontal,
-  Upload,
-  X,
-  Tag,
-} from 'lucide-react';
+import { Search, Grid, List, Filter, Plus, Edit, MoreHorizontal, Upload, X, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { colors } from '../../assets/Color';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '../../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { pageTransition, itemFadeIn, shimmerAnimation, buttonHover } from '../../assets/Animations';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +54,10 @@ import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
 import {useCategories} from '../../hooks/useCategories';
+import { Particles } from '../../Components/Particles';
+import { GridSkeleton } from '../../Components/GridSkeleton';
+import { ListSkeleton } from '../../Components/ListSkeleton';
+import { CategorySkeleton } from '../../Components/CategorySkeleton';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -95,7 +84,6 @@ export default function ManageItems() {
     light: '#FAFAFA', // Almost White
     dark: '#455A64', // Blue Grey
   };
-
   // Fetch items from API
   const fetchItems = async () => {
     try {
@@ -275,6 +263,7 @@ export default function ManageItems() {
   };
 
 
+
   // Grid Skeleton Component
   const GridSkeleton = () => {
     return (
@@ -392,6 +381,7 @@ export default function ManageItems() {
     );
   };
 
+
   return (
     <motion.div
       className="min-h-screen bg-light flex"
@@ -399,11 +389,7 @@ export default function ManageItems() {
       animate="visible"
       variants={pageTransition}
     >
-      {/* Sidebar */}
-      {/* Main Content */}
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
-        {/* Header */}
-        {/* Content */}
         <main className="flex-1 p-6 overflow-auto relative">
           <Particles />
 
@@ -484,11 +470,10 @@ export default function ManageItems() {
               ) : (
                 <div className="flex space-x-3 pb-2">
                   <motion.button
-                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                      selectedCategory === 'all'
-                        ? 'bg-primary text-white'
-                        : 'bg-white text-muted-foreground hover:bg-gray-50'
-                    }`}
+                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${selectedCategory === 'all'
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-muted-foreground hover:bg-gray-50'
+                      }`}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setSelectedCategory('all')}
@@ -499,11 +484,10 @@ export default function ManageItems() {
                   {categories && categories.length > 0 && categories.map((category) => (
                     <motion.button
                       key={category.id}
-                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${
-                        selectedCategory === category.name.toLowerCase()
-                          ? 'bg-primary text-white'
-                          : 'bg-white text-muted-foreground hover:bg-gray-50'
-                      }`}
+                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-muted-foreground hover:bg-gray-50'
+                        }`}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() =>
@@ -1030,11 +1014,10 @@ export default function ManageItems() {
               <div>
                 <Label className="block mb-2">Upload Images</Label>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${
-                    isDragging
-                      ? 'border-primary bg-primary/5'
-                      : 'border-gray-200'
-                  }`}
+                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200'
+                    }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
@@ -1077,8 +1060,6 @@ export default function ManageItems() {
                     </Button>
                   </motion.div>
                 </div>
-
-                {/* Preview uploaded files */}
                 {uploadedFiles.length > 0 && (
                   <div className="mt-4 grid grid-cols-3 gap-3">
                     <AnimatePresence>
@@ -1160,7 +1141,6 @@ export default function ManageItems() {
           <DialogHeader>
             <DialogTitle>Add New Category</DialogTitle>
             <DialogDescription>
-              Create a new category for organizing rental items
             </DialogDescription>
           </DialogHeader>
 
