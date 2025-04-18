@@ -7,6 +7,7 @@ export const loginUser = async (data, dispatch) => {
     const res = await axiosClient.post('/api/auth/login', data, {
       withCredentials: true,
     });
+    console.log(res);
     if (res.status === 200) {
       dispatch(loginSuccess(res.data.data));
       return true;

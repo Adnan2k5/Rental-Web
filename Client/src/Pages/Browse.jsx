@@ -22,6 +22,7 @@ import { ProductCard } from '../Components/ui/product';
 import { Navbar } from '../Components/Navbar';
 import { fadeIn, staggerChildren } from '../assets/Animations';
 import { Footer } from '../Components/Footer';
+import { Loader } from '../Components/loader';
 
 
 export default function BrowsePage() {
@@ -424,9 +425,9 @@ export default function BrowsePage() {
             </p>
 
             {loading ? (
-              <h1>Loading....</h1>
+              <Loader />
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product, index) => (
                   <ProductCard
                     key={index}
