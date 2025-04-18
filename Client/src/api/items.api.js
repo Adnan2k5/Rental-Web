@@ -50,3 +50,10 @@ export const deleteItem = async (id) => {
 export const updateItem = async (data) => {
   console.log(data);
 };
+
+export const fetchUserBookings = async (id) => {
+  const res = await axiosClient.get(`/api/item/bookings/${id}`, {
+    withCredentials: true,
+  });
+  return res;
+};

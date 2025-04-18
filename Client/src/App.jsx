@@ -13,8 +13,10 @@ import AdminLayout from './Pages/Admin/Layout';
 import ManageItems from './Pages/Admin/ManageItems';
 import ManageUsers from './Pages/Admin/ManageUser';
 import Chat from './Pages/Chat/Chat';
-import UserItems from './Pages/User/UserItems';
+import UserItems from './Pages/User/UserBookings';
 import Settings from './Pages/User/Settings';
+import { UserTickets } from './Pages/User/UserTickets';
+import UserDashboardLayout from './Pages/User/Layout';
 
 function App() {
   return (
@@ -28,9 +30,14 @@ function App() {
             <Route path="/login" element={<SignIn />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
-            <Route path="/dashboard" element={<ItemDashboard />} />
-            <Route path='/dashboard/myitems' element={<UserItems />} />
-            <Route path='/dashboard/settings' element={<Settings />} />
+            <Route path="/dashboard" element={<UserDashboardLayout />}>
+              <Route index element={<ItemDashboard />} />
+              <Route path="myitems" element={<UserItems />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="tickets" element={<UserTickets />} />
+              {/* <Route path="tickets/:ticketId" element={<TicketDetails />} />
+              <Route path="tickets/create" element={<CreateTicket />} /> */}
+            </Route>
             <Route path='/chat' element={<Chat />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />

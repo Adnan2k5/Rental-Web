@@ -40,12 +40,13 @@ export const userRegister = async (data) => {
   }
 };
 
-export const verifyOtp = async (data) => {
+export const verifyOtp = async (data, dispatch) => {
   try {
     const res = await axiosClient.post('/api/auth/verifyOtp', data, {
       withCredentials: true,
     });
     if (res.status === 200) {
+      dispatch(loginSuccess(res.data.data));
       return true;
     } else {
       return false;

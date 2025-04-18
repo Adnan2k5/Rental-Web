@@ -53,7 +53,6 @@ export default function BrowsePage() {
     'Available Within 1 Week',
     'Coming Soon',
   ];
-
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -75,7 +74,7 @@ export default function BrowsePage() {
       setLoading(true);
       try {
         const res = await fetchAllItems(filters);
-        setitems(res.data.message.items);
+        setitems(res.data.message.items.filter((item) => item.owner._id !== user._id));
         setCountItems(res.data.message.totalItems);
       } catch (err) {
         console.log(err);
@@ -86,6 +85,7 @@ export default function BrowsePage() {
 
     FetchProducts();
   }, [filters]);
+
 
   // Filter handlers
   const handleCategoryChange = (category) => {
