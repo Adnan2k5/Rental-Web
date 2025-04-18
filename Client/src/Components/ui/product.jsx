@@ -26,7 +26,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
             e.preventDefault();
             e.stopPropagation();
             console.log(product);
-            navigate(`/chat/${product._id}`, {
+            navigate(`/chat`, {
                 state: {
                     product,
                 },

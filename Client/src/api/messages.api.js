@@ -14,7 +14,9 @@ export const getChatHistoryApi = async (userId) => {
 
 export const getOwnerDetails = async (ownerId) => {
   try {
-    const response = await AxiosClient.get(`/api/users/${ownerId}`);
+    const response = await AxiosClient.get(`/api/users/${ownerId}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -24,8 +26,10 @@ export const getOwnerDetails = async (ownerId) => {
 // Get all chats for the current user
 export const getAllChats = async () => {
   try {
-    const response = await AxiosClient.get(`${BASE_URL}/chats`);
-    return response.data;
+    const response = await AxiosClient.get(`${BASE_URL}/chats`, {
+      withCredentials: true,
+    });
+    return response.data.chats;
   } catch (error) {
     throw error;
   }
