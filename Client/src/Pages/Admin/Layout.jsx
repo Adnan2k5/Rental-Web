@@ -10,23 +10,11 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarTrigger,
-  SidebarInset,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
 } from '../../components/ui/sidebar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../../components/ui/dropdown-menu';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '../../components/ui/avatar';
+
 import {
   FileCheck,
   Home,
@@ -37,6 +25,8 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { motion } from 'framer-motion';
+import { colors } from '../../assets/Color';
+import { shimmerAnimation } from '../../assets/Animations';
 export default function AdminLayout() {
   const location = useLocation();
   const pathname = location.pathname;
@@ -49,32 +39,6 @@ export default function AdminLayout() {
   if (!isMounted) {
     return null;
   }
-
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
-
-  const admin = {
-    name: 'Sarah Johnson',
-    role: 'Super Admin',
-    avatar: '/placeholder.svg?height=40&width=40',
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        ease: 'linear',
-      },
-    },
-  };
 
   return (
     <SidebarProvider>
@@ -106,13 +70,6 @@ export default function AdminLayout() {
 }
 
 function AdminSidebar({ pathname }) {
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
 
   const shimmerAnimation = {
     initial: { backgroundPosition: '0 0' },

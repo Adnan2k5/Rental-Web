@@ -2,7 +2,7 @@ import { useAuth } from '../Middleware/AuthProvider'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { MessageCircleMore, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { getCartCountApi } from '../api/carts.api';
 
@@ -59,6 +59,12 @@ export const Navbar = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
+                    <Link
+                        to="/chat"
+                        className="hidden md:flex items-center text-gray-700 hover:text-primary"
+                    >
+                        <MessageCircleMore className="h-5 w-5" />
+                    </Link>
                     <Link to="/cart" className="relative">
                         <ShoppingCart className="h-5 w-5" />
                         {cartCount > 0 && (
@@ -77,7 +83,7 @@ export const Navbar = () => {
                                 className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
                                 size="sm"
                             >
-                                {user.name.charAt(0).toUpperCase()}
+                                {user.name?.charAt(0).toUpperCase()}
                             </Button>
                         </Link>
                     ) : (
