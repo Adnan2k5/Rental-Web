@@ -339,7 +339,7 @@ export default function CartPage() {
                   <div className="text-sm text-muted-foreground">
                     <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
                   </div>
-                  <Button className="w-full" size="lg">
+                  <Button type="button" className="w-full" size="lg">
                     Proceed to Checkout
                   </Button>
 

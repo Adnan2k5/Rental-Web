@@ -53,7 +53,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
-import {useCategories} from '../../hooks/useCategories';
+import { useCategories } from '../../hooks/useCategories';
 import { Particles } from '../../Components/Particles';
 import { GridSkeleton } from '../../Components/GridSkeleton';
 import { ListSkeleton } from '../../Components/ListSkeleton';
@@ -243,7 +243,7 @@ export default function ManageItems() {
   const handleAddCategory = async (e) => {
     e.preventDefault();
 
-    if(categoryName.trim() === '') return;
+    if (categoryName.trim() === '') return;
     // Process form data
     try {
       await createCategoryApi(categoryName);
@@ -254,7 +254,7 @@ export default function ManageItems() {
       console.log(categories);
       toast.success('Category created successfully!');
     }
-    catch(e) {
+    catch (e) {
       console.log(e);
       toast.error('Error creating category');
     }
