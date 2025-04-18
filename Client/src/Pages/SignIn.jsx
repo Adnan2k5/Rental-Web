@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Separator } from '../components/ui/separator';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from '../Components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -18,15 +19,9 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 import { useAuth } from '../Middleware/AuthProvider';
 import { Particles } from '../Components/Particles';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogDescription,
-} from '../Components/ui/dialog';
 import { colors } from '../assets/Color';
 import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover, itemFadeInRight } from '../assets/Animations';
-
+import { Otpresend } from '../api/auth.api';
 export default function SignIn() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -44,6 +39,7 @@ export default function SignIn() {
   const [verified, setVerified] = useState(false);
   const [loading, setloading] = useState(false);
   const [sent, setsent] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleRestPass = async (e) => {
     e.preventDefault();
@@ -65,6 +61,20 @@ export default function SignIn() {
     }
   };
 
+  const resendOtp = async () => {
+    try {
+      console.log(email)
+      const res = await Otpresend({ email });
+      if (res === true) {
+        toast.success('OTP resent successfully');
+      } else {
+        toast.error('Failed to resend OTP');
+      }
+    } catch (err) {
+      toast.error('Failed to resend OTP');
+    }
+  };
+
 
 
 
@@ -81,25 +91,33 @@ export default function SignIn() {
   const { register, handleSubmit, reset } = useForm();
   const LoginSubmit = async (data) => {
     try {
+      setEmail(data.email);
       const res = await loginUser(data, dispatch);
-      if (res) {
+      if (res === 200) {
         reset();
         toast.success('Login Successful');
         navigate('/browse');
       }
+      else if (res === 403) {
+        const res = await Otpresend({ email });
+        if (res) {
+          toast.success('Verify your email to continue');
+          setIsOpen(true);
+        }
+      }
     } catch (err) {
       console.log(err);
+      toast.error('Invalid credentials');
     }
-  };
-
+  }
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await verifyOtp({ email, otp });
       if (res) {
         toast.success('Otp verified');
-        setVerified(true);
-        setsent(false);
+        setIsOpen(false);
+        navigate('/browse');
       } else {
         toast.error('Invalid Otp');
       }
@@ -232,9 +250,8 @@ export default function SignIn() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <button
-                    onClick={() => {
-                      setPassReset(true);
-                    }}
+                    type='button'
+                    onClick={() => setPassReset(true)}
                   >
                     Forgot password?
                   </button>
@@ -575,6 +592,26 @@ export default function SignIn() {
             ))}
           </div>
         </div>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enter OTP</DialogTitle>
+            </DialogHeader>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className='Input'
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <DialogFooter>
+              <Button variant="outline" onClick={resendOtp}>
+                Resend OTP
+              </Button>
+              <Button onClick={handleOtpSubmit}>Submit</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </motion.div>
     </motion.div>
   );

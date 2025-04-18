@@ -16,10 +16,10 @@ export function DatePickerWithRange({ className }) {
   const [date, setDate] =
     (React.useState < DateRange) |
     (undefined >
-      {
-        from: new Date(),
-        to: new Date(new Date().setDate(new Date().getDate() + 7)),
-      });
+    {
+      from: new Date(),
+      to: new Date(new Date().setDate(new Date().getDate() + 7)),
+    });
 
   return (
     <div className={cn('grid gap-2', className)}>

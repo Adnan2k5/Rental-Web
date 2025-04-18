@@ -99,7 +99,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
 
             <div className="flex items-center justify-between">
                 <p className="font-bold text-primary">
-                    ${product.price}/mo
+                    ${product.price}/day
                 </p>
 
                 <Button

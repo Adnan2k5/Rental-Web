@@ -46,3 +46,7 @@ export const deleteItem = async (id) => {
   });
   return res;
 };
+
+export const updateItem = async (data) => {
+  console.log(data);
+};

@@ -62,8 +62,8 @@ export const Navbar = () => {
                     <Link to="/cart" className="relative">
                         <ShoppingCart className="h-5 w-5" />
                         {cartCount > 0 && (
-                            <Badge 
-                                variant="outline" 
+                            <Badge
+                                variant="outline"
                                 className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-[10px] bg-black text-white border-black"
                             >
                                 {cartCount}
@@ -77,7 +77,7 @@ export const Navbar = () => {
                                 className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
                                 size="sm"
                             >
-                                {user.email.charAt(0).toUpperCase()}
+                                {user.name.charAt(0).toUpperCase()}
                             </Button>
                         </Link>
                     ) : (
