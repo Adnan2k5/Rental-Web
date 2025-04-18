@@ -52,6 +52,8 @@ import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
+import { createCategoryApi } from '../../api/category.api';
+import {useCategories} from '../../hooks/useCategories';
 import { Particles } from '../../Components/Particles';
 import { GridSkeleton } from '../../Components/GridSkeleton';
 import { ListSkeleton } from '../../Components/ListSkeleton';
@@ -64,39 +66,114 @@ export default function ManageItems() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
   const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const { categories, setCategories } = useCategories();
 
-  const categories = [
-    { id: 1, name: 'Electronics', color: '#4FC3F7' },
-    { id: 2, name: 'Furniture', color: '#FF8A65' },
-    { id: 3, name: 'Clothing', color: '#FFB74D' },
-    { id: 4, name: 'Sports', color: '#9575CD' },
-    { id: 5, name: 'Tools', color: '#4DB6AC' },
-  ];
 
+  // Rental Color Palette
+  const colors = {
+    primary: '#4D39EE', // Coral
+    secondary: '#191B24', // Amber
+    accent: '#4FC3F7', // Light Blue
+    light: '#FAFAFA', // Almost White
+    dark: '#455A64', // Blue Grey
+  };
   // Fetch items from API
   const fetchItems = async () => {
-    setLoading(true);
     try {
       setTimeout(async () => {
         const res = await fetchAllItems();
         setItems(res.data.message.items);
-        setLoading(false);
       }, 100);
     } catch (err) {
       toast.error('Error Fetching Items');
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchItems();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await fetchItems();
+      } catch (err) {
+      }
+      setLoading(false);
+    }
+    fetchData();
   }, []);
+
+  // Animation variants
+  const pageTransition = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemFadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const buttonHover = {
+    rest: { scale: 1 },
+    hover: {
+      scale: 1.05,
+      transition: {
+        type: 'spring',
+        stiffness: 400,
+        damping: 10,
+      },
+    },
+  };
+
+  // Particle effect component
+  const Particles = () => {
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-gradient-to-r from-primary/10 to-secondary/10"
+            style={{
+              width: Math.random() * 40 + 10,
+              height: Math.random() * 40 + 10,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            initial={{ opacity: 0.1, scale: 0 }}
+            animate={{
+              opacity: [0.1, 0.3, 0.1],
+              scale: [0, 1, 0],
+              x: [0, Math.random() * 100 - 50],
+              y: [0, Math.random() * 100 - 50],
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: 'easeInOut',
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
 
   // Filter items based on search query, category and status
   const filteredItems = items.filter((item) => {
@@ -163,14 +240,147 @@ export default function ManageItems() {
   };
 
   // Handle form submission for new category
-  const handleAddCategory = (e) => {
+  const handleAddCategory = async (e) => {
     e.preventDefault();
-    // Process form data
-    console.log('Category form submitted', e.target.elements);
 
+    if(categoryName.trim() === '') return;
+    // Process form data
+    try {
+      await createCategoryApi(categoryName);
+      setCategories((prev) => [
+        ...prev,
+        { id: Date.now(), name: categoryName, color: colors.primary },
+      ]);
+      console.log(categories);
+      toast.success('Category created successfully!');
+    }
+    catch(e) {
+      console.log(e);
+      toast.error('Error creating category');
+    }
     // Close dialog
     setIsNewCategoryDialogOpen(false);
   };
+
+
+
+  // Grid Skeleton Component
+  const GridSkeleton = () => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-lg overflow-hidden border border-gray-100"
+          >
+            <div className="relative h-48 bg-gray-100">
+              <Skeleton className="w-full h-full" />
+              <div className="absolute top-3 right-3 flex space-x-2">
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+              <div className="absolute bottom-3 left-3">
+                <Skeleton className="h-5 w-20 rounded-md" />
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <Skeleton className="h-6 w-3/4 mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-5/6 mb-3" />
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-16" />
+                <div className="flex space-x-2">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // List Skeleton Component
+  const ListSkeleton = () => {
+    return (
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">ID</TableHead>
+                <TableHead>Item</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[...Array(5)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-8" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-10 w-10 rounded-md" />
+                      <div className="w-full">
+                        <Skeleton className="h-5 w-3/4 mb-1" />
+                        <Skeleton className="h-4 w-full" />
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20 rounded-md" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                      <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Category Skeleton Component
+  const CategorySkeleton = () => {
+    return (
+      <div className="flex space-x-3 pb-2 overflow-x-auto">
+        <Skeleton className="h-9 w-32 rounded-full" />
+        {[...Array(5)].map((_, index) => (
+          <Skeleton key={index} className="h-9 w-28 rounded-full" />
+        ))}
+      </div>
+    );
+  };
+
 
   return (
     <motion.div
@@ -271,7 +481,7 @@ export default function ManageItems() {
                     All Categories
                   </motion.button>
 
-                  {categories.map((category) => (
+                  {categories && categories.length > 0 && categories.map((category) => (
                     <motion.button
                       key={category.id}
                       className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
@@ -727,7 +937,7 @@ export default function ManageItems() {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((category) => (
+                        {categories && categories.length > 0 && categories.map((category) => (
                           <SelectItem
                             key={category.id}
                             value={category.name.toLowerCase()}
@@ -945,19 +1155,9 @@ export default function ManageItems() {
                 id="categoryName"
                 name="categoryName"
                 placeholder="e.g. Electronics, Furniture"
+                onChange={(e) => setCategoryName(e.target.value)}
+                value={categoryName}
                 required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="categoryDescription">
-                Description (Optional)
-              </Label>
-              <Textarea
-                id="categoryDescription"
-                name="categoryDescription"
-                placeholder="Brief description of this category"
-                className="min-h-[80px]"
               />
             </div>
           </form>

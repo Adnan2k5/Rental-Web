@@ -31,7 +31,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "../../Components/ui/pagination"
+} from "../../components/ui/pagination"
+
+import { useCategories } from "../../hooks/useCategories"
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("grid")
@@ -44,6 +46,7 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [editingItem, setEditingItem] = useState(null)
   const ITEMS_PER_PAGE = 8
+  const {categories} = useCategories();
 
   const {
     register,
@@ -55,7 +58,7 @@ export default function Dashboard() {
     defaultValues: {
       name: "",
       description: "",
-      category: "Electronics",
+      category: "Select category",
       location: "",
       price: "",
       available: true,
@@ -540,7 +543,7 @@ export default function Dashboard() {
                   <div>
                     <Label htmlFor="category">Category</Label>
                     <Select
-                      defaultValue="electronics"
+                      defaultValue="Electronics"
                       onValueChange={(value) => {
                         const event = { target: { name: "category", value } }
                         register("category").onChange(event)
@@ -550,11 +553,9 @@ export default function Dashboard() {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="electronics">Electronics</SelectItem>
-                        <SelectItem value="furniture">Furniture</SelectItem>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="sports">Sports & Outdoors</SelectItem>
-                        <SelectItem value="tools">Tools & Equipment</SelectItem>
+                      {categories && categories.length > 0 && categories.map((category) =>
+                        <SelectItem value={`${category.name}`}>{category.name}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     <input type="hidden" {...register("category")} />
@@ -736,11 +737,9 @@ export default function Dashboard() {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="electronics">Electronics</SelectItem>
-                        <SelectItem value="furniture">Furniture</SelectItem>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="sports">Sports & Outdoors</SelectItem>
-                        <SelectItem value="tools">Tools & Equipment</SelectItem>
+                        {categories && categories.length > 0 && categories.map((category) =>
+                        <SelectItem value={`${category.name}`}>{category.name}</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     <input type="hidden" {...register("category")} />

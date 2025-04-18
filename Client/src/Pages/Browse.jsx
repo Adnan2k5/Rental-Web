@@ -23,6 +23,7 @@ import { Navbar } from '../Components/Navbar';
 import { fadeIn, staggerChildren } from '../assets/Animations';
 import { Footer } from '../Components/Footer';
 import { Loader } from '../Components/loader';
+import { useCategories } from '../hooks/useCategories';
 
 
 export default function BrowsePage() {
@@ -45,16 +46,7 @@ export default function BrowsePage() {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
-  const categories = [
-    'Electronics',
-    'Furniture',
-    'Appliances',
-    'Fitness Equipment',
-    'Home Office',
-    'Kitchen',
-    'Gaming',
-    'Cameras',
-  ];
+  const { categories } = useCategories() || [];
 
   const availability = [
     'Available Now',
@@ -181,23 +173,23 @@ export default function BrowsePage() {
               <span className="text-sm">${filters.priceRange[1]}</span>
             </div>
           </div>
-        </div>
+        </div>  
 
         <div>
           <h4 className="font-medium mb-3">Category</h4>
           <div className="space-y-2">
-            {categories.map((category) => (
-              <div key={category} className="flex items-center">
+            {categories &&  categories.length != 0 && categories.map((category) => (
+              <div key={category._id} className="flex items-center">
                 <Checkbox
-                  id={`category-${category}`}
-                  checked={filters.categories.includes(category)}
-                  onCheckedChange={() => handleCategoryChange(category)}
+                  id={`category-${category._id}`}
+                  checked={filters.categories.includes(category.name)}
+                  onCheckedChange={() => handleCategoryChange(category.name)}
                 />
                 <label
-                  htmlFor={`category-${category}`}
+                  htmlFor={`category-${category._id}`}
                   className="ml-2 text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  {category}
+                  {category.name}
                 </label>
               </div>
             ))}

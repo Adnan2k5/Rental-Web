@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Category from "./category.model.js";
 
 const itemSchema = new mongoose.Schema(
     {
@@ -19,7 +20,13 @@ const itemSchema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
-            enum: ["Electronics", "Furniture", "Appliances", "Fitness Equipment", "Home Office"],
+            validate: {
+                validator: async function (value) {
+                    const exists = await Category.exists({ name: value });
+                    return !!exists;
+                },
+                message: props => `${props.value} is not a valid category`
+            }
         },
         images: [
             {
