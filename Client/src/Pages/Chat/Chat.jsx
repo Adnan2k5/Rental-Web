@@ -41,9 +41,29 @@ export default function Chat() {
     }, [messages])
 
     useEffect(() => {
-        if(product.owner._id !== "") {
-            startConversation({_id: product.owner._id, name: product.owner.name || product.name, avatar: product.images[0]});
+        if (product.owner._id !== "") {
+            startConversation({ _id: product.owner._id, name: product.owner.name || product.owner._id, avatar: product.images[0] });
         }
+
+        // Connect to socket and join room when component mounts
+        socket.emit("joinRoom", { userId: user._id });
+
+        // Listen for connect/disconnect events
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Re-join room if socket reconnects
+            if (user?._id) {
+                socket.emit("joinRoom", { userId: user._id });
+            }
+        });
+
+        // Clean up socket connection on component unmount
+        return () => {
+            socket.off("connect");
+            if (user?._id) {
+                socket.emit("leaveRoom", { userId: user._id });
+            }
+        };
     }, []);
 
     const sendMessage = (content) => {
@@ -57,7 +77,7 @@ export default function Chat() {
         socket.emit("sendMessage", { userId: owner._id, message })
 
         // Add user to contacts if not already there
-        const contactExists = contacts.some(contact => contact.user._id === owner._id);
+        const contactExists = contacts.some(contact => contact._id === owner._id);
         if (!contactExists) {
             const newContact = {
                 _id: Date.now().toString(), // Temporary ID until refreshed
@@ -118,57 +138,8 @@ export default function Chat() {
             try {
                 setLoading(true);
                 const response = await getAllChats();
-                let allContacts = response;
-
-                // Add product owner to contacts list if not already there
-                if (product.owner && product.owner._id) {
-                    const ownerExists = response.data.some(
-                        contact => contact.user._id === product.owner._id
-                    );
-
-                    if (!ownerExists && product.owner._id !== user?._id) {
-                        // Add as a new contact with a placeholder for latest message
-                        allContacts = [
-                            ...allContacts,
-                            {
-                                _id: `temp-${product.owner._id}`,
-                                user: {
-                                    _id: product.owner._id,
-                                    name: product.owner.name,
-                                    avatar: product.owner.avatar
-                                },
-                                latestMessage: {
-                                    content: `About ${product.name}`,
-                                    timestamp: new Date()
-                                },
-                                unreadCount: 0
-                            }
-                        ];
-                    }
-
-                    setContacts(allContacts);
-
-                    // If we have product.owner._id from navigation, set it as selected contact
-                    if (product.owner._id) {
-                        const match = allContacts.find(contact => contact.user._id === product.owner._id);
-                        if (match) {
-                            setSelectedContact({
-                                _id: match.user._id,
-                                name: match.user.name,
-                                avatar: match.user.avatar
-                            });
-                        } else {
-                            setSelectedContact(product.owner);
-                        }
-                    } else if (allContacts.length > 0) {
-                        // Otherwise select first contact
-                        setSelectedContact({
-                            _id: allContacts[0].user._id,
-                            name: allContacts[0].user.name,
-                            avatar: allContacts[0].user.avatar
-                        });
-                    }
-                }
+                let allContacts = response.data;
+                setContacts(allContacts);
             } catch (error) {
                 console.error("Error fetching contacts:", error);
             } finally {
@@ -180,6 +151,57 @@ export default function Chat() {
             fetchContacts();
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchChatHistory = async () => {
+            if (selectedContact) {
+                try {
+                    const chatHistory = await getChatHistoryApi(selectedContact._id);
+                    setMessages(chatHistory);
+                } catch (error) {
+                    console.error("Error fetching chat history:", error);
+                }
+            }
+        };
+
+        fetchChatHistory();
+    }, [selectedContact]);
+
+    // Listen for incoming messages
+    useEffect(() => {
+        // Handle incoming messages
+        const handleIncomingMessage = (data) => {
+            // Add message to state if it's from the currently selected contact
+            if (selectedContact && data.from === selectedContact._id) {
+                setMessages(prevMessages => [...prevMessages, data]);
+            }
+
+            // Update the contacts list to show latest message
+            setContacts(prevContacts => {
+                return prevContacts.map(contact => {
+                    if (contact.user._id === data.from) {
+                        return {
+                            ...contact,
+                            latestMessage: {
+                                content: data.content,
+                                timestamp: data.timestamp
+                            },
+                            unreadCount: selectedContact && selectedContact._id === contact.user._id
+                                ? 0 : (contact.unreadCount || 0) + 1
+                        };
+                    }
+                    return contact;
+                });
+            });
+        };
+        // Register event listener
+        socket.on("receiveMessage", handleIncomingMessage);
+
+        // Clean up event listener when component unmounts
+        return () => {
+            socket.off("receiveMessage", handleIncomingMessage);
+        };
+    }, [user, selectedContact]);
 
     return (
         <div className="flex flex-col h-[100dvh] bg-[#0E0F15]">
@@ -218,7 +240,7 @@ export default function Chat() {
                                 <div
                                     key={contact._id}
                                     onClick={() => setSelectedContact({
-                                        _id: contact.user._id,
+                                        _id: contact._id,
                                         name: contact.user.name,
                                         avatar: contact.user.avatar
                                     })}

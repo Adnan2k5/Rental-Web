@@ -13,7 +13,6 @@ import AdminLayout from './Pages/Admin/Layout';
 import ManageItems from './Pages/Admin/ManageItems';
 import ManageUsers from './Pages/Admin/ManageUser';
 import Chat from './Pages/Chat/Chat';
-import ChatInbox from './Pages/Chat/ChatInbox';
 import UserItems from './Pages/User/UserItems';
 import Settings from './Pages/User/Settings';
 
