@@ -67,6 +67,7 @@ import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
+import { createCategoryApi, fetchCategoriesApi } from '../../api/category.api';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -75,11 +76,12 @@ export default function ManageItems() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false);
   const [isNewCategoryDialogOpen, setIsNewCategoryDialogOpen] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [items, setItems] = useState([]);
-  const [selectedColor, setSelectedColor] = useState('#4FC3F7');
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Rental Color Palette
@@ -91,32 +93,38 @@ export default function ManageItems() {
     dark: '#455A64', // Blue Grey
   };
 
-  // Sample categories
-  const categories = [
-    { id: 1, name: 'Electronics', color: '#4FC3F7' },
-    { id: 2, name: 'Furniture', color: '#FF8A65' },
-    { id: 3, name: 'Clothing', color: '#FFB74D' },
-    { id: 4, name: 'Sports', color: '#9575CD' },
-    { id: 5, name: 'Tools', color: '#4DB6AC' },
-  ];
-
   // Fetch items from API
   const fetchItems = async () => {
-    setLoading(true);
     try {
       setTimeout(async () => {
         const res = await fetchAllItems();
         setItems(res.data.message.items);
-        setLoading(false);
       }, 100);
     } catch (err) {
       toast.error('Error Fetching Items');
-      setLoading(false);
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetchCategoriesApi();
+      setCategories(res);
+    }
+    catch (err) {
+      toast.error('Error Fetching Categories');
+    }
+  }
+
   useEffect(() => {
-    fetchItems();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchItems(), fetchCategories()]);
+      } catch (err) {
+      }
+      setLoading(false);
+    }
+    fetchData();
   }, []);
 
   // Animation variants
@@ -263,14 +271,23 @@ export default function ManageItems() {
   };
 
   // Handle form submission for new category
-  const handleAddCategory = (e) => {
+  const handleAddCategory = async (e) => {
     e.preventDefault();
-    // Process form data
-    console.log('Category form submitted', e.target.elements);
 
+    if(categoryName.trim() === '') return;
+    // Process form data
+    try {
+      await createCategoryApi(categoryName);
+      toast.success('Category created successfully!');
+    }
+    catch(e) {
+      console.log(e);
+      toast.error('Error creating category');
+    }
     // Close dialog
     setIsNewCategoryDialogOpen(false);
   };
+
 
   // Grid Skeleton Component
   const GridSkeleton = () => {
@@ -1172,19 +1189,9 @@ export default function ManageItems() {
                 id="categoryName"
                 name="categoryName"
                 placeholder="e.g. Electronics, Furniture"
+                onChange={(e) => setCategoryName(e.target.value)}
+                value={categoryName}
                 required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="categoryDescription">
-                Description (Optional)
-              </Label>
-              <Textarea
-                id="categoryDescription"
-                name="categoryDescription"
-                placeholder="Brief description of this category"
-                className="min-h-[80px]"
               />
             </div>
           </form>
