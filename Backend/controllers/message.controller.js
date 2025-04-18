@@ -29,8 +29,6 @@ const getChatHistory = asyncHandler(async (req, res) => {
         { isRead: true }
     );
 
-    console.log(messages);
-
     return res.status(200).json(
         new ApiResponse(200, messages, "Chat history fetched successfully")
     );
@@ -41,14 +39,13 @@ const getChatHistory = asyncHandler(async (req, res) => {
  */
 const getAllChats = asyncHandler(async (req, res) => {
     const currentUserId = req.user._id;
-
     // Aggregate to get the latest message from each conversation
     const chats = await Message.aggregate([
         {
             $match: {
                 $or: [
-                    { from: new mongoose.Types.ObjectId(currentUserId) },
-                    { to: new mongoose.Types.ObjectId(currentUserId) }
+                    { from: mongoose.Types.ObjectId.createFromHexString(currentUserId.toString()) },
+                    { to: mongoose.Types.ObjectId.createFromHexString(currentUserId.toString()) }
                 ]
             }
         },
@@ -59,7 +56,7 @@ const getAllChats = asyncHandler(async (req, res) => {
             $group: {
                 _id: {
                     $cond: [
-                        { $eq: ["$from", new mongoose.Types.ObjectId(currentUserId)] },
+                        { $eq: ["$from", mongoose.Types.ObjectId.createFromHexString(currentUserId.toString())] },
                         "$to",
                         "$from"
                     ]
@@ -70,7 +67,7 @@ const getAllChats = asyncHandler(async (req, res) => {
                         $cond: [
                             {
                                 $and: [
-                                    { $eq: ["$to", new mongoose.Types.ObjectId(currentUserId)] },
+                                    { $eq: ["$to", mongoose.Types.ObjectId.createFromHexString(currentUserId.toString())] },
                                     { $eq: ["$isRead", false] }
                                 ]
                             },

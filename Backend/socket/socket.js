@@ -7,7 +7,7 @@ const initSocketIO = (io) => {
     const userSocketMap = new Map();
     io.on("connection", (socket) => {
         // Listen for user joining a room
-        socket.on("joinRoom", async (userId) => {
+        socket.on("joinRoom", async ({userId}) => {
             try {
                 userSocketMap.set(userId, socket.id);
                 socket.join(userId);
