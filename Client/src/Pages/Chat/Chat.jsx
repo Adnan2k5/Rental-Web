@@ -50,6 +50,27 @@ export default function Chat() {
         getChatHistory();
     }, []);
 
+    useEffect(() => {
+        // Listen for incoming messages
+        socket.on("receiveMessage", (message) => {
+            // Only add the message if it's from the current chat partner
+            if ((message.from === owner._id && message.to === user._id) || 
+                (message.from === user._id && message.to === owner._id)) {
+                setMessages(prevMessages => [...prevMessages, message]);
+            }
+        });
+    
+        // Connect/register the user with the socket
+        if (user?._id) {
+            socket.emit("setup", user._id);
+        }
+    
+        // Cleanup on unmount
+        return () => {
+            socket.off("receiveMessage");
+        };
+    }, [user._id, owner._id]);
+
 
     return (
         <div className="flex flex-col h-[100dvh] bg-[#0E0F15]">
