@@ -24,7 +24,6 @@ export default function Chat() {
     const [searchLoading, setSearchLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const location = useLocation();
-    const navigate = useNavigate();
     const { user } = useSelector((state) => state.user);
 
     // Get recipient from location state or params
@@ -305,7 +304,7 @@ export default function Chat() {
                     {selectedContact ? (
                         <>
                             <Header
-                                productName={product.name}
+                                productName={selectedContact.name}
                                 ownerName={selectedContact.name}
                                 productUrl={selectedContact.avatar || product.images[0]}
                             />
