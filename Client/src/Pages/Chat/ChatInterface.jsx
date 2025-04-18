@@ -92,7 +92,33 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
                         : 'bg-[#212330] text-white rounded-tl-none'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                    {/* Message text content */}
+                    {message.content && (
+                      <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                    )}
+                    
+                    {/* Message attachments - simplified handling for array of base64 images */}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className={`${message.content ? 'mt-2' : ''} flex flex-wrap gap-2`}>
+                        {message.attachments.map((base64Image, index) => (
+                          <div key={index} className="rounded-lg overflow-hidden">
+                            <a 
+                              href={base64Image} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="block"
+                            >
+                              <img 
+                                src={base64Image} 
+                                alt={`Image ${index + 1}`}
+                                className="max-w-full max-h-[200px] object-contain rounded-lg cursor-pointer"
+                                loading="lazy"
+                              />
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div className={`text-xs mt-1 text-gray-400 ${isSender ? 'text-right mr-1' : 'ml-1'}`}>
                     {format(new Date(message.timestamp), 'h:mm a')}

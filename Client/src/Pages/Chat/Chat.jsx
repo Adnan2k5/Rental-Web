@@ -66,13 +66,18 @@ export default function Chat() {
         };
     }, []);
 
-    const sendMessage = (content) => {
+    const sendMessage = (content, attachment) => {
         const message = {
             from: user._id,
             to: owner._id,
             content: content,
             timestamp: new Date(),
         }
+
+        if (attachment) {
+            message.attachments = attachment;
+        }
+
         setMessages((prevMessages) => [...prevMessages, message])
         socket.emit("sendMessage", { userId: owner._id, message })
 
@@ -171,9 +176,16 @@ export default function Chat() {
     useEffect(() => {
         // Handle incoming messages
         const handleIncomingMessage = (data) => {
+            // Process attachments if they exist - attachments are simply an array of base64 strings
+            const processedData = {
+                ...data,
+                // Ensure attachments is always an array
+                attachments: Array.isArray(data.attachments) ? data.attachments : []
+            };
+
             // Add message to state if it's from the currently selected contact
             if (selectedContact && data.from === selectedContact._id) {
-                setMessages(prevMessages => [...prevMessages, data]);
+                setMessages(prevMessages => [...prevMessages, processedData]);
             }
 
             // Update the contacts list to show latest message
@@ -184,7 +196,9 @@ export default function Chat() {
                             ...contact,
                             latestMessage: {
                                 content: data.content,
-                                timestamp: data.timestamp
+                                timestamp: data.timestamp,
+                                // Include attachment info in latest message if present
+                                hasAttachments: data.attachments && data.attachments.length > 0
                             },
                             unreadCount: selectedContact && selectedContact._id === contact.user._id
                                 ? 0 : (contact.unreadCount || 0) + 1
