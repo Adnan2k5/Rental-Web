@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { motion } from "framer-motion"
 import { useForm } from "react-hook-form"
 import { User, Mail, Phone, MapPin, Camera, Save } from "lucide-react"
@@ -13,11 +13,22 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { Loader } from "../../Components/loader"
+import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogFooter } from "../../Components/ui/dialog"
+import { Otpresend, Otpsend, updatePassword, UserUpdate, VerifyEmail } from "../../api/auth.api"
+import { useDispatch } from "react-redux"
+import { set } from "date-fns"
 
 export default function Settings() {
     const { user } = useAuth()
     const [isLoading, setIsLoading] = useState(false)
     const [avatarPreview, setAvatarPreview] = useState(null)
+    const [changePass, setChangePass] = useState(false)
+    const [otp, setOtp] = useState("")
+    const [newPass, setNewPass] = useState("")
+    const [newEmail, setNewEmail] = useState(user?.email)
+    const [verifyButton, setVerifyButton] = useState(false)
+    const [emailsent, setemailsent] = useState(false)
+
 
     const {
         register,
@@ -40,9 +51,18 @@ export default function Settings() {
             setValue("email", user.email || "")
             setValue("phone", user.phone || "")
             setValue("address", user.address || "")
-            setValue("bio", user.bio || "")
         }
     }, [user, setValue])
+
+    useEffect(() => {
+        if (user?.email !== newEmail) {
+            setVerifyButton(true)
+        }
+        else {
+            setVerifyButton(false)
+        }
+    }, [newEmail])
+
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0]
@@ -54,18 +74,76 @@ export default function Settings() {
             reader.readAsDataURL(file)
         }
     }
-
+    const dispatch = useDispatch();
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
             // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            toast.success("Profile updated successfully!")
+            const updatedData = { ...data, _id: user._id, }
+            const res = await UserUpdate(updatedData, dispatch)
         } catch (error) {
             console.error("Error updating profile:", error)
             toast.error("Failed to update profile")
         } finally {
             setIsLoading(false)
+        }
+    }
+    const handleOpen = async (email) => {
+        if (email) {
+            const data = { email: newEmail, id: user._id }
+            const res = await Otpsend(data)
+            if (res) {
+                setVerifyButton(false)
+                toast.success("Otp sent successfully!")
+                setemailsent(true)
+                setChangePass(true)
+            }
+        }
+        else {
+            const res = await Otpresend(user?.email)
+            if (res) {
+                setChangePass(true)
+                toast.success("Otp sent successfully!")
+            }
+            else {
+                toast.error("Failed to send Otp")
+            }
+        }
+    }
+
+    const handleUpdatePass = async () => {
+        setIsLoading(true)
+        try {
+            const data = { email: user?.email, password: newPass, otp: otp }
+            const res = await updatePassword(data);
+            if (res) {
+                setChangePass(false)
+                toast.success("Password updated successfully!")
+            } else {
+                toast.error("Failed to update password")
+            }
+        } catch (error) {
+            console.error("Error updating password:", error)
+            toast.error("Failed to update password")
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const verifyEmail = async () => {
+        try {
+            const data = { email: newEmail, otp: otp, id: user._id }
+            const res = await VerifyEmail(data, dispatch)
+            if (res) {
+                setChangePass(false)
+                toast.success("Email updated successfully!")
+            } else {
+                toast.error("Failed to update email")
+            }
+        }
+        catch (error) {
+            console.error("Error updating email:", error)
+            toast.error("Failed to update email")
         }
     }
 
@@ -156,6 +234,7 @@ export default function Settings() {
                                             />
                                         </div>
                                         {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
+
                                     </div>
 
                                     <div className="space-y-2">
@@ -173,20 +252,21 @@ export default function Settings() {
                                                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                                         message: "Invalid email address",
                                                     },
+                                                    onChange: (e) => { setNewEmail(e.target.value) }
                                                 })}
                                             />
                                         </div>
                                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                                        {verifyButton ? <Button type="button" onClick={() => handleOpen({ email: true })} variant="outline">Verify Email</Button> : ``}
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="phone">Phone Number</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input id="phone" placeholder="Your phone number" className="pl-10" {...register("phone")} />
+                                            <Input id="phone" placeholder="Your phone number" className="pl-10" {...register("phoneNumber")} />
                                         </div>
                                     </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="address">Address</Label>
                                         <div className="relative">
@@ -194,16 +274,6 @@ export default function Settings() {
                                             <Input id="address" placeholder="Your address" className="pl-10" {...register("address")} />
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="bio">Bio</Label>
-                                    <Textarea
-                                        id="bio"
-                                        placeholder="Tell us a little about yourself"
-                                        className="min-h-[100px]"
-                                        {...register("bio")}
-                                    />
                                 </div>
                             </form>
                         </CardContent>
@@ -234,11 +304,38 @@ export default function Settings() {
                                 <CardDescription>Manage your password and security settings</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <Button variant="outline">Change Password</Button>
+                                <Button type="button" onClick={() => handleOpen()} variant="outline">Change Password</Button>
                             </CardContent>
                         </Card>
                     </motion.div>
                 </motion.div>
+                <Dialog open={changePass} onOpenChange={setChangePass}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>{emailsent ? 'Update Your Email' : 'Change Password'}</DialogTitle>
+                        </DialogHeader>
+                        {emailsent ? `` : <input
+                            type="text"
+                            placeholder="New Password"
+                            className='Input'
+                            value={newPass}
+                            onChange={(e) => setNewPass(e.target.value)}
+                        />}
+                        <input
+                            type="text"
+                            placeholder="Enter Otp"
+                            className='Input'
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                        />
+                        <DialogFooter>
+                            {emailsent ? <Button variant="outline" onClick={() => verifyEmail()}>Update Email</Button> : <Button variant="outline" onClick={() => handleUpdatePass()}>
+                                Change Password
+                            </Button>}
+
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     )
