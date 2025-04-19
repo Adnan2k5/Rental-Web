@@ -59,21 +59,49 @@ export const getAllStats = asyncHandler(async (req, res) => {
         })
     );
 
-    const currentMonth = new Date().toISOString().substring(0, 7);
+    // Get item growth data for the last 4 months
+    const last4Months = last7Months.slice(-4);
+    const itemStartDate = new Date(last4Months[0] + "-01");
 
-
-    // Await the remaining promises
-    const [userGrowth, itemsByCategory] = await Promise.all([
-        userGrowthPromise,
-        itemsByCategoryPromise
+    const itemGrowthPromise = Item.aggregate([
+        {
+            $match: {
+                createdAt: {
+                    $gte: itemStartDate,
+                    $lte: endDate
+                }
+            }
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+                count: { $sum: 1 },
+            },
+        },
+        {
+            $sort: { _id: 1 },
+        },
     ]);
 
+    // Await the remaining promises
+    const [userGrowth, itemsByCategory, itemGrowth] = await Promise.all([
+        userGrowthPromise,
+        itemsByCategoryPromise,
+        itemGrowthPromise
+    ]);
+
+    // Fill in any missing months with zero count for itemGrowth
+    const formattedItemGrowth = last4Months.map(month => {
+        const found = itemGrowth.find(item => item._id === month);
+        return { month, count: found ? found.count : 0 };
+    });
 
     // Fill in any missing months with zero count
     const formattedUserGrowth = last7Months.map(month => {
         const found = userGrowth.find(item => item._id === month);
         return { month, count: found ? found.count : 0 };
     });
+
 
     return res.status(200).json(
         new ApiResponse(200, {
@@ -82,6 +110,7 @@ export const getAllStats = asyncHandler(async (req, res) => {
                 totalItems,
                 activeItems,
             },
+            itemGrowth: formattedItemGrowth,
             recentUsers,
             userGrowth: formattedUserGrowth,
             categories,

@@ -45,7 +45,6 @@ import {
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import { getStats } from '../../api/admin.api';
-import { set } from 'date-fns';
 
 export default function AdminDashboard() {
 
@@ -63,12 +62,13 @@ export default function AdminDashboard() {
   const [revenueData, setRevenueData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [recentUsers, setRecentUsers] = useState([]);
+  const [itemGrowth, setItemGrowth] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getStats();
-        console.log(response);
+       
         setDashboardData({
           totalRevenue: 1248,
           revenueGrowth: 12,
@@ -88,6 +88,13 @@ export default function AdminDashboard() {
           response.itemsByCategory.map((item) => ({
             name: item.categoryName,
             value: (item.itemCount/response.stats.totalItems) * 100,
+          }))
+        );
+
+        setItemGrowth(
+          response.itemsByCategory.map((item) => ({
+            month: item.categoryName,
+            items: item.itemCount,
           }))
         );
 
@@ -551,7 +558,7 @@ export default function AdminDashboard() {
                       <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
-                            data={categoryData}
+                            data={itemGrowth}
                             margin={{
                               top: 20,
                               right: 30,
