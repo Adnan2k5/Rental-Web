@@ -360,7 +360,6 @@ const signInWithGoogle = asyncHandler(async (req, res) => {
         );
 });
 
-
 const signInWithFacebook = asyncHandler(async (req, res) => {
     const { code } = req.body;
     if (!code) {
@@ -405,7 +404,6 @@ const signInWithFacebook = asyncHandler(async (req, res) => {
             )
         );
 });
-
 
 
 export {
