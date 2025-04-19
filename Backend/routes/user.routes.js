@@ -8,7 +8,8 @@ import {
     getBookingDetailsById,
     getReviewDetailsById,
     updateReviewById,
-    deleteReviewById
+    deleteReviewById,
+    updateUser
 } from '../controllers/user.controller.js';
 import { reviewItem } from '../controllers/item.controller.js';
 
@@ -21,6 +22,8 @@ router.get('/bookings', verifyJWT, getUserBookings);
 router.get('/bookings/:id', verifyJWT, getBookingDetailsById);
 
 router.get('/reviews', verifyJWT, getUserReviews);
+
+router.put('/update/:id', verifyJWT, updateUser);
 
 router.route('/reviews/:id')
     .get(verifyJWT, getReviewDetailsById)

@@ -86,6 +86,53 @@ const registerUser = asyncHandler(async (req, res) => {
         );
 });
 
+const updateEmail = asyncHandler(async (req, res) => {
+    const {email, otp, id} = req.body;
+    if (email?.trim() === "" || !email) {
+        throw new ApiError(400, "Email is Required");
+    }
+
+    const otpExist = await Otp.findOne({ userId: id });
+    if (!otpExist) {
+        throw new ApiError(400, "Invalid OTP");
+    }
+    if (otpExist.otp !== Number(otp)) {
+        throw new ApiError(400, "Invalid OTP");
+    }
+    otpExist.verified = true;
+    await otpExist.save();
+    const user = await User.findByIdAndUpdate(id, { email: email }, { new: true }).select('email phoneNumber name verified role');
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    await Otp.deleteMany({ userId: id });
+    await user.save();
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user);
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
+    };
+
+    return res.status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: user,
+                    accessToken,
+                },
+                "User Verified Successfully",
+            )
+        );
+
+
+})
+
 const verifyOtp = asyncHandler(async (req, res) => {
     const { email, otp } = req.body;
 
@@ -144,6 +191,31 @@ const verifyOtp = asyncHandler(async (req, res) => {
         );
 
 });
+
+ const sendOtp = asyncHandler(async (req,res)=> {
+    const {email, id} = req.body;
+    if (email?.trim() === "" || !email) {
+        throw new ApiError(400, "Email is Required");
+    }
+    const otpCode = Math.floor(100000 + Math.random() * 900000);
+    await Otp.create({
+        userId: id,
+        otp: otpCode,
+    })
+
+    sendEmail({
+        from: process.env.SMTP_EMAIL,
+        to: email,
+        subject: "Verify OTP",
+        text: `Hello ${email}, Your OTP for verification is ${otpCode}`,
+    })
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            email: email,
+        }, "OTP sent Succesfully"),
+    );
+})
 
 const resendOtp = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -417,4 +489,6 @@ export {
     updatePassword,
     signInWithGoogle,
     signInWithFacebook,
+    updateEmail,
+    sendOtp,
 };

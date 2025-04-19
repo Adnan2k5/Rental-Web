@@ -93,3 +93,15 @@ export const deleteReviewById = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, {}, "Review deleted successfully")); 
 });
+
+export const updateUser = asyncHandler(async (req,res)=>{
+    const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {$set: req.body},
+        {new: true}.select("-password -refreshToken -bookings -reviews -role -cart")
+    );
+    if(!updatedUser){
+        throw new ApiError(404, "User not found");
+    }
+    return res.status(200).json(new ApiResponse(200, updatedUser, "User updated successfully"))
+})
