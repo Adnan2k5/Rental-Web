@@ -455,7 +455,7 @@ export default function LandingPage() {
                 number: '02',
                 title: 'Select Rental Period',
                 description:
-                  'Choose from flexible rental periods - monthly, quarterly, or yearly.',
+                  'Choose from flexible rental periods - daily, or monthly.',
                 icon: '📅',
               },
               {
