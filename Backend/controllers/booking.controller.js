@@ -34,6 +34,9 @@ export const createBooking = asyncHandler(async (req, res) => {
                 duration: cartItem.duration,
                 status: "confirmed",
             });
+
+            req.user.bookings.push(booking._id);
+            await req.user.save();
             return booking;
         }
     ));
