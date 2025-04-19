@@ -38,7 +38,6 @@ const bookingSchema = new mongoose.Schema(
         },
         paymentDetails: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
             ref: "Payment",
         },
     },

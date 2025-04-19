@@ -6,8 +6,8 @@ import { Booking } from "../models/booking.model.js";
 import { Item } from "../models/item.model.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
-    const cartId = req.user.cart;
-    const cart = await Cart.findById(cartId).populate("items.item", "price name images");
+    const userId = req.user._id;
+    const cart = await Cart.findOne({user: userId}).populate("items.item", "price name images");
 
     if (!cart) {
         throw new ApiError(404, "Cart not found");
@@ -23,6 +23,7 @@ export const createBooking = asyncHandler(async (req, res) => {
             if (!item) {
                 throw new ApiError(404, `Item with ID ${cartItem.item._id} not found`);
             }
+
             const booking = await Booking.create({
                 user: req.user._id,
                 item: item._id,
