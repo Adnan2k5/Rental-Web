@@ -31,7 +31,7 @@ export const UserTickets = () => {
                 setLoading(false)
             } catch (err) {
                 console.error("Error fetching tickets:", err)
-                setError("Failed to load tickets. Please try again later.")
+                setError("No tickets found.")
                 setLoading(false)
             }
         }
