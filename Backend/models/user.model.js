@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    address: {
+      type: String
+    },
     verified: {
       type: Boolean,
       default: false,
