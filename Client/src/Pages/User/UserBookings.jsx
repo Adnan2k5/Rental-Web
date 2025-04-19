@@ -34,9 +34,8 @@ export default function UserItems() {
     const fetchItems = async () => {
         try {
             const res = await fetchUserBookings(user?._id)
-            console.log(res)
-            setFetchItems(res.data.message)
-            setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))
+            setFetchItems(res.data)
+            setTotalPages(Math.ceil(res.data.length / ITEMS_PER_PAGE))
         } catch (error) {
             console.error("Error fetching items:", error)
             toast.error("Failed to fetch items")

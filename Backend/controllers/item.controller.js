@@ -8,6 +8,10 @@ import { User } from "../models/user.model.js";
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
+    if(!id) {
+        throw new ApiError(400, "Item ID is required");
+    }
+
     const item = await Item.findById(id).populate("owner", "name");
 
     if (!item) {
