@@ -43,8 +43,65 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { useState, useEffect } from 'react';
+import { getStats } from '../../api/admin.api';
+import { set } from 'date-fns';
 
 export default function AdminDashboard() {
+
+  const [dashboardData, setDashboardData] = useState({
+    totalRevenue: 0,
+    revenueGrowth: 0,
+    totalUsers: 0,
+    userGrowth: 0,
+    newUsers: 0,
+    totalItems: 0,
+    newItems: 0,
+    activeItems: 0,
+  });
+
+  const [revenueData, setRevenueData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [recentUsers, setRecentUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getStats();
+        console.log(response);
+        setDashboardData({
+          totalRevenue: 1248,
+          revenueGrowth: 12,
+          totalUsers: response.stats.totalUsers,
+          userGrowth: (response.userGrowth[6].count / response.stats.totalUsers) * 100,
+          newUsers: response.userGrowth[6].count,
+          totalItems: response.stats.totalItems,
+          newItems: response.stats.totalItems - response.stats.activeItems,
+          activeItems: response.stats.activeItems,
+        });
+        setRevenueData(response.userGrowth.map((item) => ({
+          month: item.month,
+          users: item.count,
+        })));
+
+        setCategoryData(
+          response.itemsByCategory.map((item) => ({
+            name: item.categoryName,
+            value: (item.itemCount/response.stats.totalItems) * 100,
+          }))
+        );
+
+        setRecentUsers(
+          response.recentUsers
+        );
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   // Rental Color Palette
   const colors = {
     primary: '#4D39EE', // Coral
@@ -61,72 +118,12 @@ export default function AdminDashboard() {
     avatar: '/placeholder.svg?height=40&width=40',
   };
 
-  // Sample dashboard data
-  const dashboardData = {
-    totalRevenue: 128750,
-    totalUsers: 8432,
-    totalItems: 12567,
-    activeItems: 8934,
-    newUsers: 342,
-    newItems: 156,
-    revenueGrowth: 12.8,
-    userGrowth: 8.4,
-  };
-
-  // Sample revenue data for chart
-  const revenueData = [
-    { month: 'Jan', revenue: 15000, users: 1200, items: 800 },
-    { month: 'Feb', revenue: 18000, users: 1350, items: 850 },
-    { month: 'Mar', revenue: 17000, users: 1400, items: 900 },
-    { month: 'Apr', revenue: 19000, users: 1500, items: 950 },
-    { month: 'May', revenue: 21000, users: 1600, items: 1000 },
-    { month: 'Jun', revenue: 25000, users: 1750, items: 1100 },
-    { month: 'Jul', revenue: 28000, users: 1900, items: 1200 },
-  ];
-
-  // Sample category data for chart
-  const categoryData = [
-    { name: 'Electronics', value: 35 },
-    { name: 'Furniture', value: 25 },
-    { name: 'Clothing', value: 15 },
-    { name: 'Sports', value: 15 },
-    { name: 'Tools', value: 10 },
-  ];
-
   const COLORS = [
     colors.primary,
     colors.secondary,
     colors.accent,
     '#9575CD',
     '#4DB6AC',
-  ];
-
-  // Sample recent users
-  const recentUsers = [
-    {
-      id: 1,
-      name: 'Alex Thompson',
-      email: 'alex@example.com',
-      joinDate: '2 days ago',
-      itemsRented: 3,
-      avatar: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: 2,
-      name: 'Jamie Rodriguez',
-      email: 'jamie@example.com',
-      joinDate: '5 days ago',
-      itemsRented: 1,
-      avatar: '/placeholder.svg?height=40&width=40',
-    },
-    {
-      id: 3,
-      name: 'Taylor Kim',
-      email: 'taylor@example.com',
-      joinDate: '1 week ago',
-      itemsRented: 5,
-      avatar: '/placeholder.svg?height=40&width=40',
-    },
   ];
 
   const pageTransition = {
@@ -554,7 +551,7 @@ export default function AdminDashboard() {
                       <div className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
-                            data={revenueData}
+                            data={categoryData}
                             margin={{
                               top: 20,
                               right: 30,
@@ -619,10 +616,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-sm text-right">
-                          <div>Joined {user.joinDate}</div>
-                          <div className="text-muted-foreground">
-                            {user.itemsRented} items rented
-                          </div>
+                          <div>Joined {user.createdAt}</div>
                         </div>
                         <Button variant="ghost" size="icon">
                           <ChevronDown className="h-4 w-4" />
