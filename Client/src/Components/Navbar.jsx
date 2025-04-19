@@ -2,7 +2,7 @@ import { useAuth } from '../Middleware/AuthProvider'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { MessageCircleMore, ShoppingCart } from 'lucide-react';
+import { Headset, MessageCircleMore, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { getCartCountApi } from '../api/carts.api';
 
