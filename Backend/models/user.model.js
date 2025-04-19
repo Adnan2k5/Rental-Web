@@ -48,9 +48,7 @@ const userSchema = new mongoose.Schema(
       },
     ],
   },
-  {
-    Timestamps: true
-  }
+  { timestamps: true }
 );
 
 // This hook is called just before data is saved
