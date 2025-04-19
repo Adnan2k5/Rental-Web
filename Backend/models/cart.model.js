@@ -22,11 +22,11 @@ const cartSchema = new mongoose.Schema(
                 },
                 startDate: {
                     type: Date,
-                    required: true,
+                    Default: Date.now,
                 },
                 endDate: {
                     type: Date,
-                    required: true,
+                    Default: Date.now + 7 * 24 * 60 * 60 * 1000, // Default to one week from now
                 },
             },
         ],
