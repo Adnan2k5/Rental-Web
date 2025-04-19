@@ -13,3 +13,17 @@ export const getStats = async () => {
         }
     }
 }
+
+export const getAllUsers = async () => {
+    try {
+        const res = await axiosClient.get("/api/admin/users", {
+            withCredentials: true,
+        });
+        return res.data.data;
+    }
+    catch(err) {
+        if (err.response.status) {
+            return err.response.status;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Search,
   MoreHorizontal,
@@ -60,12 +60,26 @@ import {
 } from '../../components/ui/pagination';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
+import { getAllUsers } from '../../api/admin.api';
 
 export default function ManageUsers() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await getAllUsers();
+      if (response) {
+        setUsers(response.users);
+      } else {
+        console.error('Failed to fetch users');
+      }
+    }
+    fetchUsers();
+  }, []);
 
   // Rental Color Palette
   const colors = {
@@ -83,105 +97,6 @@ export default function ManageUsers() {
     avatar: '/placeholder.svg?height=40&width=40',
   };
 
-  // Sample users data
-  const users = [
-    {
-      id: 1,
-      name: 'Alex Thompson',
-      email: 'alex@example.com',
-      joinDate: 'Jan 15, 2023',
-      itemsRented: 8,
-      itemsPosted: 3,
-      status: 'active',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '2 hours ago',
-      verified: true,
-    },
-    {
-      id: 2,
-      name: 'Jamie Rodriguez',
-      email: 'jamie@example.com',
-      joinDate: 'Feb 28, 2023',
-      itemsRented: 5,
-      itemsPosted: 2,
-      status: 'active',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '1 day ago',
-      verified: true,
-    },
-    {
-      id: 3,
-      name: 'Taylor Kim',
-      email: 'taylor@example.com',
-      joinDate: 'Mar 10, 2023',
-      itemsRented: 12,
-      itemsPosted: 7,
-      status: 'active',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: 'Just now',
-      verified: true,
-    },
-    {
-      id: 4,
-      name: 'Morgan Lee',
-      email: 'morgan@example.com',
-      joinDate: 'Apr 5, 2023',
-      itemsRented: 3,
-      itemsPosted: 0,
-      status: 'inactive',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '2 weeks ago',
-      verified: true,
-    },
-    {
-      id: 5,
-      name: 'Casey Johnson',
-      email: 'casey@example.com',
-      joinDate: 'May 20, 2023',
-      itemsRented: 0,
-      itemsPosted: 4,
-      status: 'suspended',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '1 month ago',
-      verified: false,
-    },
-    {
-      id: 6,
-      name: 'Riley Smith',
-      email: 'riley@example.com',
-      joinDate: 'Jun 12, 2023',
-      itemsRented: 7,
-      itemsPosted: 2,
-      status: 'active',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '3 days ago',
-      verified: true,
-    },
-    {
-      id: 7,
-      name: 'Jordan Williams',
-      email: 'jordan@example.com',
-      joinDate: 'Jul 8, 2023',
-      itemsRented: 2,
-      itemsPosted: 1,
-      status: 'active',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '5 days ago',
-      verified: true,
-    },
-    {
-      id: 8,
-      name: 'Avery Davis',
-      email: 'avery@example.com',
-      joinDate: 'Aug 17, 2023',
-      itemsRented: 4,
-      itemsPosted: 0,
-      status: 'pending',
-      avatar: '/placeholder.svg?height=40&width=40',
-      lastActive: '1 week ago',
-      verified: false,
-    },
-  ];
 
   // Animation variants
   const pageTransition = {
@@ -456,7 +371,7 @@ export default function ManageUsers() {
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
-                          <TableCell>{user.joinDate}</TableCell>
+                          <TableCell>{user.createdAt}</TableCell>
                           <TableCell className="text-center">
                             {user.itemsRented}
                           </TableCell>
