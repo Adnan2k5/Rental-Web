@@ -118,3 +118,34 @@ export const getAllStats = asyncHandler(async (req, res) => {
         }, "Stats fetched successfully")
     );
 });
+
+
+export const getAllUsers = asyncHandler(async (req, res) => {
+    const { page, limit } = req.query;
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+    const totalUsers = await User.countDocuments({});
+    const users = await User.find({}).skip(skip).limit(limitNumber).select("-password -refreshToken -reviews -bookings -role -cart").sort({ createdAt: -1 });
+
+    const totalPages = Math.ceil(totalUsers / limitNumber);
+    const hasNextPage = pageNumber < totalPages;
+    const hasPreviousPage = pageNumber > 1;
+    const nextPage = hasNextPage ? pageNumber + 1 : null;
+    const previousPage = hasPreviousPage ? pageNumber - 1 : null;
+    const pagination = {
+        totalUsers,
+        totalPages,
+        currentPage: pageNumber,
+        hasNextPage,
+        hasPreviousPage,
+        nextPage,
+        previousPage
+    };
+    return res.status(200).json(
+        new ApiResponse(200, {
+            users,
+            pagination
+        }, "Users fetched successfully")
+    );
+});
