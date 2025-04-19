@@ -13,7 +13,7 @@ import { addItemToCartApi, fetchCartItemsApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Navbar } from "../Components/Navbar"
 import DateRangePicker from "../Components/DateRangePicker"
-import { format, formatDate } from "date-fns"
+import { createBookingApi } from "../api/bookings.api"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([])
@@ -131,6 +131,17 @@ export default function CartPage() {
     const end = new Date(endDate)
     const daysDiff = end.getDate() - start.getDate()
     return daysDiff
+  }
+
+  const createBookings = async () => {
+    try {
+      const res = await createBookingApi();
+      setCartItems([]) // Clear cart after booking
+      toast.success("Bookings created successfully", { description: "Your bookings have been created." })
+    }
+    catch(e) {
+      toast.error("Error creating bookings", { description: e.message })
+    }
   }
 
   const subtotal = cartItems.reduce((total, item) => total + item.item.price * item.quantity * item.duration, 0)
@@ -339,7 +350,7 @@ export default function CartPage() {
                   <div className="text-sm text-muted-foreground">
                     <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
                   </div>
-                  <Button type="button" className="w-full" size="lg">
+                  <Button type="button" className="w-full" size="lg" onClick={createBookings}>
                     Proceed to Checkout
                   </Button>
 

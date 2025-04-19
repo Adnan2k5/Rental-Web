@@ -15,6 +15,7 @@ import cartRoute from "./routes/cart.routes.js"
 import ticketRoute from "./routes/ticket.routes.js"
 import messageRoute from "./routes/message.routes.js"
 import categoryRoute from "./routes/category.routes.js"
+import bookingRoute from "./routes/book.routes.js"
 import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 
@@ -45,6 +46,7 @@ app.use("/api/cart", cartRoute);
 app.use("/api/tickets", ticketRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/category", categoryRoute);
+app.use("/api/booking", bookingRoute);
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
