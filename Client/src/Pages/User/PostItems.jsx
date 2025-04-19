@@ -46,7 +46,8 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [editingItem, setEditingItem] = useState(null)
   const ITEMS_PER_PAGE = 8
-  const {categories} = useCategories();
+  const { categories } = useCategories();
+  const [loading, setLoading] = useState(false)
 
   const {
     register,
@@ -67,6 +68,7 @@ export default function Dashboard() {
   })
 
   const handlePostItem = async (data) => {
+    setLoading(true)
     const formData = new FormData()
     formData.append("name", data.name)
     formData.append("description", data.description)
@@ -81,6 +83,7 @@ export default function Dashboard() {
     await createItems(formData)
     setIsNewItemDialogOpen(false)
     setUploadedFiles([])
+    setLoading(false)
     toast.success("Item posted successfully!")
     reset()
     fetchItems()
@@ -553,8 +556,8 @@ export default function Dashboard() {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                      {categories && categories.length > 0 && categories.map((category) =>
-                        <SelectItem value={`${category.name}`}>{category.name}</SelectItem>
+                        {categories && categories.length > 0 && categories.map((category) =>
+                          <SelectItem key={category.name} value={`${category.name}`}>{category.name}</SelectItem>
                         )}
                       </SelectContent>
                     </Select>
@@ -676,7 +679,7 @@ export default function Dashboard() {
                   whileHover={{ x: "100%", opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative">Post Item</span>
+                <span className="relative">{loading ? 'Posting...' : 'Post Item'}</span>
               </Button>
             </motion.div>
           </DialogFooter>
@@ -738,7 +741,7 @@ export default function Dashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         {categories && categories.length > 0 && categories.map((category) =>
-                        <SelectItem value={`${category.name}`}>{category.name}</SelectItem>
+                          <SelectItem key={category.name} value={`${category.name}`}>{category.name}</SelectItem>
                         )}
                       </SelectContent>
                     </Select>
