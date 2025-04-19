@@ -6,7 +6,6 @@ import { addItemToCartApi } from '../../api/carts.api';
 import { useNavigate } from 'react-router-dom';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
-
     const navigate = useNavigate();
 
     const addItemToCart = async (e) => {
@@ -84,7 +83,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
             </h3>
             <div className="div flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground mb-3">
-                    by {product.brand}
+                    by {product.owner.name}
                 </p>
                 <Button
                     size="sm"

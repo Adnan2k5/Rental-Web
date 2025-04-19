@@ -17,6 +17,7 @@ import UserItems from './Pages/User/UserBookings';
 import Settings from './Pages/User/Settings';
 import { UserTickets } from './Pages/User/UserTickets';
 import UserDashboardLayout from './Pages/User/Layout';
+import { CreateTicket } from './Pages/User/CreateTickets';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
               <Route path="myitems" element={<UserItems />} />
               <Route path="settings" element={<Settings />} />
               <Route path="tickets" element={<UserTickets />} />
+              <Route path='tickets/create' element={<CreateTicket />} />
               {/* <Route path="tickets/:ticketId" element={<TicketDetails />} />
               <Route path="tickets/create" element={<CreateTicket />} /> */}
             </Route>

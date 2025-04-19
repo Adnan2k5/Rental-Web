@@ -219,29 +219,6 @@ export const CreateTicket = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="priority">Priority</Label>
-                            <RadioGroup
-                                defaultValue="medium"
-                                value={formData.priority}
-                                onValueChange={(value) => handleSelectChange("priority", value)}
-                                className="flex space-x-4"
-                            >
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="low" id="low" />
-                                    <Label htmlFor="low">Low</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="medium" id="medium" />
-                                    <Label htmlFor="medium">Medium</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="high" id="high" />
-                                    <Label htmlFor="high">High</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-
-                        <div className="space-y-2">
                             <Label htmlFor="description" className={errors.description ? "text-red-500" : ""}>
                                 Description {errors.description && <span className="text-red-500">*</span>}
                             </Label>
