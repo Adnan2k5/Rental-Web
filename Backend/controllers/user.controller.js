@@ -20,7 +20,16 @@ export const getUserById = asyncHandler(async (req, res) => {
 
 export const getUserBookings = asyncHandler(async (req, res) => {
     const id = req.user._id;
-    const user = await User.findById(id).select("-password -refreshToken -reviews").populate("bookings");
+    
+    const user = await User.findById(id)
+    .select("-password -refreshToken -reviews")
+    .populate({
+      path: "bookings",
+      populate: {
+        path: "item"
+      }
+    });
+
     return res.status(200).json(new ApiResponse(200, user.bookings, "User fetched successfully"));
 });
 
