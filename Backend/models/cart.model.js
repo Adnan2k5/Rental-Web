@@ -20,11 +20,13 @@ const cartSchema = new mongoose.Schema(
                     default: 1,
                     min: 1,
                 },
-                duration: {
-                    type: Number,
+                startDate: {
+                    type: Date,
                     required: true,
-                    default: 1,
-                    min: 1,
+                },
+                endDate: {
+                    type: Date,
+                    required: true,
                 },
             },
         ],
