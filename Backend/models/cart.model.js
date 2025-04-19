@@ -20,11 +20,15 @@ const cartSchema = new mongoose.Schema(
                     default: 1,
                     min: 1,
                 },
-                duration: {
-                    type: Number,
-                    required: true,
-                    default: 1,
-                    min: 1,
+                startDate: {
+                    type: Date,
+                    default: Date.now,
+                },
+                endDate: {
+                    type: Date,
+                    default: function () {
+                        return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // One week from now
+                    },
                 },
             },
         ],

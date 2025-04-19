@@ -13,7 +13,7 @@ import { addItemToCartApi, fetchCartItemsApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Navbar } from "../Components/Navbar"
 import DateRangePicker from "../Components/DateRangePicker"
-import { format, formatDate } from "date-fns"
+import { createBookingApi } from "../api/bookings.api"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([])
@@ -115,13 +115,8 @@ export default function CartPage() {
     }
   }
 
-  // Calculate totals
-
-
   // Is cart empty
   const isCartEmpty = cartItems.length === 0
-
-  const user = useAuth()
 
   // Calculate months between two dates
   const calculateMonthsBetween = (startDate, endDate) => {
@@ -133,7 +128,28 @@ export default function CartPage() {
     return daysDiff
   }
 
-  const subtotal = cartItems.reduce((total, item) => total + item.item.price * item.quantity * item.duration, 0)
+  const calculateDaysBetween = (startDate, endDate) => {
+    if (!startDate || !endDate) return 1;
+
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    const timeDiff = end.getTime() - start.getTime()
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) // Convert milliseconds to days
+    return daysDiff
+  }
+
+  const createBookings = async () => {
+    try {
+      await createBookingApi(cartItems);
+      setCartItems([]) // Clear cart after booking
+      toast.success("Bookings created successfully", { description: "Your bookings have been created." })
+    }
+    catch(e) {
+      toast.error("Error creating bookings", { description: e.message })
+    }
+  }
+
+  const subtotal = cartItems.reduce((total, item) => total + item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate), 0)
   const discount = 0
   const total = subtotal
 
@@ -213,7 +229,7 @@ export default function CartPage() {
                           <h3 className="font-medium text-lg">{item.item.name}</h3>
                           <div className="flex items-center">
                             <span className="font-bold text-lg text-primary">
-                              ${item.item.price * item.quantity * item.duration}
+                              ${item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
                             </span>
                           </div>
                         </div>
@@ -339,7 +355,7 @@ export default function CartPage() {
                   <div className="text-sm text-muted-foreground">
                     <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
                   </div>
-                  <Button type="button" className="w-full" size="lg">
+                  <Button type="button" className="w-full" size="lg" onClick={createBookings}>
                     Proceed to Checkout
                   </Button>
 

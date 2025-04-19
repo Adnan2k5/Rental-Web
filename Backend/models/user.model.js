@@ -44,12 +44,6 @@ const userSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
-    cart: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Cart",
-      },
-    ],
   },
   {
     Timestamps: true

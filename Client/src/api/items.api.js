@@ -52,11 +52,10 @@ export const updateItem = async (data) => {
 };
 
 export const fetchUserBookings = async () => {
-  const res = await axiosClient.get(`/api/item/bookings/`, {
+  const res = await axiosClient.get(`/api/user/bookings`, {
     withCredentials: true,
   });
-  console.log(res);
-  return res;
+  return res.data;
 };
 
 export const postItemReview = async (data) => {

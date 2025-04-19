@@ -31,11 +31,6 @@ const bookingSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        duration: {
-            //In Months
-            type: Number,
-            required: true,
-        },
         status: {
             type: String,
             enum: ["pending", "confirmed", "canceled"],
@@ -43,7 +38,6 @@ const bookingSchema = new mongoose.Schema(
         },
         paymentDetails: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
             ref: "Payment",
         },
     },

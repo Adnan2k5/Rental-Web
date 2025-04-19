@@ -13,13 +13,13 @@ export const getCart = asyncHandler(async (req, res) => {
 });
 
 export const addItemToCart = asyncHandler(async (req, res) => {
-    const { itemId, quantity, duration, all } = req.body;
+    const { itemId, quantity, startDate, endDate, all } = req.body;
 
     if (!itemId && all === undefined) {
         throw new ApiError(400, "Item ID is required");
     }
 
-    if (quantity === undefined && duration === undefined && all === undefined) {
+    if (quantity === undefined && startDate === undefined && endDate === undefined && all === undefined) {
         throw new ApiError(400, "Quantity or Duration are required");
     }
 
@@ -36,20 +36,26 @@ export const addItemToCart = asyncHandler(async (req, res) => {
     }
 
     const itemIndex = cart.items.findIndex(item => item.item.toString() === itemId);
-    if (itemIndex !== -1 && ((quantity !== undefined && quantity <= 0) && (duration !== undefined && duration <= 0))) {
+    if (itemIndex !== -1 && ((quantity !== undefined && quantity <= 0))) {
         cart.items.splice(itemIndex, 1);
     }
     else if (itemIndex > -1) {
         if (quantity !== null && quantity !== undefined) {
             cart.items[itemIndex].quantity = quantity;
         }
-        if (duration !== null && duration !== undefined) {
-            cart.items[itemIndex].duration = duration;
+        if (startDate !== null && startDate !== undefined) {
+            cart.items[itemIndex].startDate = startDate;
         }
-    } else {
-        cart.items.push({ item: itemId, quantity: quantity, duration: duration });
+        if (endDate !== null && endDate !== undefined) {
+            cart.items[itemIndex].endDate = endDate;
+        }
+    } else if(startDate && endDate) {
+        cart.items.push({ item: itemId, quantity: quantity, startDate: startDate, endDate: endDate });
     }
-
+    else {
+        cart.items.push({ item: itemId, quantity: quantity });
+    }
+``
     await cart.save();
 
     return res.status(200).json(new ApiResponse(200, cart, "Item added to cart successfully"));
