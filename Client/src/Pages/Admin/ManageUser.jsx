@@ -60,8 +60,9 @@ import {
 } from '../../components/ui/pagination';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
-import { getAllUsers } from '../../api/admin.api';
 import { format } from 'date-fns';
+import { getAllUsers, changeUserStatus } from '../../api/admin.api';
+import { toast } from 'sonner';
 
 export default function ManageUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -118,18 +119,6 @@ export default function ManageUsers() {
       opacity: 1,
       y: 0,
       transition: { duration: 0.5 },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
     },
   };
 
@@ -191,28 +180,33 @@ export default function ManageUsers() {
             Active
           </Badge>
         );
-      case 'inactive':
-        return (
-          <Badge variant="outline" className="text-gray-500">
-            Inactive
-          </Badge>
-        );
       case 'suspended':
         return (
           <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
             Suspended
           </Badge>
-        );
-      case 'pending':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-            Pending
-          </Badge>
-        );
-      default:
+        ); default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  const updateUserStatus = async () => {
+    console.log(selectedUser._id, selectedUser.status);
+    const res = await changeUserStatus(selectedUser._id, selectedUser.status);
+    if(res) {
+      toast.success('User status updated successfully');
+      setIsUserDialogOpen(false);
+      setSelectedUser(null);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === selectedUser._id ? { ...user, status: selectedUser.status } : user
+        )
+      );
+    }
+    else {
+      toast.error('Failed to update user status');
+    }
+  }
 
   return (
     <motion.div
@@ -329,7 +323,7 @@ export default function ManageUsers() {
                       {filteredUsers.map((user) => (
                         <TableRow key={user._id} className="hover:bg-gray-50">
                           <TableCell className="font-medium">
-                            {user.id}
+                            {user._id}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -353,7 +347,7 @@ export default function ManageUsers() {
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>{format(user.createdAt, 'MM-dd-yyyy')}</TableCell>
                           <TableCell className="text-center">
-                            {user.itemsRented}
+                            {user.bookings.length}
                           </TableCell>
                           <TableCell className="text-center">
                             {user.verified ? (
@@ -444,6 +438,7 @@ export default function ManageUsers() {
                   defaultValue={selectedUser.name}
                   disabled
                   className="col-span-3"
+                  readOnly={true}
                 />
               </div>
 
@@ -456,6 +451,8 @@ export default function ManageUsers() {
                   defaultValue={selectedUser.email}
                   disabled
                   className="col-span-3 disabled"
+                  className="col-span-3"
+                  readOnly={true}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -480,6 +477,9 @@ export default function ManageUsers() {
                 <Select
                   defaultValue={selectedUser.status}
                   className="col-span-3"
+                  onValueChange={(value) => {
+                    setSelectedUser((prev) => ({ ...prev, status: value }));
+                  }}
                 >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
@@ -490,8 +490,21 @@ export default function ManageUsers() {
                   </SelectContent>
                 </Select>
               </div>
-
-
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Verified</Label>
+                <div className="flex items-center space-x-2 col-span-3">
+                  <Switch
+                    id="verified"
+                    defaultChecked={selectedUser.verified}
+                    readOnly
+                  />
+                  <Label htmlFor="verified">
+                    {selectedUser.verified
+                      ? 'Verified Account'
+                      : 'Not Verified'}
+                  </Label>
+                </div>
+              </div>
             </div>
 
             <DialogFooter>
@@ -505,6 +518,7 @@ export default function ManageUsers() {
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                 }}
+                onClick={updateUserStatus}
               >
                 Save Changes
               </Button>
