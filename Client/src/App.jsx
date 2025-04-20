@@ -18,6 +18,8 @@ import Settings from './Pages/User/Settings';
 import { UserTickets } from './Pages/User/UserTickets';
 import UserDashboardLayout from './Pages/User/Layout';
 import { CreateTicket } from './Pages/User/CreateTickets';
+import TicketsSupport from './Pages/Admin/TicketsSupport';
+import TermsConditions from './Pages/Admin/Terms';
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />
               <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path='/admin/tickets' element={<TicketsSupport />} />
+              <Route path='/admin/terms' element={<TermsConditions />} />
             </Route>
           </Routes>
         </AuthProvider>

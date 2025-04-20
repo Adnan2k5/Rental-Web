@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Item } from "../models/item.model.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
+import { Review } from "../models/review.model.js";
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -174,6 +175,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
 export const reviewItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { rating, comment } = req.body;
+ 
 
     if (!rating) {
         throw new ApiError(400, "Rating is required");
@@ -183,18 +185,28 @@ export const reviewItem = asyncHandler(async (req, res) => {
     if (!item) {
         throw new ApiError(404, "Item not found");
     }
-
-    const reviewExists = item.reviews.find((review) => review.user.toString() === req.user._id.toString());
+    console.log(item)
+    const reviewExists = await Review.findOne({
+        item: id,
+        user: req.user._id
+    }).lean();
     if (reviewExists) {
         throw new ApiError(400, "You have already reviewed this item");
     }
 
-    item.reviews.push({ user: req.user._id, rating, comment });
-    item.numReviews = item.reviews.length;
+    item.totalReviews += 1;
 
-    item.avgRating = item.reviews.reduce((acc, review) => acc + review.rating, 0) / item.numReviews;
+    item.avgRating =  (item.avgRating * (item.totalReviews - 1) + rating) / item.totalReviews;
+
+    const review = await Review.create({
+        user: req.user._id,
+        item: id,
+        rating,
+        comment
+    });
 
     await item.save();
+    await review.save();
 
     res.status(201).json(new ApiResponse(201, "Review added successfully", item));
 });

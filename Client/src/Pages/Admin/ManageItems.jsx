@@ -361,7 +361,7 @@ export default function ManageItems() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card >
     );
   };
 

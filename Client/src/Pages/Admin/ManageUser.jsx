@@ -60,6 +60,7 @@ import {
 } from '../../components/ui/pagination';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
+import { format } from 'date-fns';
 import { getAllUsers, changeUserStatus } from '../../api/admin.api';
 import { toast } from 'sonner';
 
@@ -192,7 +193,7 @@ export default function ManageUsers() {
   const updateUserStatus = async () => {
     console.log(selectedUser._id, selectedUser.status);
     const res = await changeUserStatus(selectedUser._id, selectedUser.status);
-    if(res) {
+    if (res) {
       toast.success('User status updated successfully');
       setIsUserDialogOpen(false);
       setSelectedUser(null);
@@ -247,7 +248,7 @@ export default function ManageUsers() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Button variant="outline" className="h-9">
+                <Button onClick={() => { location.reload() }} variant="outline" className="h-9">
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
                 </Button>
@@ -255,22 +256,6 @@ export default function ManageUsers() {
                 <Button variant="outline" className="h-9">
                   <Download className="h-4 w-4 mr-2" />
                   Export
-                </Button>
-
-                <Button
-                  className="relative overflow-hidden h-9"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  }}
-                >
-                  <motion.span
-                    className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: '-100%', opacity: 0 }}
-                    whileHover={{ x: '100%', opacity: 0.3 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  <span className="relative">Add User</span>
                 </Button>
               </motion.div>
             </div>
@@ -336,7 +321,7 @@ export default function ManageUsers() {
                     </TableHeader>
                     <TableBody>
                       {filteredUsers.map((user) => (
-                        <TableRow key={user.id} className="hover:bg-gray-50">
+                        <TableRow key={user._id} className="hover:bg-gray-50">
                           <TableCell className="font-medium">
                             {user._id}
                           </TableCell>
@@ -360,7 +345,7 @@ export default function ManageUsers() {
                             </div>
                           </TableCell>
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
-                          <TableCell>{user.createdAt}</TableCell>
+                          <TableCell>{format(user.createdAt, 'MM-dd-yyyy')}</TableCell>
                           <TableCell className="text-center">
                             {user.bookings.length}
                           </TableCell>
@@ -451,6 +436,7 @@ export default function ManageUsers() {
                 <Input
                   id="name"
                   defaultValue={selectedUser.name}
+                  disabled
                   className="col-span-3"
                   readOnly={true}
                 />
@@ -463,11 +449,26 @@ export default function ManageUsers() {
                 <Input
                   id="email"
                   defaultValue={selectedUser.email}
-                  className="col-span-3"
+                  disabled
+                  className="col-span-3 disabled"
                   readOnly={true}
                 />
               </div>
-
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">Verified</Label>
+                <div className="flex items-center space-x-2 col-span-3">
+                  <Switch
+                    disabled
+                    id="verified"
+                    defaultChecked={selectedUser.verified}
+                  />
+                  <Label htmlFor="verified">
+                    {selectedUser.verified
+                      ? 'Verified Account'
+                      : 'Not Verified'}
+                  </Label>
+                </div>
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="status" className="text-right">
                   Status
@@ -488,7 +489,6 @@ export default function ManageUsers() {
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Verified</Label>
                 <div className="flex items-center space-x-2 col-span-3">
