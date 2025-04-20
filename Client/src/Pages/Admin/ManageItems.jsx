@@ -479,7 +479,7 @@ export default function ManageItems() {
 
                   {categories && categories.length > 0 && categories.map((category) => (
                     <motion.button
-                      key={category.id}
+                      key={category._id}
                       className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
                         ? 'bg-primary text-white'
                         : 'bg-white text-muted-foreground hover:bg-gray-50'

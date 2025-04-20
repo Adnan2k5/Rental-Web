@@ -29,7 +29,15 @@ const ticketSchema = new mongoose.Schema(
         },
         category: {
             type: String,
-            enum: ["account", "payment", "booking", "technical", "other"],
+            enum: [
+                "Account Issues",
+                "Billing & Payments",
+                "Technical Support",
+                "Product Inquiry",
+                "Feature Request",
+                "Bug Report",
+                "Other"
+            ],
             required: true,
         },
         attachments: [

@@ -16,38 +16,47 @@ export const createTicket = async (ticketData) => {
     });
   }
 
-  const response = await axiosClient.post('/tickets/create', formData, {
+  const response = await axiosClient.post('/api/tickets/create', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
+    withCredentials: true,
   });
   return response.data;
 };
 
 // Get all tickets for current user
 export const getUserTickets = async () => {
-  const response = await axiosClient.get('/tickets/my-tickets');
+  const response = await axiosClient.get('/api/tickets/my-tickets', {
+    withCredentials: true,
+  });
   return response.data;
 };
 
 // Get a specific ticket by ID
 export const getTicketById = async (ticketId) => {
-  const response = await axiosClient.get(`/tickets/${ticketId}`);
+  const response = await axiosClient.get(`/api/tickets/${ticketId}`, {
+    withCredentials: true,
+  });
   return response.data;
 };
 
 // Add a response to a ticket
 export const addTicketResponse = async (ticketId, message) => {
-  const response = await axiosClient.post(`/tickets/${ticketId}/respond`, {
+  const response = await axiosClient.post(`/api/tickets/${ticketId}/respond`, {
     message,
+  }, {
+    withCredentials: true,
   });
   return response.data;
 };
 
 // Update ticket status
 export const updateTicketStatus = async (ticketId, status) => {
-  const response = await axiosClient.patch(`/tickets/${ticketId}/status`, {
+  const response = await axiosClient.patch(`/api/tickets/${ticketId}/status`, {
     status,
+  },{
+    withCredentials: true,
   });
   return response.data;
 };
@@ -63,6 +72,8 @@ export const getAllTickets = async (filters = {}) => {
   queryParams.append('page', page);
   queryParams.append('limit', limit);
 
-  const response = await axiosClient.get(`/tickets?${queryParams.toString()}`);
+  const response = await axiosClient.get(`/api/tickets?${queryParams.toString()}`, {
+    withCredentials: true,
+  });
   return response.data;
 };

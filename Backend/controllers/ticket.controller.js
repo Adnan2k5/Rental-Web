@@ -107,7 +107,7 @@ const addTicketResponse = asyncHandler(async (req, res) => {
     await ticket.save();
     
     return res.status(200).json(
-        new ApiResponse(200, ticket, "Response added successfully")
+        new ApiResponse(200, ticket, "Re sponse added successfully")
     );
 });
 
@@ -127,7 +127,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
     }
     
     // Only admins can change status, except users can close their own tickets
-    if (req.user.role !== "admin" && (ticket.user.toString() !== req.user._id.toString() || status !== "closed")) {
+    if (req.user.role !== "admin" && (ticket.user.toString() !== req.user._id.toString())) {
         throw new ApiError(403, "You don't have permission to update this ticket's status");
     }
     
@@ -141,11 +141,6 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
 // Admin: Get all tickets (with filters)
 const getAllTickets = asyncHandler(async (req, res) => {
-    // Only admins can access all tickets
-    if (req.user.role !== "admin") {
-        throw new ApiError(403, "You don't have permission to access all tickets");
-    }
-    
     const { status, priority, category, page = 1, limit = 10 } = req.query;
     
     const filter = {};

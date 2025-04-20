@@ -269,7 +269,8 @@ export const TicketDetails = () => {
                                                 <div className="flex justify-between">
                                                     <div>
                                                         <p className="font-medium text-sm">
-                                                            {response.user?.name || "Support Agent"}
+                                                            {response.isAdmin && "Staff"}
+                                                            {!response.isAdmin && "User"}
                                                             {response.isAdmin && (
                                                                 <Badge className="ml-2 bg-primary/10 text-primary border-primary/20">
                                                                     Staff
