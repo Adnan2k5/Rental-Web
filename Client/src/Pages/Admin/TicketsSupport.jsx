@@ -2,7 +2,7 @@
 
 import { Label } from "../../components/ui/label"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import {
     Search,
@@ -31,6 +31,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from "../../Components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../Components/ui/tabs"
 import { Separator } from "../../Components/ui/separator"
+import { getAllTickets, addTicketResponse, updateTicketStatus } from "../../api/tickets.api"
+import { toast } from "sonner"
 
 export default function TicketsSupport() {
     const [tickets, setTickets] = useState([])
@@ -41,6 +43,18 @@ export default function TicketsSupport() {
     const [replyText, setReplyText] = useState("")
     const [isReplying, setIsReplying] = useState(false)
     const [ticketDialogOpen, setTicketDialogOpen] = useState(false);
+    const dialogRef = useRef(null);
+
+    const fetchTickets = async () => {
+        setLoading(true)
+        const tickets = await getAllTickets();
+        setTickets(tickets.data.tickets);
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        fetchTickets();
+    }, []);
 
     const pageTransition = {
         hidden: { opacity: 0 },
@@ -87,12 +101,31 @@ export default function TicketsSupport() {
         setTicketDialogOpen(true)
     }
 
-    const handleReply = () => {
-        console.log("replyed")
+    const handleReply = async () => {
+        setIsReplying(true)
+        const response = await addTicketResponse(selectedTicket._id, replyText)
+        if (response && response.data) {
+            setSelectedTicket(prev => ({
+                ...prev,
+                responses: response.data.responses
+            }));
+            setReplyText("")
+        }
+        setIsReplying(false)
     }
 
-    const handleStatusChange = (status) => {
-        console.log("status changed", status)
+    const handleStatusChange = async (status) => {
+        try {
+            await updateTicketStatus(selectedTicket._id, status);
+            setSelectedTicket(prev => ({
+                ...prev,
+                status: status
+            }));
+            toast.success(`Ticket status updated to ${status}`);
+        } catch (err) {
+            console.error("Error reopening ticket:", err);
+            toast.error("Failed to update ticket status");
+        }
     }
 
     const getStatusBadge = (status) => {
@@ -104,7 +137,7 @@ export default function TicketsSupport() {
                         Open
                     </Badge>
                 )
-            case "in_progress":
+            case "in-progress":
                 return (
                     <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
                         <RefreshCw className="h-3 w-3 mr-1" />
@@ -207,7 +240,7 @@ export default function TicketsSupport() {
                                     <SelectContent>
                                         <SelectItem value="all">All Tickets</SelectItem>
                                         <SelectItem value="open">Open</SelectItem>
-                                        <SelectItem value="in_progress">In Progress</SelectItem>
+                                        <SelectItem value="in-progress">In Progress</SelectItem>
                                         <SelectItem value="closed">Closed</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -241,7 +274,7 @@ export default function TicketsSupport() {
                                 <div className="divide-y">
                                     {filteredTickets.map((ticket) => (
                                         <motion.div
-                                            key={ticket.id}
+                                            key={ticket._id}
                                             className="grid grid-cols-12 items-center p-3 hover:bg-muted/50 cursor-pointer"
                                             onClick={() => handleTicketClick(ticket)}
                                             whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
@@ -257,7 +290,7 @@ export default function TicketsSupport() {
                                             <div className="col-span-3 hidden md:block">
                                                 <div className="flex items-center gap-2">
                                                     <Avatar className="h-6 w-6">
-                                                        <AvatarImage src={ticket.user.avatar || "/placeholder.svg"} alt={ticket.user.name} />
+                                                        <AvatarImage src={"/placeholder.svg"} alt={ticket.user.name} />
                                                         <AvatarFallback>{ticket.user.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
                                                     <span className="truncate">{ticket.user.name}</span>
@@ -287,14 +320,32 @@ export default function TicketsSupport() {
             </motion.div>
 
             {/* Ticket Detail Dialog */}
-            <Dialog open={ticketDialogOpen} onOpenChange={setTicketDialogOpen}>
+            <Dialog open={ticketDialogOpen} onOpenChange={(open) => {
+                setTicketDialogOpen(open);
+                // Reset focus issues by ensuring state is properly updated
+                if (!open) {
+                    setTimeout(() => setSelectedTicket(null), 100);
+                }
+            }}>
                 {selectedTicket && (
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogContent 
+                        ref={dialogRef}
+                        onOpenAutoFocus={(e) => {
+                            // Prevent default autofocus behavior
+                            e.preventDefault();
+                            // Manually focus a safe element
+                            if (dialogRef.current) {
+                                const safeToFocus = dialogRef.current.querySelector('[role="dialog"]');
+                                if (safeToFocus) safeToFocus.focus();
+                            }
+                        }}
+                        onEscapeKeyDown={() => setTicketDialogOpen(false)}
+                        className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                         <DialogHeader>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <DialogTitle>{selectedTicket.subject}</DialogTitle>
-                                    <div className="text-sm text-muted-foreground">({selectedTicket.id})</div>
+                                    <span className="text-sm text-muted-foreground">({selectedTicket.id})</span>
                                 </div>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -304,7 +355,7 @@ export default function TicketsSupport() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => handleStatusChange("open")}>Mark as Open</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleStatusChange("in_progress")}>
+                                        <DropdownMenuItem onClick={() => handleStatusChange("in-progress")}>
                                             Mark as In Progress
                                         </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleStatusChange("closed")}>Mark as Closed</DropdownMenuItem>
@@ -312,20 +363,22 @@ export default function TicketsSupport() {
                                 </DropdownMenu>
                             </div>
                             <DialogDescription>
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    {getStatusBadge(selectedTicket.status)}
-                                    {getPriorityBadge(selectedTicket.priority)}
-                                    <Badge variant="outline" className="bg-gray-50">
-                                        {selectedTicket.category}
-                                    </Badge>
-                                </div>
+                                Status: {selectedTicket.status}, Priority: {selectedTicket.priority}, Category: {selectedTicket.category}
                             </DialogDescription>
+                            {/* Put badges after DialogDescription */}
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {getStatusBadge(selectedTicket.status)}
+                                {getPriorityBadge(selectedTicket.priority)}
+                                <Badge variant="outline" className="bg-gray-50">
+                                    {selectedTicket.category}
+                                </Badge>
+                            </div>
                         </DialogHeader>
 
                         <div className="flex-1 overflow-y-auto py-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Avatar>
-                                    <AvatarImage src={selectedTicket.user.avatar || "/placeholder.svg"} alt={selectedTicket.user.name} />
+                                    <AvatarImage src={"/placeholder.svg"} alt={selectedTicket.user.name} />
                                     <AvatarFallback>{selectedTicket.user.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>
@@ -341,24 +394,24 @@ export default function TicketsSupport() {
                                 </TabsList>
 
                                 <TabsContent value="conversation" className="space-y-4">
-                                    {selectedTicket.messages.map((message) => (
+                                    {selectedTicket.responses.map((message) => (
                                         <div
-                                            key={message.id}
-                                            className={`flex ${message.sender === "admin" ? "justify-end" : "justify-start"}`}
+                                            key={message.timestamp}
+                                            className={`flex ${message.isAdmin ? "justify-end" : "justify-start"}`}
                                         >
                                             <div
-                                                className={`max-w-[80%] rounded-lg p-3 ${message.sender === "admin" ? "bg-primary text-primary-foreground" : "bg-muted"
+                                                className={`max-w-[80%] rounded-lg p-3 ${message.isAdmin ? "bg-primary text-primary-foreground" : "bg-muted"
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Avatar className="h-6 w-6">
-                                                        <AvatarImage src={message.user.avatar || "/placeholder.svg"} alt={message.user.name} />
-                                                        <AvatarFallback>{message.user.name.charAt(0)}</AvatarFallback>
+                                                        <AvatarImage src={"/placeholder.svg"} alt={selectedTicket.user.name} />
+                                                        <AvatarFallback>{selectedTicket.user.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <span className="text-sm font-medium">{message.user.name}</span>
+                                                    <span className="text-sm font-medium">{selectedTicket.user.name}</span>
                                                     <span className="text-xs opacity-70">{formatDate(message.timestamp)}</span>
                                                 </div>
-                                                <div className="whitespace-pre-wrap">{message.text}</div>
+                                                <div className="whitespace-pre-wrap">{message.message}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -385,18 +438,12 @@ export default function TicketsSupport() {
                                             <div>
                                                 <h3 className="text-sm font-medium mb-1">Attachments</h3>
                                                 <div className="space-y-2">
-                                                    {selectedTicket.attachments.map((attachment) => (
-                                                        <div key={attachment.id} className="flex items-center gap-2 p-2 rounded border">
+                                                    {selectedTicket.attachments.map((attachment, index) => (
+                                                        <div key={index} className="flex items-center gap-2 p-2 rounded border">
                                                             <div className="h-8 w-8 bg-muted rounded flex items-center justify-center text-xs font-medium">
-                                                                {attachment.name.split(".").pop().toUpperCase()}
+                                                                {index + 1}
                                                             </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="text-sm font-medium truncate">{attachment.name}</div>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {(attachment.size / 1024 / 1024).toFixed(2)} MB
-                                                                </div>
-                                                            </div>
-                                                            <Button variant="ghost" size="sm">
+                                                            <Button variant="ghost" size="sm" onClick={() => window.open(attachment, "_blank")}>
                                                                 View
                                                             </Button>
                                                         </div>

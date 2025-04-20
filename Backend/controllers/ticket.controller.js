@@ -141,11 +141,6 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
 
 // Admin: Get all tickets (with filters)
 const getAllTickets = asyncHandler(async (req, res) => {
-    // Only admins can access all tickets
-    if (req.user.role !== "admin") {
-        throw new ApiError(403, "You don't have permission to access all tickets");
-    }
-    
     const { status, priority, category, page = 1, limit = 10 } = req.query;
     
     const filter = {};

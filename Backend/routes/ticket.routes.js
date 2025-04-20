@@ -24,6 +24,6 @@ router.post("/:ticketId/respond", addTicketResponse);
 router.patch("/:ticketId/status", updateTicketStatus);
 
 // Admin routes
-router.get("/", verifyAdmin, getAllTickets);
+router.get("/", getAllTickets);
 
 export default router;
