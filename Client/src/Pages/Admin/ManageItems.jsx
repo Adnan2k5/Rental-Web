@@ -54,10 +54,6 @@ import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
 import { useCategories } from '../../hooks/useCategories';
-import { Particles } from '../../Components/Particles';
-import { GridSkeleton } from '../../Components/GridSkeleton';
-import { ListSkeleton } from '../../Components/ListSkeleton';
-import { CategorySkeleton } from '../../Components/CategorySkeleton';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -365,7 +361,7 @@ export default function ManageItems() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card >
     );
   };
 
