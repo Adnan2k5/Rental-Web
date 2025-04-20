@@ -60,7 +60,8 @@ import {
 } from '../../components/ui/pagination';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
-import { getAllUsers } from '../../api/admin.api';
+import { getAllUsers, changeUserStatus } from '../../api/admin.api';
+import { toast } from 'sonner';
 
 export default function ManageUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -172,7 +173,7 @@ export default function ManageUsers() {
   // Get status badge
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'active':  
+      case 'active':
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
             Active
@@ -187,6 +188,24 @@ export default function ManageUsers() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  const updateUserStatus = async () => {
+    console.log(selectedUser._id, selectedUser.status);
+    const res = await changeUserStatus(selectedUser._id, selectedUser.status);
+    if(res) {
+      toast.success('User status updated successfully');
+      setIsUserDialogOpen(false);
+      setSelectedUser(null);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === selectedUser._id ? { ...user, status: selectedUser.status } : user
+        )
+      );
+    }
+    else {
+      toast.error('Failed to update user status');
+    }
+  }
 
   return (
     <motion.div
@@ -362,28 +381,6 @@ export default function ManageUsers() {
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    View Profile
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    Send Message
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600">
-                                    Suspend User
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -455,6 +452,7 @@ export default function ManageUsers() {
                   id="name"
                   defaultValue={selectedUser.name}
                   className="col-span-3"
+                  readOnly={true}
                 />
               </div>
 
@@ -466,6 +464,7 @@ export default function ManageUsers() {
                   id="email"
                   defaultValue={selectedUser.email}
                   className="col-span-3"
+                  readOnly={true}
                 />
               </div>
 
@@ -476,15 +475,16 @@ export default function ManageUsers() {
                 <Select
                   defaultValue={selectedUser.status}
                   className="col-span-3"
+                  onValueChange={(value) => {
+                    setSelectedUser((prev) => ({ ...prev, status: value }));
+                  }}
                 >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
                     <SelectItem value="suspended">Suspended</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -495,6 +495,7 @@ export default function ManageUsers() {
                   <Switch
                     id="verified"
                     defaultChecked={selectedUser.verified}
+                    readOnly
                   />
                   <Label htmlFor="verified">
                     {selectedUser.verified
@@ -516,6 +517,7 @@ export default function ManageUsers() {
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                 }}
+                onClick={updateUserStatus}
               >
                 Save Changes
               </Button>

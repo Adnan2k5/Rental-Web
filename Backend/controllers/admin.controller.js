@@ -149,3 +149,21 @@ export const getAllUsers = asyncHandler(async (req, res) => {
         }, "Users fetched successfully")
     );
 });
+
+export const changeUserStatus = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    if (!["active", "suspended"].includes(status)) {
+        throw new ApiError(400, "Invalid status value. Use 'active' or 'suspended'.");
+    }
+
+    const user = await User.findByIdAndUpdate(userId, { status }, { new: true });
+    if (!user) {
+        throw new ApiError(404, "User not found.");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, user, "User status updated successfully")
+    );
+});
