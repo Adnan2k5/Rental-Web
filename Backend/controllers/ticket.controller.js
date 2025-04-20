@@ -107,7 +107,7 @@ const addTicketResponse = asyncHandler(async (req, res) => {
     await ticket.save();
     
     return res.status(200).json(
-        new ApiResponse(200, ticket, "Response added successfully")
+        new ApiResponse(200, ticket, "Re sponse added successfully")
     );
 });
 
