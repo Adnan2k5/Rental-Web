@@ -193,7 +193,7 @@ export default function ManageUsers() {
   const updateUserStatus = async () => {
     console.log(selectedUser._id, selectedUser.status);
     const res = await changeUserStatus(selectedUser._id, selectedUser.status);
-    if(res) {
+    if (res) {
       toast.success('User status updated successfully');
       setIsUserDialogOpen(false);
       setSelectedUser(null);
@@ -451,7 +451,6 @@ export default function ManageUsers() {
                   defaultValue={selectedUser.email}
                   disabled
                   className="col-span-3 disabled"
-                  className="col-span-3"
                   readOnly={true}
                 />
               </div>
