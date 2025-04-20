@@ -20,6 +20,7 @@ import UserDashboardLayout from './Pages/User/Layout';
 import { CreateTicket } from './Pages/User/CreateTickets';
 import TicketsSupport from './Pages/Admin/TicketsSupport';
 import TermsConditions from './Pages/Admin/Terms';
+import { TicketDetails } from './Pages/User/TikcetDetails';
 
 function App() {
   return (
@@ -39,7 +40,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="tickets" element={<UserTickets />} />
               <Route path='tickets/create' element={<CreateTicket />} />
-              {/* <Route path="tickets/:ticketId" element={<TicketDetails />} /> */}
+              <Route path="tickets/:ticketId" element={<TicketDetails />} />
               {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
             <Route path='/chat' element={<Chat />} />
