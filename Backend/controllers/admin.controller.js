@@ -126,7 +126,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     const limitNumber = parseInt(limit) || 10;
     const skip = (pageNumber - 1) * limitNumber;
     const totalUsers = await User.countDocuments({});
-    const users = await User.find({}).skip(skip).limit(limitNumber).select("-password -refreshToken -reviews -bookings -role -cart").sort({ createdAt: -1 });
+    const users = await User.find({}).skip(skip).limit(limitNumber).select("-password -refreshToken -reviews -role -cart").sort({ createdAt: -1 });
 
     const totalPages = Math.ceil(totalUsers / limitNumber);
     const hasNextPage = pageNumber < totalPages;

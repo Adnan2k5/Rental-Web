@@ -68,7 +68,7 @@ export default function ManageUsers() {
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       const response = await getAllUsers();
@@ -117,18 +117,6 @@ export default function ManageUsers() {
       opacity: 1,
       y: 0,
       transition: { duration: 0.5 },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
     },
   };
 
@@ -184,16 +172,10 @@ export default function ManageUsers() {
   // Get status badge
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'active':
+      case 'active':  
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
             Active
-          </Badge>
-        );
-      case 'inactive':
-        return (
-          <Badge variant="outline" className="text-gray-500">
-            Inactive
           </Badge>
         );
       case 'suspended':
@@ -201,14 +183,7 @@ export default function ManageUsers() {
           <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
             Suspended
           </Badge>
-        );
-      case 'pending':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-            Pending
-          </Badge>
-        );
-      default:
+        ); default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
@@ -315,9 +290,7 @@ export default function ManageUsers() {
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
                       <SelectItem value="suspended">Suspended</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -338,9 +311,6 @@ export default function ManageUsers() {
                         <TableHead className="text-center">
                           Items Rented
                         </TableHead>
-                        <TableHead className="text-center">
-                          Items Posted
-                        </TableHead>
                         <TableHead className="text-center">Verified</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
@@ -349,7 +319,7 @@ export default function ManageUsers() {
                       {filteredUsers.map((user) => (
                         <TableRow key={user.id} className="hover:bg-gray-50">
                           <TableCell className="font-medium">
-                            {user.id}
+                            {user._id}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -373,10 +343,7 @@ export default function ManageUsers() {
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>{user.createdAt}</TableCell>
                           <TableCell className="text-center">
-                            {user.itemsRented}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {user.itemsPosted}
+                            {user.bookings.length}
                           </TableCell>
                           <TableCell className="text-center">
                             {user.verified ? (
