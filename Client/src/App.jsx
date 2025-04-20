@@ -39,8 +39,8 @@ function App() {
               <Route path="settings" element={<Settings />} />
               <Route path="tickets" element={<UserTickets />} />
               <Route path='tickets/create' element={<CreateTicket />} />
-              {/* <Route path="tickets/:ticketId" element={<TicketDetails />} />
-              <Route path="tickets/create" element={<CreateTicket />} /> */}
+              {/* <Route path="tickets/:ticketId" element={<TicketDetails />} /> */}
+              {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
             <Route path='/chat' element={<Chat />} />
             <Route path="/admin" element={<AdminLayout />}>
