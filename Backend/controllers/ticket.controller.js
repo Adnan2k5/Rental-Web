@@ -127,7 +127,7 @@ const updateTicketStatus = asyncHandler(async (req, res) => {
     }
     
     // Only admins can change status, except users can close their own tickets
-    if (req.user.role !== "admin" && (ticket.user.toString() !== req.user._id.toString() || status !== "closed")) {
+    if (req.user.role !== "admin" && (ticket.user.toString() !== req.user._id.toString())) {
         throw new ApiError(403, "You don't have permission to update this ticket's status");
     }
     
