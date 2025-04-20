@@ -54,10 +54,6 @@ import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
 import { useCategories } from '../../hooks/useCategories';
-import { Particles } from '../../Components/Particles';
-import { GridSkeleton } from '../../Components/GridSkeleton';
-import { ListSkeleton } from '../../Components/ListSkeleton';
-import { CategorySkeleton } from '../../Components/CategorySkeleton';
 
 export default function ManageItems() {
   const [viewMode, setViewMode] = useState('grid');
@@ -483,7 +479,7 @@ export default function ManageItems() {
 
                   {categories && categories.length > 0 && categories.map((category) => (
                     <motion.button
-                      key={category.id}
+                      key={category._id}
                       className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
                         ? 'bg-primary text-white'
                         : 'bg-white text-muted-foreground hover:bg-gray-50'
