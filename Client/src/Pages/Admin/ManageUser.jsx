@@ -60,7 +60,8 @@ import {
 } from '../../components/ui/pagination';
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
-import { getAllUsers } from '../../api/admin.api';
+import { getAllUsers, changeUserStatus } from '../../api/admin.api';
+import { toast } from 'sonner';
 
 export default function ManageUsers() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,7 +69,7 @@ export default function ManageUsers() {
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       const response = await getAllUsers();
@@ -117,18 +118,6 @@ export default function ManageUsers() {
       opacity: 1,
       y: 0,
       transition: { duration: 0.5 },
-    },
-  };
-
-  const shimmerAnimation = {
-    initial: { backgroundPosition: '0 0' },
-    animate: {
-      backgroundPosition: ['0 0', '100% 100%'],
-      transition: {
-        duration: 3,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: 'linear',
-      },
     },
   };
 
@@ -190,28 +179,33 @@ export default function ManageUsers() {
             Active
           </Badge>
         );
-      case 'inactive':
-        return (
-          <Badge variant="outline" className="text-gray-500">
-            Inactive
-          </Badge>
-        );
       case 'suspended':
         return (
           <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
             Suspended
           </Badge>
-        );
-      case 'pending':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-            Pending
-          </Badge>
-        );
-      default:
+        ); default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  const updateUserStatus = async () => {
+    console.log(selectedUser._id, selectedUser.status);
+    const res = await changeUserStatus(selectedUser._id, selectedUser.status);
+    if(res) {
+      toast.success('User status updated successfully');
+      setIsUserDialogOpen(false);
+      setSelectedUser(null);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === selectedUser._id ? { ...user, status: selectedUser.status } : user
+        )
+      );
+    }
+    else {
+      toast.error('Failed to update user status');
+    }
+  }
 
   return (
     <motion.div
@@ -315,9 +309,7 @@ export default function ManageUsers() {
                     <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
                       <SelectItem value="suspended">Suspended</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -338,9 +330,6 @@ export default function ManageUsers() {
                         <TableHead className="text-center">
                           Items Rented
                         </TableHead>
-                        <TableHead className="text-center">
-                          Items Posted
-                        </TableHead>
                         <TableHead className="text-center">Verified</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
@@ -349,7 +338,7 @@ export default function ManageUsers() {
                       {filteredUsers.map((user) => (
                         <TableRow key={user.id} className="hover:bg-gray-50">
                           <TableCell className="font-medium">
-                            {user.id}
+                            {user._id}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -373,10 +362,7 @@ export default function ManageUsers() {
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>{user.createdAt}</TableCell>
                           <TableCell className="text-center">
-                            {user.itemsRented}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {user.itemsPosted}
+                            {user.bookings.length}
                           </TableCell>
                           <TableCell className="text-center">
                             {user.verified ? (
@@ -395,28 +381,6 @@ export default function ManageUsers() {
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    View Profile
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    Send Message
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600">
-                                    Suspend User
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -488,6 +452,7 @@ export default function ManageUsers() {
                   id="name"
                   defaultValue={selectedUser.name}
                   className="col-span-3"
+                  readOnly={true}
                 />
               </div>
 
@@ -499,6 +464,7 @@ export default function ManageUsers() {
                   id="email"
                   defaultValue={selectedUser.email}
                   className="col-span-3"
+                  readOnly={true}
                 />
               </div>
 
@@ -509,15 +475,16 @@ export default function ManageUsers() {
                 <Select
                   defaultValue={selectedUser.status}
                   className="col-span-3"
+                  onValueChange={(value) => {
+                    setSelectedUser((prev) => ({ ...prev, status: value }));
+                  }}
                 >
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
                     <SelectItem value="suspended">Suspended</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -528,6 +495,7 @@ export default function ManageUsers() {
                   <Switch
                     id="verified"
                     defaultChecked={selectedUser.verified}
+                    readOnly
                   />
                   <Label htmlFor="verified">
                     {selectedUser.verified
@@ -549,6 +517,7 @@ export default function ManageUsers() {
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                 }}
+                onClick={updateUserStatus}
               >
                 Save Changes
               </Button>

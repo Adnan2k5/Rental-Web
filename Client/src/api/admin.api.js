@@ -27,3 +27,15 @@ export const getAllUsers = async () => {
         }
     }
 }
+
+export const changeUserStatus = async (userId, status) => {
+    try {
+        const res = await axiosClient.post(`/api/admin/users/${userId}`, { status }, {
+            withCredentials: true,
+        });
+        return res.data.data;
+    }
+    catch(err) {
+        console.error(err);
+    }
+}

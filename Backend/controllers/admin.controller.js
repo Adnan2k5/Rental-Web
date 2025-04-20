@@ -126,7 +126,7 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     const limitNumber = parseInt(limit) || 10;
     const skip = (pageNumber - 1) * limitNumber;
     const totalUsers = await User.countDocuments({});
-    const users = await User.find({}).skip(skip).limit(limitNumber).select("-password -refreshToken -reviews -bookings -role -cart").sort({ createdAt: -1 });
+    const users = await User.find({}).skip(skip).limit(limitNumber).select("-password -refreshToken -reviews -role -cart").sort({ createdAt: -1 });
 
     const totalPages = Math.ceil(totalUsers / limitNumber);
     const hasNextPage = pageNumber < totalPages;
@@ -147,5 +147,23 @@ export const getAllUsers = asyncHandler(async (req, res) => {
             users,
             pagination
         }, "Users fetched successfully")
+    );
+});
+
+export const changeUserStatus = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    if (!["active", "suspended"].includes(status)) {
+        throw new ApiError(400, "Invalid status value. Use 'active' or 'suspended'.");
+    }
+
+    const user = await User.findByIdAndUpdate(userId, { status }, { new: true });
+    if (!user) {
+        throw new ApiError(404, "User not found.");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, user, "User status updated successfully")
     );
 });
