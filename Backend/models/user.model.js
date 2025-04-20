@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema(
       enum: ["user"],
       default: "user",
     },
+    status: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
+    },
     bookings: [
       {
         type: mongoose.Schema.Types.ObjectId,
