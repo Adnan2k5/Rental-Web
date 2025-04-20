@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Minus, Plus, Star, ShoppingCart, ExternalLink, X } from "lucide-react"
 import { Button } from "./ui/button"
@@ -37,7 +35,6 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
       setIsLoading(false)
     }
   }
-  console.log(product)
 
   // Product description - would come from the API in a real app
   const description =

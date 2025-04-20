@@ -63,5 +63,9 @@ export const postItemReview = async (data) => {
   const res = await axiosClient.post(`/api/user/reviews/${id}`, data, {
     withCredentials: true,
   });
-  return res;
+  if (res.status === 201) {
+    return true;
+  } else {
+    return false;
+  }
 };
