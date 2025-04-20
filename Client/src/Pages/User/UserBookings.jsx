@@ -29,6 +29,7 @@ export default function UserItems() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [comment, setComment] = useState("")
+    const [itemid, setitemid] = useState("");
     const ITEMS_PER_PAGE = 10
 
     const fetchItems = async () => {
@@ -47,14 +48,18 @@ export default function UserItems() {
         }
     }, [user])
 
+    const handleSetReview = (id) => {
+        setitemid(id)
+        setReview(true)
+    }
 
-    const handleReviewSubmit = async (id, rating, comment) => {
+    const handleReviewSubmit = async (rating, comment) => {
         try {
-            const data = { id, rating, comment }
+            const data = { id: itemid, rating, comment }
             const res = await postItemReview(data)
-            if (res.status === 200) {
+            if (res) {
                 toast.success("Review posted successfully")
-                setRating(0)
+                setRating(0);
                 setComment("")
                 setReview(false)
             } else {
@@ -154,7 +159,7 @@ export default function UserItems() {
                                 <div className="flex items-center justify-between">
                                     <div className="text-primary font-semibold">${item.item.price}</div>
                                     <div className="flex space-x-2">
-                                        <Button onClick={() => setReview(true)} className="p-1.5 rounded-md">
+                                        <Button onClick={() => handleSetReview(item.item._id)} className="p-1.5 rounded-md">
                                             Add Review
                                         </Button>
                                     </div>
@@ -249,7 +254,7 @@ export default function UserItems() {
                             variant="primary"
                             className="mr-2 bg-black text-white w-full mt-4"
                             onClick={() => {
-                                handleReviewSubmit(item._id, rating, comment)
+                                handleReviewSubmit(rating, comment)
                                 setRating(0)
                                 setReview(false)
                             }}
