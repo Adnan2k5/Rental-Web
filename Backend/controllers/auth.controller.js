@@ -7,6 +7,7 @@ import sendEmail from '../utils/sendOTP.js';
 import { OAuth2Client } from "google-auth-library";
 import { getLinkedInAccessToken, verifyLinkedInToken } from '../utils/linkedinHandler.js';
 import { getFacebookAccessToken, verifyFacebookToken } from '../utils/facebookHandler.js';
+import { sendSMS } from '../utils/twilio.js';
 
 let client = null;
 
@@ -151,15 +152,15 @@ const verifyOtp = asyncHandler(async (req, res) => {
     if (!otpExist) {
         throw new ApiError(400, "Invalid OTP");
     }
-
+    
     if (otpExist.otp !== Number(otp)) {
         throw new ApiError(400, "Invalid OTP");
     }
-
+    
     otpExist.verified = true;
 
     await otpExist.save();
-
+    
     user.verified = true;
 
     await user.save();
@@ -477,6 +478,94 @@ const signInWithFacebook = asyncHandler(async (req, res) => {
         );
 });
 
+const signInWithPhoneNumber = asyncHandler(async (req, res) => {
+    const { name, phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+        throw new ApiError(400, "Phone Number is Required");
+    }
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000);
+
+    let user = await User.findOne({ phoneNumber: phoneNumber }).select('email phoneNumber name verified role');
+
+    if (!user) {
+        user = await User.create({
+            phoneNumber: phoneNumber,
+            name: name,
+            verified: false,
+        });
+    }
+    
+    await Otp.create({
+        userId: user._id,
+        otp: otpCode,
+    });
+
+    const response = await sendSMS(phoneNumber, `Your OTP is ${otpCode}`);
+
+    if(response.success === false) {
+        throw new ApiError(500, `Error sending OTP: ${response.error}`);
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, {
+            phoneNumber: phoneNumber,
+        }, "OTP sent Succesfully"),
+    );
+});
+
+const verifyPhoneNumber = asyncHandler(async (req, res) => {
+    const { phoneNumber, otp } = req.body;
+
+    if (!phoneNumber || !otp) {
+        throw new ApiError(400, "Phone Number and OTP are Required");
+    }
+
+    const user = await User.findOne({ phoneNumber: phoneNumber }).select('email phoneNumber name verified role');
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    } 
+
+    const otpExist = await Otp.findOne({ userId: user._id });
+    if (!otpExist || otpExist.otp !== Number(otp)) {
+        throw new ApiError(400, "Invalid OTP");
+    }
+    
+    if (otpExist.expiresAt && otpExist.expiresAt < new Date()) {
+        await Otp.deleteOne({ userId: user._id });
+        throw new ApiError(400, "OTP has expired");
+    }
+    
+    await Otp.deleteOne({ userId: user._id });
+
+    user.verified = true;
+    
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user);
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
+    };
+
+    return res.status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: user,
+                    accessToken,
+                },
+                "User Verified Successfully",
+            )
+        );
+});
 
 export {
     registerUser,
@@ -489,4 +578,6 @@ export {
     signInWithFacebook,
     updateEmail,
     sendOtp,
+    signInWithPhoneNumber,
+    verifyPhoneNumber,  
 };
