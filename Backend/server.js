@@ -19,6 +19,7 @@ import bookingRoute from "./routes/book.routes.js"
 import adminRoute from "./routes/admin.routes.js"
 import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
+import { initTwilio } from "./utils/twilio.js";
 
 const app = express();
 // Create HTTP server using Express app
@@ -31,6 +32,8 @@ const io = new Server(server, {
         credentials: true
     }
 });
+initTwilio(); // Initialize Twilio client
+
 
 app.use(cors({origin: "http://localhost:5173", credentials: true}));
 app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));

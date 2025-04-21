@@ -10,6 +10,8 @@ import {
     signInWithGoogle,
     sendOtp,
     updateEmail,
+    signInWithPhoneNumber,
+    verifyPhoneNumber,
 } from '../controllers/auth.controller.js';
 
 const authRoute = express.Router();
@@ -23,5 +25,7 @@ authRoute.post('/forgotPassword', forgotPassword);
 authRoute.post('/updatePassword', updatePassword);
 authRoute.post('/signInWithGoogle', signInWithGoogle);
 authRoute.post('/signInWithFacebook', signInWithFacebook);
+authRoute.post('/signInWithPhoneNumber', signInWithPhoneNumber);
+authRoute.post('/verifyPhoneNumber', verifyPhoneNumber);
 
 export default authRoute;
