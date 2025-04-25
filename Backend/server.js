@@ -25,12 +25,15 @@ import { initTwilio } from "./utils/twilio.js";
 import { ensureDefaultTerms } from "./controllers/terms.controller.js";
 
 const app = express();
+
+console.log(process.env.Client_URL);
+
 // Create HTTP server using Express app
 const server = createServer(app);
 // Initialize Socket.IO with the HTTP server
 const io = new Server(server, {
   cors: {
-    origin: process.env.Clinet_URL || "http://localhost:5173",
+    origin: "https://rental-web-ogp5.vercel.app/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -38,7 +41,7 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: process.env.Client_URL || "http://localhost:5173",
+    origin: "https://rental-web-ogp5.vercel.app/",
     credentials: true,
   })
 );
