@@ -68,9 +68,11 @@ export default function ManageItems() {
   const fileInputRef = useRef(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 12;
 
   const { categories, setCategories } = useCategories();
-
 
   // Rental Color Palette
   const colors = {
@@ -80,13 +82,13 @@ export default function ManageItems() {
     light: '#FAFAFA', // Almost White
     dark: '#455A64', // Blue Grey
   };
+
   // Fetch items from API
-  const fetchItems = async () => {
+  const fetchItems = async (page = currentPage) => {
     try {
-      setTimeout(async () => {
-        const res = await fetchAllItems();
-        setItems(res.data.message.items);
-      }, 100);
+      const res = await fetchAllItems({ page, limit: itemsPerPage });
+      setItems(res.data.message.items);
+      setTotalItems(res.data.message.totalItems || 0);
     } catch (err) {
       toast.error('Error Fetching Items');
     }
@@ -96,13 +98,13 @@ export default function ManageItems() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await fetchItems();
-      } catch (err) {
-      }
+        await fetchItems(currentPage);
+      } catch (err) {}
       setLoading(false);
-    }
+    };
     fetchData();
-  }, []);
+    // eslint-disable-next-line
+  }, [currentPage]);
 
   // Animation variants
   const pageTransition = {
@@ -258,7 +260,12 @@ export default function ManageItems() {
     setIsNewCategoryDialogOpen(false);
   };
 
-
+  // Pagination logic
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    setCurrentPage(page);
+  };
 
   // Grid Skeleton Component
   const GridSkeleton = () => {
@@ -853,29 +860,53 @@ export default function ManageItems() {
             </motion.div>
 
             {/* Pagination - Only show when not loading */}
-            {!loading && (
+            {!loading && totalPages > 1 && (
               <div className="mt-6 flex justify-center">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious href="#" />
+                      <PaginationPrevious
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                      />
                     </PaginationItem>
+                    {Array.from({ length: totalPages }).map((_, idx) => {
+                      const pageNum = idx + 1;
+                      // Show first, last, and pages around current
+                      if (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink
+                              isActive={currentPage === pageNum}
+                              onClick={() => handlePageChange(pageNum)}
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      // Ellipsis for skipped pages
+                      if (
+                        (pageNum === 2 && currentPage > 3) ||
+                        (pageNum === totalPages - 1 && currentPage < totalPages - 2)
+                      ) {
+                        return (
+                          <PaginationItem key={`ellipsis-${pageNum}`}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
                     <PaginationItem>
-                      <PaginationLink href="#" isActive>
-                        1
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
+                      <PaginationNext
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                      />
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
@@ -935,7 +966,7 @@ export default function ManageItems() {
                       <SelectContent>
                         {categories && categories.length > 0 && categories.map((category) => (
                           <SelectItem
-                            key={category.id}
+                            key={category._id}
                             value={category.name.toLowerCase()}
                           >
                             {category.name}
