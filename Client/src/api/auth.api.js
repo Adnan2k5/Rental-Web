@@ -149,3 +149,18 @@ export const UserUpdate = async (data, dispatch) => {
     console.log(err);
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const res = await axiosClient.get('/api/auth/logoutUser', {
+      withCredentials: true,
+    });
+    if (res.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}

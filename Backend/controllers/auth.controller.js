@@ -567,6 +567,16 @@ const verifyPhoneNumber = asyncHandler(async (req, res) => {
         );
 });
 
+const logoutUser = asyncHandler(async (req, res) => {
+    req.user.refreshToken = null;
+    await req.user.save();
+
+    res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: 'None' });
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: 'None' });
+
+    return res.status(200).json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
 export {
     registerUser,
     verifyOtp,
@@ -580,4 +590,5 @@ export {
     sendOtp,
     signInWithPhoneNumber,
     verifyPhoneNumber,  
+    logoutUser, 
 };

@@ -27,10 +27,17 @@ import { Button } from '../../components/ui/button';
 import { motion } from 'framer-motion';
 import { colors } from '../../assets/Color';
 import { shimmerAnimation } from '../../assets/Animations';
+import { useDispatch } from 'react-redux';
+import { logout } from "../../Store/UserSlice"
+import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../api/auth.api'; 
+
 export default function AdminLayout() {
   const location = useLocation();
   const pathname = location.pathname;
   const [isMounted, setIsMounted] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsMounted(true);
@@ -40,10 +47,25 @@ export default function AdminLayout() {
     return null;
   }
 
+  const handleLogout = async () => {
+    try {
+      const res = await logoutUser()
+      if (res) {
+        dispatch(logout())
+        navigate("/login")
+      } else {
+        console.error("Logout failed")
+      }
+    }
+    catch (error) {
+      console.error("Logout error:", error)
+    }
+  }
+
   return (
     <SidebarProvider>
       <div className="flex h-screen overflow-hidden">
-        <AdminSidebar pathname={pathname} />
+        <AdminSidebar pathname={pathname} handleLogout={handleLogout} />
         <header className="bg-white border-b border-gray-100 py-4 px-6">
           <div className="flex items-center justify-between">
             <div className="md:hidden">
@@ -69,7 +91,7 @@ export default function AdminLayout() {
   );
 }
 
-function AdminSidebar({ pathname }) {
+function AdminSidebar({ pathname, handleLogout }) {
 
   const shimmerAnimation = {
     initial: { backgroundPosition: '0 0' },
@@ -173,7 +195,7 @@ function AdminSidebar({ pathname }) {
         {/* Continue with other sidebar groups */}
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <Button variant="outline" className="w-full justify-start" size="sm">
+        <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
