@@ -276,7 +276,7 @@ const UserDashboardLayout = () => {
                 <main className="flex-1 p-6 overflow-auto relative">
                     <Particles />
                     <div className="relative z-10">
-                        {/* This is where child components will be rendered */}
+                        {/* This is where child Components will be rendered */}
                         <Outlet />
                     </div>
                 </main>

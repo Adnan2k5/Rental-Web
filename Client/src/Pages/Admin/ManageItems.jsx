@@ -2,26 +2,26 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, Grid, List, Filter, Plus, Edit, MoreHorizontal, Upload, X, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { colors } from '../../assets/Color';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Button } from '../../Components/ui/button';
+import { Input } from '../../Components/ui/input';
+import { Textarea } from '../../Components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '../../Components/ui/avatar';
 import { pageTransition, itemFadeIn, shimmerAnimation, buttonHover } from '../../assets/Animations';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../components/ui/dropdown-menu';
-import { Badge } from '../../components/ui/badge';
-import { Card, CardContent } from '../../components/ui/card';
+} from '../../Components/ui/dropdown-menu';
+import { Badge } from '../../Components/ui/badge';
+import { Card, CardContent } from '../../Components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
+} from '../../Components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
+} from '../../Components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -37,7 +37,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '../../Components/ui/table';
 import {
   Pagination,
   PaginationContent,
@@ -46,10 +46,10 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '../../components/ui/pagination';
-import { Switch } from '../../components/ui/switch';
-import { Label } from '../../components/ui/label';
-import { Skeleton } from '../../components/ui/skeleton';
+} from '../../Components/ui/pagination';
+import { Switch } from '../../Components/ui/switch';
+import { Label } from '../../Components/ui/label';
+import { Skeleton } from '../../Components/ui/skeleton';
 import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
@@ -99,7 +99,7 @@ export default function ManageItems() {
       setLoading(true);
       try {
         await fetchItems(currentPage);
-      } catch (err) {}
+      } catch (err) { }
       setLoading(false);
     };
     fetchData();
@@ -140,7 +140,7 @@ export default function ManageItems() {
     },
   };
 
-  // Particle effect component
+  // Particle effect Components
   const Particles = () => {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -267,7 +267,7 @@ export default function ManageItems() {
     setCurrentPage(page);
   };
 
-  // Grid Skeleton Component
+  // Grid Skeleton Components
   const GridSkeleton = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -310,7 +310,7 @@ export default function ManageItems() {
     );
   };
 
-  // List Skeleton Component
+  // List Skeleton Components
   const ListSkeleton = () => {
     return (
       <Card>
@@ -372,7 +372,7 @@ export default function ManageItems() {
     );
   };
 
-  // Category Skeleton Component
+  // Category Skeleton Components
   const CategorySkeleton = () => {
     return (
       <div className="flex space-x-3 pb-2 overflow-x-auto">

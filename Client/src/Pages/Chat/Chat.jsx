@@ -44,7 +44,7 @@ export default function Chat() {
             startConversation({ _id: product.owner._id, name: product.owner.name || product.owner._id, avatar: product.images[0] });
         }
 
-        // Connect to socket and join room when component mounts
+        // Connect to socket and join room when Components mounts
         socket.emit("joinRoom", { userId: user._id });
 
         // Listen for connect/disconnect events
@@ -56,7 +56,7 @@ export default function Chat() {
             }
         });
 
-        // Clean up socket connection on component unmount
+        // Clean up socket connection on Components unmount
         return () => {
             socket.off("connect");
             if (user?._id) {
@@ -210,7 +210,7 @@ export default function Chat() {
         // Register event listener
         socket.on("receiveMessage", handleIncomingMessage);
 
-        // Clean up event listener when component unmounts
+        // Clean up event listener when Components unmounts
         return () => {
             socket.off("receiveMessage", handleIncomingMessage);
         };

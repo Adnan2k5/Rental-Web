@@ -54,7 +54,7 @@ function SidebarProvider({
   const [openMobile, setOpenMobile] = React.useState(false)
 
   // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
+  // We use openProp and setOpenProp for control from outside the Components.
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback((value) => {
@@ -537,7 +537,7 @@ function SidebarMenuAction({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className
       )}
       {...props} />

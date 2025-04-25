@@ -21,7 +21,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '../../components/ui/sidebar';
+} from '../../Components/ui/sidebar';
 
 export function SidebarNav() {
   const location = useLocation();

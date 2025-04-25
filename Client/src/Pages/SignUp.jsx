@@ -15,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
+} from '../Components/ui/dialog';
 import { useAuth } from '../Middleware/AuthProvider';
 import { toast } from 'sonner';
 import { colors } from '../assets/Color';

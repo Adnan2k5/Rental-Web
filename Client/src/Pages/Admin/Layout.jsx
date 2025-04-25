@@ -12,7 +12,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from '../../components/ui/sidebar';
+} from '../../Components/ui/sidebar';
 
 import {
   FileCheck,
@@ -22,14 +22,14 @@ import {
   TicketCheck,
   Users,
 } from 'lucide-react';
-import { Button } from '../../components/ui/button';
+import { Button } from '../../Components/ui/button';
 import { motion } from 'framer-motion';
 import { colors } from '../../assets/Color';
 import { shimmerAnimation } from '../../assets/Animations';
 import { useDispatch } from 'react-redux';
 import { logout } from "../../Store/UserSlice"
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../api/auth.api'; 
+import { logoutUser } from '../../api/auth.api';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -138,7 +138,7 @@ function AdminSidebar({ pathname, handleLogout }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Other sidebar groups with Link components instead of <a> tags */}
+        {/* Other sidebar groups with Link Components instead of <a> tags */}
         <SidebarGroup>
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarGroupContent>

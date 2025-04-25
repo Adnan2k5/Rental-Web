@@ -656,7 +656,7 @@ export default function LandingPage() {
   );
 }
 
-// Counter animation component
+// Counter animation Components
 const CounterAnimation = ({ target }) => {
   const [count, setCount] = useState(0);
 
