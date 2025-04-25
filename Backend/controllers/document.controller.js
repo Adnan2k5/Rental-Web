@@ -41,7 +41,23 @@ export const createDocument = asyncHandler(async (req, res) => {
 
 });
 
-export const getAllDocuments = asyncHandler(async (req, res) => { });
+export const getAllDocuments = asyncHandler(async (req, res) => { 
+    const { verified } = req.query;
+
+    if (verified && !["false", "true"].includes(verified)) {
+        throw new ApiError(400, "Invalid status value. Use 'true' or 'false");
+    }
+
+    const documents = await Document.find(verified ? { verified: verified === "true" } : {})
+        .populate("owner", "name email")
+        .sort({ createdAt: -1 });
+
+    res.status(200).json(
+        new ApiResponse(200, "Documents retrieved successfully", {
+            documents,
+        })
+    );
+});
 
 export const updateDocument = asyncHandler(async (req, res) => { });
 

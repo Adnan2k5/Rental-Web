@@ -22,6 +22,10 @@ const documentSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        verified: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );
