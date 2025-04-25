@@ -107,7 +107,6 @@ export const updateUser = asyncHandler(async (req,res)=>{
     const updatedUser = await User.findByIdAndUpdate(
         req.params.id,
         {$set: req.body},
-        {new: true}.select("-password -refreshToken -bookings -reviews -role -cart")
     );
     if(!updatedUser){
         throw new ApiError(404, "User not found");

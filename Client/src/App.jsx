@@ -21,6 +21,8 @@ import { CreateTicket } from './Pages/User/CreateTickets';
 import TicketsSupport from './Pages/Admin/TicketsSupport';
 import TermsConditions from './Pages/Admin/Terms';
 import { TicketDetails } from './Pages/User/TikcetDetails';
+import UserVerification from './Pages/Admin/UserVerification';
+import DocumentVerification from './Pages/User/DocumentVerification';
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
             <Route path="/dashboard" element={<UserDashboardLayout />}>
               <Route index element={<ItemDashboard />} />
               <Route path="myitems" element={<UserItems />} />
+              <Route path="verification" element={<DocumentVerification />} />
               <Route path="settings" element={<Settings />} />
               <Route path="tickets" element={<UserTickets />} />
               <Route path='tickets/create' element={<CreateTicket />} />
@@ -48,6 +51,7 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />
               <Route path="/admin/users" element={<ManageUsers />} />
+              <Route path='/admin/users/verification' element={<UserVerification />} />
               <Route path='/admin/tickets' element={<TicketsSupport />} />
               <Route path='/admin/terms' element={<TermsConditions />} />
             </Route>

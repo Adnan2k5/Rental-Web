@@ -41,7 +41,6 @@ export default function Settings() {
             email: user?.email || "",
             phone: user?.phone || "",
             address: user?.address || "",
-            bio: user?.bio || "",
         },
     })
 
@@ -64,16 +63,6 @@ export default function Settings() {
     }, [newEmail])
 
 
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0]
-        if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => {
-                setAvatarPreview(reader.result)
-            }
-            reader.readAsDataURL(file)
-        }
-    }
     const dispatch = useDispatch();
     const onSubmit = async (data) => {
         setIsLoading(true)
@@ -81,6 +70,9 @@ export default function Settings() {
             // Simulate API call
             const updatedData = { ...data, _id: user._id, }
             const res = await UserUpdate(updatedData, dispatch)
+            if (res) {
+                toast.success("Profile updated successfully!")
+            }
         } catch (error) {
             console.error("Error updating profile:", error)
             toast.error("Failed to update profile")
@@ -147,6 +139,7 @@ export default function Settings() {
         }
     }
 
+
     return (
         <div>
             <motion.div
@@ -170,29 +163,15 @@ export default function Settings() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Profile Picture</CardTitle>
-                            <CardDescription>Update your profile photo</CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center">
                             <div className="relative mb-4">
                                 <Avatar className="h-24 w-24">
-                                    <AvatarImage src={avatarPreview || user?.avatar} alt={user?.name || user?.email} />
+
                                     <AvatarFallback className="text-2xl">
                                         {user?.name?.charAt(0) || user?.email?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
-                                <label
-                                    htmlFor="avatar-upload"
-                                    className="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
-                                >
-                                    <Camera className="h-4 w-4" />
-                                </label>
-                                <input
-                                    id="avatar-upload"
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleAvatarChange}
-                                />
                             </div>
                             <div className="text-center">
                                 <h3 className="font-medium">{user?.name || "User"}</h3>
@@ -264,7 +243,7 @@ export default function Settings() {
                                         <Label htmlFor="phone">Phone Number</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input id="phone" placeholder="Your phone number" className="pl-10" {...register("phoneNumber")} />
+                                            <Input id="phone" value={user.phoneNumber} placeholder="Your phone number" className="pl-10" {...register("phoneNumber")} />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -280,7 +259,7 @@ export default function Settings() {
                         <CardFooter className="flex justify-end border-t pt-4">
                             <Button type="submit" form="profile-form" disabled={isLoading}>
                                 {isLoading ? (
-                                    <Loader />
+                                    <>Saving...</>
                                 ) : (
                                     <>
                                         <Save className="mr-2 h-4 w-4" />

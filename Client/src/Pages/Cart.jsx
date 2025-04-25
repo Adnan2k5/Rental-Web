@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { Navbar } from "../Components/Navbar"
 import DateRangePicker from "../Components/DateRangePicker"
 import { createBookingApi } from "../api/bookings.api"
+import { fadeIn, staggerChildren } from "../assets/Animations"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([])
@@ -30,21 +31,6 @@ export default function CartPage() {
     fetchCartItems()
   }, [refreshCart])
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
-  }
-
-  const staggerChildren = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
 
   // Cart actions
   const removeItem = async (id) => {
@@ -71,12 +57,10 @@ export default function CartPage() {
       await addItemToCartApi(id, newQuantity, null)
     } catch (err) {
       toast.error("Failed to update quantity", { description: err.message })
-      // Refresh to get correct data if there was an error
       setRefreshCart(!refreshCart)
     }
   }
 
-  // Fixed updateDuration function
   const updateDuration = async (id, startDate, endDate, newDuration) => {
     try {
       // Optimistically update UI
@@ -143,8 +127,7 @@ export default function CartPage() {
       await createBookingApi(cartItems);
       setCartItems([]) // Clear cart after booking
       toast.success("Bookings created successfully", { description: "Your bookings have been created." })
-    }
-    catch(e) {
+    } catch (e) {
       toast.error("Error creating bookings", { description: e.message })
     }
   }

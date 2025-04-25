@@ -98,6 +98,9 @@ export default function SignIn() {
         toast.success('Login Successful');
         navigate('/browse');
       }
+      else if (res === 400) {
+        toast.error('Invalid credentials');
+      }
       else if (res === 403) {
         const res = await Otpresend({ email });
         if (res) {
@@ -106,8 +109,7 @@ export default function SignIn() {
         }
       }
     } catch (err) {
-      console.log(err);
-      toast.error('Invalid credentials');
+      toast.error('Server Error');
     }
   }
   const handleOtpSubmit = async (e) => {

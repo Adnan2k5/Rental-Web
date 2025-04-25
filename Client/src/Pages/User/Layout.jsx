@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Outlet, Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Search, Bell, Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X } from 'lucide-react'
+import { Search, Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge } from 'lucide-react'
 import { Button } from "../../Components/ui/button"
 import { Input } from "../../Components/ui/input"
 import {
@@ -45,6 +45,11 @@ const UserDashboardLayout = () => {
             icon: <LayoutGrid className="h-4 w-4 mr-3" />,
             label: "Browse",
             path: "/browse",
+        },
+        {
+            icon: <Badge className="h-4 w-4 mr-3" />,
+            label: "Get Verified",
+            path: "/dashboard/verification",
         },
         {
             icon: <Settings className="h-4 w-4 mr-3" />,
@@ -225,23 +230,8 @@ const UserDashboardLayout = () => {
                             </div>
                         </div>
 
-                        <div className="relative max-w-md w-full hidden md:block">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search items..."
-                                className="pl-10 bg-gray-50 border-0 focus-visible:ring-1 focus-visible:ring-primary"
-                            />
-                        </div>
 
                         <div className="flex items-center space-x-4">
-                            <motion.button
-                                className="relative p-2 rounded-full hover:bg-gray-100"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Bell className="h-5 w-5 text-muted-foreground" />
-                                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary"></span>
-                            </motion.button>
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -259,7 +249,6 @@ const UserDashboardLayout = () => {
                                     </motion.button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-56">
-                                    <DropdownMenuItem>Profile</DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link to="/dashboard/settings" className="w-full">
                                             Settings

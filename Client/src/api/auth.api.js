@@ -1,6 +1,5 @@
 import { loginStart, loginSuccess } from '../Store/UserSlice';
 import axiosClient from '../Middleware/AxiosClient';
-import { id } from 'date-fns/locale';
 
 export const loginUser = async (data, dispatch) => {
   try {
@@ -12,6 +11,9 @@ export const loginUser = async (data, dispatch) => {
     if (res.status === 200) {
       dispatch(loginSuccess(res.data.data));
       return 200;
+    }
+    if (res.status === 400) {
+      return 400;
     }
   } catch (err) {
     // dispatch(loginFailure(err.response.status));
@@ -141,6 +143,7 @@ export const UserUpdate = async (data, dispatch) => {
       withCredentials: true,
     });
     if (res.status === 200) {
+      dispatch(loginSuccess(res.data.data));
       return true;
     } else {
       return false;
