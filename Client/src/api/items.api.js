@@ -8,6 +8,8 @@ export const fetchAllItems = async ({
   query,
   page,
   limit,
+  lat,
+  long,
 } = {}) => {
   const res = await axiosClient.get('/api/item/discover', {
     withCredentials: true,
@@ -21,6 +23,8 @@ export const fetchAllItems = async ({
       query,
       page,
       limit,
+      lat, 
+      long,
     },
   });
   return res;
