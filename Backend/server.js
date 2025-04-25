@@ -30,13 +30,18 @@ const server = createServer(app);
 // Initialize Socket.IO with the HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.Clinet_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
 });
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: process.env.Client_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -54,7 +59,7 @@ app.use("/api/category", categoryRoute);
 app.use("/api/booking", bookingRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/document", documentRoute);
-app.use("/api/terms", termRoutes); 
+app.use("/api/terms", termRoutes);
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
