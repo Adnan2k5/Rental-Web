@@ -14,15 +14,15 @@ export const getStats = async () => {
     }
 }
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (page = 1, limit = 10) => {
     try {
-        const res = await axiosClient.get("/api/admin/users", {
+        const res = await axiosClient.get(`/api/admin/users?page=${page}&limit=${limit}`, {
             withCredentials: true,
         });
         return res.data.data;
     }
     catch(err) {
-        if (err.response.status) {
+        if (err.response && err.response.status) {
             return err.response.status;
         }
     }

@@ -52,7 +52,6 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -70,18 +69,22 @@ export default function ManageUsers() {
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10); // You can make this selectable if you want
+  const [pagination, setPagination] = useState({ totalPages: 1, currentPage: 1 });
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await getAllUsers();
+      const response = await getAllUsers(page, limit);
       if (response) {
         setUsers(response.users);
+        if (response.pagination) setPagination(response.pagination);
       } else {
         console.error('Failed to fetch users');
       }
     }
     fetchUsers();
-  }, []);
+  }, [page, limit]);
 
   // Rental Color Palette
   const colors = {
@@ -154,16 +157,6 @@ export default function ManageUsers() {
       </div>
     );
   };
-
-  // Filter users based on search query and status
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      selectedStatus === 'all' || user.status === selectedStatus;
-    return matchesSearch && matchesStatus;
-  });
 
   // Handle user edit
   const handleEditUser = (user) => {
@@ -320,7 +313,7 @@ export default function ManageUsers() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredUsers.map((user) => (
+                      {users.map((user) => (
                         <TableRow key={user._id} className="hover:bg-gray-50">
                           <TableCell className="font-medium">
                             {user._id}
@@ -380,24 +373,29 @@ export default function ManageUsers() {
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious href="#" />
+                      <PaginationPrevious
+                        href="#"
+                        onClick={e => { e.preventDefault(); if (pagination.hasPreviousPage) setPage(p => p - 1); }}
+                        className={pagination.hasPreviousPage ? '' : 'pointer-events-none opacity-50'}
+                      />
                     </PaginationItem>
+                    {Array.from({ length: pagination.totalPages }, (_, i) => (
+                      <PaginationItem key={i + 1}>
+                        <PaginationLink
+                          href="#"
+                          isActive={pagination.currentPage === i + 1}
+                          onClick={e => { e.preventDefault(); setPage(i + 1); }}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
                     <PaginationItem>
-                      <PaginationLink href="#" isActive>
-                        1
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href="#" />
+                      <PaginationNext
+                        href="#"
+                        onClick={e => { e.preventDefault(); if (pagination.hasNextPage) setPage(p => p + 1); }}
+                        className={pagination.hasNextPage ? '' : 'pointer-events-none opacity-50'}
+                      />
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>

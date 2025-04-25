@@ -43,18 +43,27 @@ export default function TicketsSupport() {
     const [replyText, setReplyText] = useState("")
     const [isReplying, setIsReplying] = useState(false)
     const [ticketDialogOpen, setTicketDialogOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(10);
     const dialogRef = useRef(null);
 
-    const fetchTickets = async () => {
+    const fetchTickets = async (page = 1) => {
         setLoading(true)
-        const tickets = await getAllTickets();
-        setTickets(tickets.data.tickets);
+        const filters = {};
+        if (statusFilter !== "all") filters.status = statusFilter;
+        filters.page = page;
+        filters.limit = pageSize;
+        const ticketsRes = await getAllTickets(filters);
+        setTickets(ticketsRes.data.tickets);
+        setTotalPages(ticketsRes.data.totalPages || 1);
         setLoading(false)
     }
 
     useEffect(() => {
-        fetchTickets();
-    }, []);
+        fetchTickets(currentPage);
+        // eslint-disable-next-line
+    }, [currentPage, statusFilter]);
 
     const pageTransition = {
         hidden: { opacity: 0 },
@@ -83,18 +92,8 @@ export default function TicketsSupport() {
 
     const handleStatusFilter = (value) => {
         setStatusFilter(value)
+        setCurrentPage(1);
     }
-
-    const filteredTickets = tickets.filter((ticket) => {
-        const matchesSearch =
-            ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            ticket.user.name.toLowerCase().includes(searchQuery.toLowerCase())
-
-        const matchesStatus = statusFilter === "all" || ticket.status === statusFilter
-
-        return matchesSearch && matchesStatus
-    })
 
     const handleTicketClick = (ticket) => {
         setSelectedTicket(ticket)
@@ -252,7 +251,7 @@ export default function TicketsSupport() {
                             <div className="flex justify-center items-center py-8">
                                 <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
-                        ) : filteredTickets.length === 0 ? (
+                        ) : tickets.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 text-center">
                                 <AlertCircle className="h-8 w-8 text-muted-foreground mb-2" />
                                 <h3 className="font-medium text-lg">No tickets found</h3>
@@ -263,6 +262,7 @@ export default function TicketsSupport() {
                                 </p>
                             </div>
                         ) : (
+                            <>
                             <div className="rounded-md border">
                                 <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
                                     <div className="col-span-5 md:col-span-4">Ticket</div>
@@ -272,7 +272,13 @@ export default function TicketsSupport() {
                                     <div className="col-span-4 md:col-span-1 text-right">Actions</div>
                                 </div>
                                 <div className="divide-y">
-                                    {filteredTickets.map((ticket) => (
+                                    {tickets.filter((ticket) => {
+                                        const matchesSearch =
+                                            ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                            ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                            ticket.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                        return matchesSearch;
+                                    }).map((ticket) => (
                                         <motion.div
                                             key={ticket._id}
                                             className="grid grid-cols-12 items-center p-3 hover:bg-muted/50 cursor-pointer"
@@ -314,6 +320,36 @@ export default function TicketsSupport() {
                                     ))}
                                 </div>
                             </div>
+                            {/* Pagination Controls */}
+                            <div className="flex justify-center items-center gap-2 mt-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                >
+                                    Previous
+                                </Button>
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <Button
+                                        key={i + 1}
+                                        variant={currentPage === i + 1 ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setCurrentPage(i + 1)}
+                                    >
+                                        {i + 1}
+                                    </Button>
+                                ))}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={currentPage === totalPages}
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                            </>
                         )}
                     </CardContent>
                 </Card>
