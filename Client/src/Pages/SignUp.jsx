@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../Components/ui/button';
 import { Input } from '../components/ui/input';
 import { Checkbox } from '../components/ui/checkbox';
 import { Separator } from '../components/ui/separator';

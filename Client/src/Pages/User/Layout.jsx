@@ -3,9 +3,8 @@
 import { useState } from "react"
 import { Outlet, Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Search, Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge } from 'lucide-react'
+import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge } from 'lucide-react'
 import { Button } from "../../Components/ui/button"
-import { Input } from "../../Components/ui/input"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,7 +13,7 @@ import {
 } from "../../Components/ui/dropdown-menu"
 import { Separator } from "../../Components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar"
-import { Sheet, SheetContent, SheetTrigger } from "../../Components/ui/sheet"
+import { Sheet, SheetContent } from "../../Components/ui/sheet"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn, shimmerAnimation } from "../../assets/Animations"
@@ -24,11 +23,6 @@ import { logout } from "../../Store/UserSlice"
 import { useDispatch } from 'react-redux';
 import { logoutUser } from "../../api/auth.api"
 
-
-/**
- * UserDashboardLayout - A layout component that wraps all user dashboard pages
- * Provides consistent navigation, header, and structure for user dashboard pages
- */
 const UserDashboardLayout = () => {
     const { user } = useAuth()
     const dispatch = useDispatch()

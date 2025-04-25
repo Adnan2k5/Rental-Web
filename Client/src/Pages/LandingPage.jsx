@@ -9,7 +9,7 @@ import {
   Users,
   TrendingUp,
 } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../Components/ui/button';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductQuickView from '../Components/Quick-View';
