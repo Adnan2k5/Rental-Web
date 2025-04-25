@@ -1,6 +1,6 @@
 "use client"
 
-import { Label } from "../../components/ui/label"
+import { Label } from "../../Components/ui/label"
 
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
@@ -263,92 +263,92 @@ export default function TicketsSupport() {
                             </div>
                         ) : (
                             <>
-                            <div className="rounded-md border">
-                                <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
-                                    <div className="col-span-5 md:col-span-4">Ticket</div>
-                                    <div className="col-span-3 hidden md:block">Customer</div>
-                                    <div className="col-span-3 md:col-span-2">Status</div>
-                                    <div className="col-span-2 hidden md:block">Priority</div>
-                                    <div className="col-span-4 md:col-span-1 text-right">Actions</div>
-                                </div>
-                                <div className="divide-y">
-                                    {tickets.filter((ticket) => {
-                                        const matchesSearch =
-                                            ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                            ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                            ticket.user.name.toLowerCase().includes(searchQuery.toLowerCase())
-                                        return matchesSearch;
-                                    }).map((ticket) => (
-                                        <motion.div
-                                            key={ticket._id}
-                                            className="grid grid-cols-12 items-center p-3 hover:bg-muted/50 cursor-pointer"
-                                            onClick={() => handleTicketClick(ticket)}
-                                            whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
-                                        >
-                                            <div className="col-span-5 md:col-span-4">
-                                                <div className="font-medium">{ticket.subject}</div>
-                                                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                    <span>{ticket.id}</span>
-                                                    <span>•</span>
-                                                    <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                                <div className="rounded-md border">
+                                    <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
+                                        <div className="col-span-5 md:col-span-4">Ticket</div>
+                                        <div className="col-span-3 hidden md:block">Customer</div>
+                                        <div className="col-span-3 md:col-span-2">Status</div>
+                                        <div className="col-span-2 hidden md:block">Priority</div>
+                                        <div className="col-span-4 md:col-span-1 text-right">Actions</div>
+                                    </div>
+                                    <div className="divide-y">
+                                        {tickets.filter((ticket) => {
+                                            const matchesSearch =
+                                                ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                ticket.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                            return matchesSearch;
+                                        }).map((ticket) => (
+                                            <motion.div
+                                                key={ticket._id}
+                                                className="grid grid-cols-12 items-center p-3 hover:bg-muted/50 cursor-pointer"
+                                                onClick={() => handleTicketClick(ticket)}
+                                                whileHover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+                                            >
+                                                <div className="col-span-5 md:col-span-4">
+                                                    <div className="font-medium">{ticket.subject}</div>
+                                                    <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                                        <span>{ticket.id}</span>
+                                                        <span>•</span>
+                                                        <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="col-span-3 hidden md:block">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-6 w-6">
-                                                        <AvatarImage src={"/placeholder.svg"} alt={ticket.user.name} />
-                                                        <AvatarFallback>{ticket.user.name.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    <span className="truncate">{ticket.user.name}</span>
+                                                <div className="col-span-3 hidden md:block">
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar className="h-6 w-6">
+                                                            <AvatarImage src={"/placeholder.svg"} alt={ticket.user.name} />
+                                                            <AvatarFallback>{ticket.user.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="truncate">{ticket.user.name}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="col-span-3 md:col-span-2">{getStatusBadge(ticket.status)}</div>
-                                            <div className="col-span-2 hidden md:block">{getPriorityBadge(ticket.priority)}</div>
-                                            <div className="col-span-4 md:col-span-1 text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        handleTicketClick(ticket)
-                                                    }}
-                                                >
-                                                    <ChevronRight className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                                                <div className="col-span-3 md:col-span-2">{getStatusBadge(ticket.status)}</div>
+                                                <div className="col-span-2 hidden md:block">{getPriorityBadge(ticket.priority)}</div>
+                                                <div className="col-span-4 md:col-span-1 text-right">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            handleTicketClick(ticket)
+                                                        }}
+                                                    >
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            {/* Pagination Controls */}
-                            <div className="flex justify-center items-center gap-2 mt-4">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={currentPage === 1}
-                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                >
-                                    Previous
-                                </Button>
-                                {Array.from({ length: totalPages }, (_, i) => (
+                                {/* Pagination Controls */}
+                                <div className="flex justify-center items-center gap-2 mt-4">
                                     <Button
-                                        key={i + 1}
-                                        variant={currentPage === i + 1 ? "default" : "outline"}
+                                        variant="outline"
                                         size="sm"
-                                        onClick={() => setCurrentPage(i + 1)}
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     >
-                                        {i + 1}
+                                        Previous
                                     </Button>
-                                ))}
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    disabled={currentPage === totalPages}
-                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                >
-                                    Next
-                                </Button>
-                            </div>
+                                    {Array.from({ length: totalPages }, (_, i) => (
+                                        <Button
+                                            key={i + 1}
+                                            variant={currentPage === i + 1 ? "default" : "outline"}
+                                            size="sm"
+                                            onClick={() => setCurrentPage(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </Button>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
                             </>
                         )}
                     </CardContent>
@@ -364,7 +364,7 @@ export default function TicketsSupport() {
                 }
             }}>
                 {selectedTicket && (
-                    <DialogContent 
+                    <DialogContent
                         ref={dialogRef}
                         onOpenAutoFocus={(e) => {
                             // Prevent default autofocus behavior

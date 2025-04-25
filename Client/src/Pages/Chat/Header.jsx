@@ -1,6 +1,6 @@
 import { ArrowLeft, MoreVertical, PhoneCall, Video } from "lucide-react"
 import { Button } from "../../Components/ui/button"
-import { Avatar } from "../../components/ui/avatar"
+import { Avatar } from "../../Components/ui/avatar"
 import { Tooltip } from "../../Components/ui/tooltip"
 
 export default function Header({ productName, ownerName, productUrl }) {
@@ -12,9 +12,9 @@ export default function Header({ productName, ownerName, productUrl }) {
         <div className="bg-gradient-to-r from-[#151823] to-[#1E2131] border-b border-[#4D39EE]/20 p-4 md:px-6 lg:px-8 sticky top-0 z-10 shadow-md">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 md:gap-5">
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
+                    <Button
+                        variant="ghost"
+                        size="icon"
                         className="text-white hover:bg-[#2A2D3A] hover:text-[#4D39EE] transition-all duration-300"
                         onClick={navigateBack}
                     >

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Facebook, Twitter, ArrowRight } from 'lucide-react';
 import { Button } from '../Components/ui/button';
-import { Input } from '../components/ui/input';
-import { Checkbox } from '../components/ui/checkbox';
-import { Separator } from '../components/ui/separator';
+import { Input } from '../Components/ui/input';
+import { Checkbox } from '../Components/ui/checkbox';
+import { Separator } from '../Components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
@@ -15,7 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../components/ui/dialog';
+} from '../Components/ui/dialog';
 import { useAuth } from '../Middleware/AuthProvider';
 import { toast } from 'sonner';
 import { colors } from '../assets/Color';

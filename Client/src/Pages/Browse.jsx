@@ -6,12 +6,12 @@ import {
   Star,
   X,
 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Checkbox } from '../components/ui/checkbox';
-import { Slider } from '../components/ui/slider';
-import { Badge } from '../components/ui/badge';
-import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
+import { Button } from '../Components/ui/button';
+import { Input } from '../Components/ui/input';
+import { Checkbox } from '../Components/ui/checkbox';
+import { Slider } from '../Components/ui/slider';
+import { Badge } from '../Components/ui/badge';
+import { Sheet, SheetContent, SheetTrigger } from '../Components/ui/sheet';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductQuickView from '../Components/Quick-View';
 import { useAuth } from '../Middleware/AuthProvider';
@@ -173,12 +173,12 @@ export default function BrowsePage() {
               <span className="text-sm">${filters.priceRange[1]}</span>
             </div>
           </div>
-        </div>  
+        </div>
 
         <div>
           <h4 className="font-medium mb-3">Category</h4>
           <div className="space-y-2">
-            {categories &&  categories.length != 0 && categories.map((category) => (
+            {categories && categories.length != 0 && categories.map((category) => (
               <div key={category._id} className="flex items-center">
                 <Checkbox
                   id={`category-${category._id}`}

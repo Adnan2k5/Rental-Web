@@ -13,8 +13,8 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '../../components/ui/avatar';
-import { Badge } from '../../components/ui/badge';
+} from '../../Components/ui/avatar';
+import { Badge } from '../../Components/ui/badge';
 import {
   Card,
   CardContent,
@@ -27,7 +27,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '../../components/ui/tabs';
+} from '../../Components/ui/tabs';
 import {
   LineChart,
   Line,
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       try {
         const response = await getStats();
-       
+
         setDashboardData({
           totalRevenue: 1248,
           revenueGrowth: 12,
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
         setCategoryData(
           response.itemsByCategory.map((item) => ({
             name: item.categoryName,
-            value: (item.itemCount/response.stats.totalItems) * 100,
+            value: (item.itemCount / response.stats.totalItems) * 100,
           }))
         );
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { Avatar } from "../../components/ui/avatar";
+import { Avatar } from "../../Components/ui/avatar";
 
 export default function ChatInterface({ messages, messagesEndRef, currentUserId }) {
   // Sample avatar for demo (replace with actual user image)
@@ -22,7 +22,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
   };
 
   const groupedMessages = groupMessagesByDate(messages);
-  
+
   // Check if a message is from the current user
   const isCurrentUser = (from) => from === currentUserId;
 
@@ -32,7 +32,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
       return "Today";
     } else if (date.toDateString() === yesterday.toDateString()) {
@@ -68,12 +68,12 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
               {formatDateHeader(dateKey)}
             </div>
           </div>
-          
+
           {groupedMessages[dateKey].map((message, index) => {
             const isSender = isCurrentUser(message.from);
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`flex ${isSender ? 'justify-end' : 'justify-start'} mb-3 animate-fadeIn`}
               >
                 {!isSender && (
@@ -83,33 +83,32 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
                     </Avatar>
                   </div>
                 )}
-                
+
                 <div className={`max-w-[75%] group`}>
-                  <div 
-                    className={`px-4 py-2 rounded-2xl shadow-sm ${
-                      isSender 
-                        ? 'bg-gradient-to-r from-[#4D39EE] to-[#4D39EE]/90 text-white rounded-tr-none' 
-                        : 'bg-[#212330] text-white rounded-tl-none'
-                    }`}
+                  <div
+                    className={`px-4 py-2 rounded-2xl shadow-sm ${isSender
+                      ? 'bg-gradient-to-r from-[#4D39EE] to-[#4D39EE]/90 text-white rounded-tr-none'
+                      : 'bg-[#212330] text-white rounded-tl-none'
+                      }`}
                   >
                     {/* Message text content */}
                     {message.content && (
                       <p className="whitespace-pre-wrap break-words">{message.content}</p>
                     )}
-                    
+
                     {/* Message attachments - simplified handling for array of base64 images */}
                     {message.attachments && message.attachments.length > 0 && (
                       <div className={`${message.content ? 'mt-2' : ''} flex flex-wrap gap-2`}>
                         {message.attachments.map((base64Image, index) => (
                           <div key={index} className="rounded-lg overflow-hidden">
-                            <a 
-                              href={base64Image} 
-                              target="_blank" 
+                            <a
+                              href={base64Image}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="block"
                             >
-                              <img 
-                                src={base64Image} 
+                              <img
+                                src={base64Image}
                                 alt={`Image ${index + 1}`}
                                 className="max-w-full max-h-[200px] object-contain rounded-lg cursor-pointer"
                                 loading="lazy"
@@ -124,7 +123,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
                     {format(new Date(message.timestamp), 'h:mm a')}
                   </div>
                 </div>
-                
+
                 {isSender && (
                   <div className="flex-shrink-0 ml-2 mt-1">
                     <Avatar className="h-8 w-8">
@@ -138,7 +137,7 @@ export default function ChatInterface({ messages, messagesEndRef, currentUserId 
         </div>
       ))}
       <div ref={messagesEndRef} />
-      
+
       {/* Add the date-fns import to package.json if needed */}
       <style jsx>{`
         @keyframes fadeIn {

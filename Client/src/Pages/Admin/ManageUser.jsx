@@ -11,28 +11,28 @@ import {
   Edit,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
+import { Button } from '../../Components/ui/button';
+import { Input } from '../../Components/ui/input';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '../../components/ui/avatar';
+} from '../../Components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../../components/ui/dropdown-menu';
-import { Badge } from '../../components/ui/badge';
-import { Card, CardContent } from '../../components/ui/card';
+} from '../../Components/ui/dropdown-menu';
+import { Badge } from '../../Components/ui/badge';
+import { Card, CardContent } from '../../Components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../components/ui/select';
+} from '../../Components/ui/select';
 import {
   Table,
   TableBody,
@@ -40,7 +40,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
+} from '../../Components/ui/table';
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../components/ui/dialog';
+} from '../../Components/ui/dialog';
 import {
   Pagination,
   PaginationContent,
@@ -56,9 +56,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '../../components/ui/pagination';
-import { Switch } from '../../components/ui/switch';
-import { Label } from '../../components/ui/label';
+} from '../../Components/ui/pagination';
+import { Switch } from '../../Components/ui/switch';
+import { Label } from '../../Components/ui/label';
 import { format } from 'date-fns';
 import { getAllUsers, changeUserStatus } from '../../api/admin.api';
 import { toast } from 'sonner';
@@ -125,7 +125,7 @@ export default function ManageUsers() {
     },
   };
 
-  // Particle effect component
+  // Particle effect Components
   const Particles = () => {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react"
 import { Search, Filter, RefreshCw, Eye, CheckCircle, XCircle, Clock } from "lucide-react"
 import { motion } from "framer-motion"
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
-import { Badge } from "../../components/ui/badge"
-import { Card, CardContent } from "../../components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
+import { Button } from "../../Components/ui/button"
+import { Input } from "../../Components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar"
+import { Badge } from "../../Components/ui/badge"
+import { Card, CardContent } from "../../Components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../Components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../Components/ui/table"
 import {
     Dialog,
     DialogContent,
@@ -17,7 +17,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../../components/ui/dialog"
+} from "../../Components/ui/dialog"
 import {
     Pagination,
     PaginationContent,
@@ -26,7 +26,7 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from "../../components/ui/pagination"
+} from "../../Components/ui/pagination"
 import { toast } from "sonner"
 import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn } from "../../assets/Animations"

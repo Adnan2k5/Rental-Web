@@ -8,8 +8,8 @@ import {
   Sparkles,
   LockKeyhole,
 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Separator } from '../components/ui/separator';
+import { Button } from '../Components/ui/button';
+import { Separator } from '../Components/ui/separator';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from '../Components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
