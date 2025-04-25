@@ -59,7 +59,7 @@ export default function Dashboard() {
     defaultValues: {
       name: "",
       description: "",
-      category: "Select category",
+      category: "Electronics",
       location: "",
       price: "",
       available: true,

@@ -1,4 +1,3 @@
-// components/admin/AdminLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
 import {
@@ -163,6 +162,17 @@ function AdminSidebar({ pathname, handleLogout }) {
                   <Link to="/admin/users">
                     <Users className="h-4 w-4" />
                     <span>User Management</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/admin/users/verification'}
+                >
+                  <Link to="/admin/users/verification">
+                    <Users className="h-4 w-4" />
+                    <span>User Verification</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
