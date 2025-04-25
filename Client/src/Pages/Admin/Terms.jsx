@@ -70,6 +70,7 @@ export default function TermsConditions() {
                 },
                 history: (data.history || []).map((h) => ({
                     id: h.version,
+                    content: h.content, // include content for each version
                     publishedAt: h.publishedAt,
                     publishedBy: h.publishedBy,
                 })),
@@ -119,6 +120,7 @@ export default function TermsConditions() {
             },
             history: (data.history || []).map((h) => ({
                 id: h.version,
+                content: h.content, // include content for each version
                 publishedAt: h.publishedAt,
                 publishedBy: h.publishedBy,
             })),
@@ -146,6 +148,7 @@ export default function TermsConditions() {
             },
             history: (data.history || []).map((h) => ({
                 id: h.version,
+                content: h.content, // include content for each version
                 publishedAt: h.publishedAt,
                 publishedBy: h.publishedBy,
             })),
@@ -191,10 +194,13 @@ export default function TermsConditions() {
             },
             history: (data.history || []).map((h) => ({
                 id: h.version,
+                content: h.content, // include content for each version
                 publishedAt: h.publishedAt,
                 publishedBy: h.publishedBy,
             })),
         })
+        setEditor(data.draft?.content || "") // update editor with restored draft
+        setActiveTab("draft") // switch to draft tab
         setShowHistoryDialog(false)
     }
 
@@ -238,7 +244,10 @@ export default function TermsConditions() {
                                     <CheckCircle className="h-4 w-4 mr-2" />
                                     Published
                                 </TabsTrigger>
-
+                                <TabsTrigger value="draft">
+                                    <Clock className="h-4 w-4 mr-2" />
+                                    Draft
+                                </TabsTrigger>
                                 <TabsTrigger value="history">
                                     <History className="h-4 w-4 mr-2" />
                                     History
@@ -277,6 +286,38 @@ export default function TermsConditions() {
                                     )}
                                 </div>
                             </TabsContent>
+
+                            <TabsContent value="draft" className="mt-0">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+                                            <Clock className="h-3 w-3 mr-1" />
+                                            Draft
+                                        </Badge>
+                                        <span className="text-sm text-muted-foreground">
+                                            Version {terms.draft.id} • Last updated {formatDate(terms.draft.updatedAt)}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => setShowPreviewDialog(true)}>
+                                            Preview
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving}>
+                                            {saving ? <><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <> <Save className="h-4 w-4 mr-1" /> Save Draft</>}
+                                        </Button>
+                                        <Button size="sm" onClick={() => setShowPublishDialog(true)} disabled={publishing}>
+                                            <Globe className="h-4 w-4 mr-1" /> Publish
+                                        </Button>
+                                    </div>
+                                </div>
+                                <textarea
+                                    className="w-full min-h-[300px] border rounded-md p-3 font-mono text-sm bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
+                                    value={editor}
+                                    onChange={e => setEditor(e.target.value)}
+                                    placeholder="Enter terms and conditions..."
+                                />
+                            </TabsContent>
+
                             <TabsContent value="history" className="mt-0">
                                 <div className="border rounded-md overflow-hidden">
                                     <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
@@ -359,7 +400,7 @@ export default function TermsConditions() {
 
                         <div className="flex-1 overflow-y-auto py-4">
                             <div className="border rounded-md p-4 bg-muted/30 min-h-[400px] whitespace-pre-wrap font-mono text-sm">
-                                {terms.current.content}
+                                {selectedVersion.content}
                             </div>
                         </div>
 
