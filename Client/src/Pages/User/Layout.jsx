@@ -19,6 +19,8 @@ import { useAuth } from "../../Middleware/AuthProvider"
 import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn, shimmerAnimation } from "../../assets/Animations"
 import { Particles } from "../../Components/Particles"
+import { useNavigate } from "react-router-dom"
+import { logoutUser } from "../../api/auth.api"
 
 /**
  * UserDashboardLayout - A layout component that wraps all user dashboard pages
@@ -28,6 +30,7 @@ const UserDashboardLayout = () => {
     const { user } = useAuth()
     const location = useLocation()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const navigate = useNavigate()
 
     // Navigation items configuration
     const navItems = [
@@ -68,8 +71,8 @@ const UserDashboardLayout = () => {
 
     // Handle logout
     const handleLogout = () => {
-        // Implement logout functionality
-        console.log("Logging out...")
+        logoutUser(user, dispatch)
+        navigate("/login")   
     }
 
     return (
