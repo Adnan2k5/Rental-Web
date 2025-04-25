@@ -33,7 +33,7 @@ const server = createServer(app);
 // Initialize Socket.IO with the HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "https://rental-web-ogp5.vercel.app/",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -41,7 +41,7 @@ const io = new Server(server, {
 
 app.use(
   cors({
-    origin: "https://rental-web-ogp5.vercel.app/",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
