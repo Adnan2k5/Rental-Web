@@ -150,13 +150,12 @@ export const UserUpdate = async (data, dispatch) => {
   }
 };
 
-export const logoutUser = async (data, dispatch) => {
+export const logoutUser = async () => {
   try {
-    const res = await axiosClient.get('/api/auth/logout', {
+    const res = await axiosClient.get('/api/auth/logoutUser', {
       withCredentials: true,
     });
     if (res.status === 200) {
-      dispatch(logout());
       return true;
     } else {
       return false;

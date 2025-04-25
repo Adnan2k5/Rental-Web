@@ -20,7 +20,10 @@ import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn, shimmerAnimation } from "../../assets/Animations"
 import { Particles } from "../../Components/Particles"
 import { useNavigate } from "react-router-dom"
+import { logout } from "../../Store/UserSlice"
+import { useDispatch } from 'react-redux';
 import { logoutUser } from "../../api/auth.api"
+
 
 /**
  * UserDashboardLayout - A layout component that wraps all user dashboard pages
@@ -28,6 +31,7 @@ import { logoutUser } from "../../api/auth.api"
  */
 const UserDashboardLayout = () => {
     const { user } = useAuth()
+    const dispatch = useDispatch()
     const location = useLocation()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const navigate = useNavigate()
@@ -70,9 +74,19 @@ const UserDashboardLayout = () => {
     }
 
     // Handle logout
-    const handleLogout = () => {
-        logoutUser(user, dispatch)
-        navigate("/login")   
+    const handleLogout = async () => {
+        try {
+            const res = await logoutUser()
+            if (res) {
+                dispatch(logout())
+                navigate("/login")
+            } else {
+                console.error("Logout failed")
+            }
+        }
+        catch (error) {
+            console.error("Logout error:", error)
+        }
     }
 
     return (
