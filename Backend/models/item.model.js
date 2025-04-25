@@ -40,9 +40,8 @@ const itemSchema = new mongoose.Schema(
             default: 0,
         },
         location: {
-            type: String,
-            required: true,
-            trim: true,
+            type: { type: String, enum: ['Point'], required: true },
+            coordinates: { type: [Number], required: true }
         },
         owner: {
             type: mongoose.Schema.Types.ObjectId,
@@ -73,5 +72,7 @@ const itemSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+itemSchema.index({ location: "2dsphere" });
 
 export const Item = mongoose.model("Item", itemSchema);

@@ -13,6 +13,7 @@ import { Button } from '../Components/ui/button';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductQuickView from '../Components/Quick-View';
+import { fetchTopReviewedItems } from '../api/items.api';
 
 export default function LandingPage() {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -71,45 +72,18 @@ export default function LandingPage() {
     },
   ];
 
-  // Mock trending items data
-  const trendingItems = [
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      rating: 4.8,
-      reviews: 245,
-      price: '$35/month',
-      image:
-        'https://www.zdnet.com/a/img/resize/9a4433107e15b45c323112f14e67821bd222521b/2021/08/25/96fc3e1c-9e32-405c-9e28-f7f819a45625/m1-macbook-air.jpg?auto=webp&fit=crop&height=900&width=1200',
-    },
-    {
-      id: 2,
-      name: 'Modern Lounge Chair',
-      rating: 4.6,
-      reviews: 189,
-      price: '$15/month',
-      image:
-        'https://www.zdnet.com/a/img/resize/9a4433107e15b45c323112f14e67821bd222521b/2021/08/25/96fc3e1c-9e32-405c-9e28-f7f819a45625/m1-macbook-air.jpg?auto=webp&fit=crop&height=900&width=1200',
-    },
-    {
-      id: 3,
-      name: 'Sony PlayStation 5',
-      rating: 4.9,
-      reviews: 312,
-      price: '$29/month',
-      image:
-        'https://www.zdnet.com/a/img/resize/9a4433107e15b45c323112f14e67821bd222521b/2021/08/25/96fc3e1c-9e32-405c-9e28-f7f819a45625/m1-macbook-air.jpg?auto=webp&fit=crop&height=900&width=1200',
-    },
-    {
-      id: 4,
-      name: 'iPhone 15 Pro',
-      rating: 4.7,
-      reviews: 278,
-      price: '$30/month',
-      image:
-        'https://www.zdnet.com/a/img/resize/9a4433107e15b45c323112f14e67821bd222521b/2021/08/25/96fc3e1c-9e32-405c-9e28-f7f819a45625/m1-macbook-air.jpg?auto=webp&fit=crop&height=900&width=1200',
-    },
-  ];
+  const [trendingItems, setTrendingItems] = useState([]);
+  useEffect(() => {
+    fetchTopReviewedItems().then((res) => {
+      if (res && Array.isArray(res.message)) {
+        setTrendingItems(res.message);
+      } else if (res && res.data && Array.isArray(res.data.data)) {
+        setTrendingItems(res.data.data);
+      } else {
+        setTrendingItems([]); // fallback to empty array
+      }
+    });
+  }, []);
 
   // Stats for the counter animation
   const stats = [
@@ -352,14 +326,14 @@ export default function LandingPage() {
           >
             {trendingItems.map((item, index) => (
               <motion.div
-                key={index}
+                key={item._id || index}
                 className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 group cursor-pointer"
                 variants={scaleUp}
                 whileHover={{ y: -8 }}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={item.image || '/placeholder.svg'}
+                    src={item.images?.[0] || '/placeholder.svg'}
                     alt={item.name}
                     width={300}
                     height={200}
@@ -384,21 +358,21 @@ export default function LandingPage() {
                     <div className="flex items-center text-amber-500">
                       <Star className="h-4 w-4 fill-current" />
                       <span className="ml-1 text-sm font-medium">
-                        {item.rating}
+                        {item.avgRating?.toFixed(1) || 0}
                       </span>
                     </div>
                     <span className="mx-2 text-gray-300">•</span>
                     <span className="text-xs text-gray-500">
-                      {item.reviews} reviews
+                      {item.totalReviews} reviews
                     </span>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-1">
                     {item.name}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-primary">{item.price}</p>
+                    <p className="font-bold text-primary">${item.price}/month</p>
                     <Link
-                      to={`/product/${item.id}`}
+                      to={`/product/${item._id}`}
                       className="text-xs text-gray-500 hover:text-primary flex items-center"
                     >
                       See Details <ChevronRight className="h-3 w-3 ml-1" />

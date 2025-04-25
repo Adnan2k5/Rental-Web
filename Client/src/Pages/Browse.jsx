@@ -59,6 +59,22 @@ export default function BrowsePage() {
     }
   }, [user, navigate]);
 
+  // Get user location and update filters
+  useEffect(() => {
+    if (!('geolocation' in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFilters((prev) => ({
+          ...prev,
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+        }));
+      },
+      (err) => {
+        // Optionally handle error or fallback
+      }
+    );
+  }, []);
 
   const openQuickView = (product) => {
     setQuickViewProduct(product);
