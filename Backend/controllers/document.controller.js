@@ -1,0 +1,53 @@
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { Document } from "../models/document.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+
+
+export const createDocument = asyncHandler(async (req, res) => {
+    const { country } = req.body;
+
+    if (!country) {
+        throw new ApiError(400, "Country is required");
+    }
+
+    if (!req.files || !req.files.document || !req.files.document[0]) {
+        throw new ApiError(400, "Document file is required");
+    }
+
+    if (!req.files || !req.files.image || !req.files.image[0]) {
+        throw new ApiError(400, "Image file is required");
+    }
+
+    const [documentUrl, imageUrl] = await Promise.all(
+        [
+            uploadOnCloudinary(req.files.document[0].path),
+            uploadOnCloudinary(req.files.image[0].path)
+        ]);
+
+    const document = await Document.create({
+        documentUrl: documentUrl.secure_url,
+        imageUrl: imageUrl.secure_url,
+        country,
+        owner: req.user._id,
+    });
+
+    res.status(201).json(
+        new ApiResponse(201, "Document created successfully", {
+            document,
+        })
+    );
+
+});
+
+export const getAllDocuments = asyncHandler(async (req, res) => { });
+
+export const updateDocument = asyncHandler(async (req, res) => { });
+
+export const deleteDocument = asyncHandler(async (req, res) => { });
+
+export const getDocumentById = asyncHandler(async (req, res) => { });
+
+export const getDocumentByUserId = asyncHandler(async (req, res) => { });
+

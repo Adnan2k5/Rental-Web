@@ -17,6 +17,7 @@ import messageRoute from "./routes/message.routes.js";
 import categoryRoute from "./routes/category.routes.js";
 import bookingRoute from "./routes/book.routes.js";
 import adminRoute from "./routes/admin.routes.js";
+import documentRoute from "./routes/document.routes.js";
 import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 import { initTwilio } from "./utils/twilio.js";
@@ -51,6 +52,7 @@ app.use("/api/messages", messageRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/booking", bookingRoute);
 app.use("/api/admin", adminRoute);
+app.use("/api/document", documentRoute);
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
