@@ -17,29 +17,30 @@ import {
 } from "../../Components/ui/dialog"
 import { Alert, AlertDescription, AlertTitle } from "../../Components/ui/alert"
 import { useAuth } from "../../Middleware/AuthProvider"
+import {
+    getTerms,
+    saveDraft as apiSaveDraft,
+    publishTerms as apiPublishTerms,
+    restoreVersion as apiRestoreVersion,
+    deleteVersion as apiDeleteVersion,
+} from "../../api/admin.api"
 
 export default function TermsConditions() {
-    const user = useAuth();
+    const user = useAuth()
     const [terms, setTerms] = useState({
         current: {
-            id: "v1.2",
+            id: "",
             content: "",
-            publishedAt: "2023-03-15T10:00:00Z",
+            publishedAt: "",
             status: "published",
         },
         draft: {
-            id: "v1.3-draft",
+            id: "",
             content: "",
-            updatedAt: "2023-04-18T14:30:00Z",
+            updatedAt: "",
             status: "draft",
         },
-        history: [
-            {
-                id: "v1.2",
-                publishedAt: "2023-03-15T10:00:00Z",
-                publishedBy: user?.user?.name
-            },
-        ],
+        history: [],
     })
 
     const [editor, setEditor] = useState("")
@@ -50,37 +51,31 @@ export default function TermsConditions() {
     const [showHistoryDialog, setShowHistoryDialog] = useState(false)
     const [selectedVersion, setSelectedVersion] = useState(null)
     const [showPreviewDialog, setShowPreviewDialog] = useState(false)
-    const mockCurrentTerms = `# Terms and Conditions
-
-## 1. Introduction
-
-Welcome to our rental platform. These Terms and Conditions govern your use of our website and services.
-Last Updated: March 15, 2023`
-
-    const mockDraftTerms = `# Terms and Conditions
-
-## 1. Introduction
-
-Welcome to our rental platform. These Terms and Conditions govern your use of our website and services.
-
-Last Updated: [Draft Version]`
 
     useEffect(() => {
-        // Simulate loading terms content
-        setTimeout(() => {
+        // Fetch terms from backend
+        getTerms().then((data) => {
             setTerms({
-                ...terms,
                 current: {
-                    ...terms.current,
-                    content: mockCurrentTerms,
+                    id: data.current?.version || "",
+                    content: data.current?.content || "",
+                    publishedAt: data.current?.publishedAt || "",
+                    status: data.current?.status || "published",
                 },
                 draft: {
-                    ...terms.draft,
-                    content: mockDraftTerms,
+                    id: data.draft?.version || "",
+                    content: data.draft?.content || "",
+                    updatedAt: data.draft?.updatedAt || "",
+                    status: data.draft?.status || "draft",
                 },
+                history: (data.history || []).map((h) => ({
+                    id: h.version,
+                    publishedAt: h.publishedAt,
+                    publishedBy: h.publishedBy,
+                })),
             })
-            setEditor(mockDraftTerms)
-        }, 1000)
+            setEditor(data.draft?.content || "")
+        })
     }, [])
 
     const pageTransition = {
@@ -104,73 +99,103 @@ Last Updated: [Draft Version]`
         },
     }
 
-    const handleSaveDraft = () => {
+    const handleSaveDraft = async () => {
         setSaving(true)
-
-        // Simulate API call to save draft
-        setTimeout(() => {
-            setTerms({
-                ...terms,
-                draft: {
-                    ...terms.draft,
-                    content: editor,
-                    updatedAt: new Date().toISOString(),
-                },
-            })
-            setSaving(false)
-        }, 1500)
+        await apiSaveDraft(editor, terms.draft.id || `v${Date.now()}-draft`)
+        // Refresh terms after save
+        const data = await getTerms()
+        setTerms({
+            current: {
+                id: data.current?.version || "",
+                content: data.current?.content || "",
+                publishedAt: data.current?.publishedAt || "",
+                status: data.current?.status || "published",
+            },
+            draft: {
+                id: data.draft?.version || "",
+                content: data.draft?.content || "",
+                updatedAt: data.draft?.updatedAt || "",
+                status: data.draft?.status || "draft",
+            },
+            history: (data.history || []).map((h) => ({
+                id: h.version,
+                publishedAt: h.publishedAt,
+                publishedBy: h.publishedBy,
+            })),
+        })
+        setSaving(false)
     }
 
-    const handlePublish = () => {
+    const handlePublish = async () => {
         setPublishing(true)
-
-        // Simulate API call to publish terms
-        setTimeout(() => {
-            const newVersion = `v${Number.parseFloat(terms.current.id.replace("v", "")) + 0.1}`
-
-            setTerms({
-                ...terms,
-                current: {
-                    id: newVersion,
-                    content: editor,
-                    publishedAt: new Date().toISOString(),
-                    status: "published",
-                },
-                draft: {
-                    id: `${newVersion}-draft`,
-                    content: editor,
-                    updatedAt: new Date().toISOString(),
-                    status: "draft",
-                },
-                history: [
-                    {
-                        id: newVersion,
-                        publishedAt: new Date().toISOString(),
-                        publishedBy: "Sarah Johnson",
-                    },
-                    ...terms.history,
-                ],
-            })
-
-            setPublishing(false)
-            setShowPublishDialog(false)
-        }, 2000)
+        await apiPublishTerms(editor, `v${Number.parseFloat(terms.current.id.replace("v", "")) + 0.1}`, user?.user?.name || "Admin")
+        // Refresh terms after publish
+        const data = await getTerms()
+        setTerms({
+            current: {
+                id: data.current?.version || "",
+                content: data.current?.content || "",
+                publishedAt: data.current?.publishedAt || "",
+                status: data.current?.status || "published",
+            },
+            draft: {
+                id: data.draft?.version || "",
+                content: data.draft?.content || "",
+                updatedAt: data.draft?.updatedAt || "",
+                status: data.draft?.status || "draft",
+            },
+            history: (data.history || []).map((h) => ({
+                id: h.version,
+                publishedAt: h.publishedAt,
+                publishedBy: h.publishedBy,
+            })),
+        })
+        setPublishing(false)
+        setShowPublishDialog(false)
     }
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString)
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "N/A";
         return new Intl.DateTimeFormat("en-US", {
             month: "long",
             day: "numeric",
             year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
-        }).format(date)
-    }
+        }).format(date);
+    };
 
     const handleViewVersion = (version) => {
         setSelectedVersion(version)
         setShowHistoryDialog(true)
+    }
+
+    const handleRestoreVersion = async (version) => {
+        await apiRestoreVersion(version.id)
+        // Refresh terms after restore
+        const data = await getTerms()
+        setTerms({
+            current: {
+                id: data.current?.version || "",
+                content: data.current?.content || "",
+                publishedAt: data.current?.publishedAt || "",
+                status: data.current?.status || "published",
+            },
+            draft: {
+                id: data.draft?.version || "",
+                content: data.draft?.content || "",
+                updatedAt: data.draft?.updatedAt || "",
+                status: data.draft?.status || "draft",
+            },
+            history: (data.history || []).map((h) => ({
+                id: h.version,
+                publishedAt: h.publishedAt,
+                publishedBy: h.publishedBy,
+            })),
+        })
+        setShowHistoryDialog(false)
     }
 
     return (
@@ -342,13 +367,7 @@ Last Updated: [Draft Version]`
                             <Button variant="outline" onClick={() => setShowHistoryDialog(false)}>
                                 Close
                             </Button>
-                            <Button
-                                onClick={() => {
-                                    setEditor(terms.current.content)
-                                    setActiveTab("draft")
-                                    setShowHistoryDialog(false)
-                                }}
-                            >
+                            <Button onClick={() => handleRestoreVersion(selectedVersion)}>
                                 Restore This Version
                             </Button>
                         </DialogFooter>

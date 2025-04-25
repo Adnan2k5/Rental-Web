@@ -18,9 +18,11 @@ import categoryRoute from "./routes/category.routes.js";
 import bookingRoute from "./routes/book.routes.js";
 import adminRoute from "./routes/admin.routes.js";
 import documentRoute from "./routes/document.routes.js";
+import termRoutes from "./routes/terms.routes.js";
 import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 import { initTwilio } from "./utils/twilio.js";
+import { ensureDefaultTerms } from "./controllers/terms.controller.js";
 
 const app = express();
 // Create HTTP server using Express app
@@ -33,7 +35,6 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-initTwilio(); // Initialize Twilio client
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));
@@ -53,6 +54,7 @@ app.use("/api/category", categoryRoute);
 app.use("/api/booking", bookingRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/document", documentRoute);
+app.use("/api/terms", termRoutes); 
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
@@ -60,4 +62,6 @@ server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   connectDB();
   initCloudinary();
+  initTwilio(); // Initialize Twilio client
+  ensureDefaultTerms();
 });
