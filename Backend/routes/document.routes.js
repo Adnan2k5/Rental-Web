@@ -6,6 +6,7 @@ import {
     getDocumentById,
     updateDocument,
     deleteDocument,
+    getDocumentByUserId,
 } from '../controllers/document.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
@@ -26,5 +27,6 @@ router.route('/').get(getAllDocuments).post(upload.fields([
 ]), createDocument);
 
 router.route('/:id').get(getDocumentById).put(updateDocument).delete(deleteDocument);
+router.route('/user/:id').get(getDocumentByUserId);
 
 export default router;

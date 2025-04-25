@@ -59,11 +59,76 @@ export const getAllDocuments = asyncHandler(async (req, res) => {
     );
 });
 
-export const updateDocument = asyncHandler(async (req, res) => { });
+export const updateDocument = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { verified } = req.body;
 
-export const deleteDocument = asyncHandler(async (req, res) => { });
+    if (verified === undefined) {
+        throw new ApiError(400, "At least one field is required for update");
+    }
 
-export const getDocumentById = asyncHandler(async (req, res) => { });
+    const document = await Document.findByIdAndUpdate(
+        id,
+        { verified },
+        { new: true }
+    );
 
-export const getDocumentByUserId = asyncHandler(async (req, res) => { });
+    if (!document) {
+        throw new ApiError(404, "Document not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, "Document updated successfully", {
+            document,
+        })
+    );
+});
+
+export const deleteDocument = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const document = await Document.findByIdAndDelete(id);
+
+    if (!document) {
+        throw new ApiError(404, "Document not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, "Document deleted successfully", {
+            document,
+        })
+    );
+});
+
+export const getDocumentById = asyncHandler(async (req, res) => { 
+    const { id } = req.params;
+
+    const document = await Document.findById(id).populate("owner", "name email phoneNumber");
+
+    if (!document) {
+        throw new ApiError(404, "Document not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, "Document retrieved successfully", {
+            document,
+        })
+    );
+});
+
+export const getDocumentByUserId = asyncHandler(async (req, res) => { 
+    const { id } = req.params;
+
+    const documents = await Document.find({ owner: id }).populate("owner", "name email phoneNumber");
+
+    if (!documents) {
+        throw new ApiError(404, "Documents not found for this user");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, "Documents retrieved successfully", {
+            documents,
+        })
+    );
+});
 
