@@ -73,3 +73,10 @@ export const postItemReview = async (data) => {
     return false;
   }
 };
+
+export const fetchTopReviewedItems = async () => {
+  const res = await axiosClient.get('/api/item/top-reviewed', {
+    withCredentials: true,
+  });
+  return res.data;
+};
