@@ -5,6 +5,8 @@ import { Item } from "../models/item.model.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Review } from "../models/review.model.js";
+import { getLatLongFromAddress } from "../utils/geoencoding.js";
+
 
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -32,7 +34,9 @@ export const discoverItems = asyncHandler(async (req, res) => {
         minPrice = 0,
         maxPrice = 99999999,
         limit = 10,
-        page = 1
+        page = 1,
+        lat,
+        long
     } = req.query;
 
 
@@ -62,11 +66,32 @@ export const discoverItems = asyncHandler(async (req, res) => {
         price: { $gte: minPrice, $lte: maxPrice },
     };
 
-    const items = await Item.find(filter)
-        .populate("owner", "name")
-        .limit(limit * 1)
-        .skip((page - 1) * limit);
+    let itemsQuery = Item.find(filter).populate("owner", "name");
 
+    // If lat/long provided, use geospatial query to sort by distance
+    if (lat && long) {
+        itemsQuery = Item.aggregate([
+            { $geoNear: {
+                near: { type: "Point", coordinates: [parseFloat(long), parseFloat(lat)] },
+                distanceField: "distance",
+                spherical: true,
+                query: filter
+            }},
+            { $sort: { distance: 1 } },
+            { $skip: (page - 1) * limit },
+            { $limit: parseInt(limit) },
+        ]);
+        // Populate owner after aggregation
+        itemsQuery = itemsQuery.exec();
+        // Need to manually populate owner field after aggregation
+        const items = await itemsQuery;
+        // Populate owner for each item
+        const populatedItems = await Item.populate(items, { path: "owner", select: "name" });
+        const totalItems = await Item.countDocuments(filter);
+        return res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items: populatedItems, totalItems }));
+    }
+
+    const items = await itemsQuery.limit(limit * 1).skip((page - 1) * limit);
     const totalItems = await Item.countDocuments(filter);
     res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
 });
@@ -88,6 +113,14 @@ export const createItem = asyncHandler(async (req, res) => {
         return link.url;
     }));
 
+    const { lat, lng } = await getLatLongFromAddress(location);
+
+    if (!lat || !lng) {
+        throw new ApiError(400, "Invalid location provided");
+    }
+
+    console.log(lat, lng)
+
     const item = await Item.create({
         name,
         description,
@@ -97,7 +130,10 @@ export const createItem = asyncHandler(async (req, res) => {
         status: "available",
         bookings: [],
         availableQuantity,
-        location,
+        location: {
+            type: "Point",
+            coordinates: [lng, lat]
+        },
         owner: req.user._id
     });
 
