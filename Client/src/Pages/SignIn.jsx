@@ -90,6 +90,7 @@ export default function SignIn() {
 
   const { register, handleSubmit, reset } = useForm();
   const LoginSubmit = async (data) => {
+    setloading(true);
     try {
       setEmail(data.email);
       const res = await loginUser(data, dispatch);
@@ -110,6 +111,9 @@ export default function SignIn() {
       }
     } catch (err) {
       toast.error('Server Error', err.message);
+    }
+    finally {
+      setloading(false);
     }
   }
   const handleOtpSubmit = async (e) => {

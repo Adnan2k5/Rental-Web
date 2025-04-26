@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { Search, Filter, RefreshCw, Eye, CheckCircle, XCircle } from "lucide-react"
 import { motion } from "framer-motion"
@@ -16,21 +18,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "../../Components/ui/dialog"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "../../Components/ui/pagination"
 import { toast } from "sonner"
-import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn } from "../../assets/Animations"
 import { Particles } from "../../Components/Particles"
 import { getAllDocuments, updateDocument } from "../../api/documents.api"
 import { format } from "date-fns"
+import { Link } from "react-router-dom"
 
 export default function UserVerification() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -39,7 +32,6 @@ export default function UserVerification() {
     const [selectedUser, setSelectedUser] = useState(null)
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
-
 
     const fetchDocuments = async () => {
         const res = await getAllDocuments()
@@ -72,8 +64,7 @@ export default function UserVerification() {
     const getStatusBadge = (verified) => {
         if (verified) {
             return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Approved</Badge>
-        }
-        else {
+        } else {
             return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>
         }
     }
@@ -87,10 +78,9 @@ export default function UserVerification() {
         }
         console.log(updatedUser)
         try {
-            const res = await updateDocument(selectedUser._id, updatedUser);
+            const res = await updateDocument(selectedUser._id, updatedUser)
             if (res.status === 200) {
                 toast.success("User verification approved")
-                location.reload()
             }
         } catch (error) {
             toast.error("Failed to approve verification")
@@ -104,18 +94,16 @@ export default function UserVerification() {
                 verified: false,
                 verifiedAt: new Date(),
             }
-            const res = await updateDocument(updatedUser.owner._id, updatedUser);
+            const res = await updateDocument(updatedUser.owner._id, updatedUser)
             if (res.status === 200) {
                 toast.success("User verification declined")
-            }
-            else {
+            } else {
                 toast.error("Failed to decline verification")
             }
         } catch (error) {
             toast.error("Failed to decline verification")
         }
     }
-
 
     return (
         <motion.div className="min-h-screen bg-light flex" initial="hidden" animate="visible" variants={pageTransition}>
@@ -233,9 +221,7 @@ export default function UserVerification() {
                                                             </div>
                                                         </TableCell>
                                                         <TableCell>{getStatusBadge(user.verified)}</TableCell>
-                                                        <TableCell>
-                                                            {format(user.createdAt, "dd MMM yyyy")}
-                                                        </TableCell>
+                                                        <TableCell>{format(user.createdAt, "dd MMM yyyy")}</TableCell>
                                                         <TableCell className="">
                                                             <Button
                                                                 variant="outline"
@@ -254,9 +240,6 @@ export default function UserVerification() {
                                     )}
                                 </CardContent>
                             </Card>
-
-
-
                         </motion.div>
                     </div>
                 </main>
@@ -264,65 +247,87 @@ export default function UserVerification() {
 
             {/* Document Verification Dialog */}
             {selectedUser && (
-                <Dialog open={isDocumentDialogOpen} className="sm:max-w-[300px] w-full" onOpenChange={setIsDocumentDialogOpen}>
-                    <DialogContent className="">
+                <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
+                    <DialogContent className="max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle>Verify User Documents</DialogTitle>
+                            <DialogTitle className="text-xl font-bold">Verify User Documents</DialogTitle>
                             <DialogDescription>
                                 Review {selectedUser.owner.name}'s verification documents and take action.
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="documents flex flex-col">
-                            <div className="gap-4 py-4">
-                                <div className="space-y-2">
-                                    <h3 className="text-sm font-medium">ID Card</h3>
-                                    <div className="border rounded-md overflow-hidden bg-muted">
+                        <div className="documents grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+                            <motion.div
+                                className="space-y-3"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <h3 className="text-sm font-medium flex items-center">
+                                    <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
+                                        ID Card
+                                    </Badge>
+                                    Identification Document
+                                </h3>
+                                <Link to={selectedUser.documentUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow flex items-center justify-center">
                                         <img
                                             src={selectedUser.documentUrl}
                                             alt="ID Card"
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-contain"
                                         />
                                     </div>
-                                </div>
-                            </div>
-                            <div className=" gap-4 py-4">
-                                <div className="space-y-2">
-                                    <h3 className="text-sm font-medium">User Selfie</h3>
-                                    <div className="border rounded-md overflow-hidden bg-muted">
+                                </Link>
+                            </motion.div>
+
+                            <motion.div
+                                className="space-y-3"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: 0.1 }}
+                            >
+                                <h3 className="text-sm font-medium flex items-center">
+                                    <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
+                                        Selfie
+                                    </Badge>
+                                    User Photo Verification
+                                </h3>
+                                <Link to={selectedUser.imageUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
+                                    <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow  flex items-center justify-center">
                                         <img
                                             src={selectedUser.imageUrl}
-                                            alt="ID Card"
-                                            className="w-full h-full object-cover"
+                                            alt="User Selfie"
+                                            className="w-full h-full object-contain"
                                         />
                                     </div>
-                                </div>
-                            </div>
+                                </Link>
+                            </motion.div>
                         </div>
-                        <div className="flex items-center gap-2 py-2">
-                            <Avatar className="h-8 w-8">
-                                <AvatarFallback>{selectedUser.owner.name.charAt(0)}</AvatarFallback>
+
+                        <motion.div
+                            className="flex flex-col sm:flex-row items-start sm:items-center gap-3 py-3 px-4 bg-gray-100 rounded-lg my-2"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.2, delay: 0.2 }}
+                        >
+                            <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                                <AvatarImage src={selectedUser.owner.profileImage || "/placeholder.svg"} />
+                                <AvatarFallback className="bg-gray-800 text-white">{selectedUser.owner.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
                                 <div className="font-medium">{selectedUser.owner.name}</div>
                                 <div className="text-sm text-muted-foreground">{selectedUser.owner.email}</div>
                             </div>
-                            <div className="ml-auto">{getStatusBadge(selectedUser.verified)}</div>
-                        </div>
+                            <div className="ml-auto mt-2 sm:mt-0">{getStatusBadge(selectedUser.verified)}</div>
+                        </motion.div>
 
-                        {/* {selectedUser.status === "declined" && selectedUser.declineReason && (
-                            <div className="bg-red-50 p-3 rounded-md text-sm text-red-800 mb-4">
-                                <span className="font-medium">Decline reason:</span> {selectedUser.declineReason}
-                            </div>
-                        )} */}
-
-                        <DialogFooter>
+                        <DialogFooter className="flex-col sm:flex-row gap-3 mt-4">
                             <Button variant="outline" onClick={() => setIsDocumentDialogOpen(false)}>
                                 Cancel
                             </Button>
                             <Button
                                 variant="destructive"
-                                className="bg-red-500 hover:bg-red-600 text-white"
+                                className="bg-red-500 hover:bg-red-600 text-white transition-colors"
                                 onClick={handleDecline}
                             >
                                 <XCircle className="h-4 w-4 mr-2" />
@@ -330,7 +335,7 @@ export default function UserVerification() {
                             </Button>
                             <Button
                                 variant="default"
-                                className="bg-green-500 hover:bg-green-600 text-white"
+                                className="bg-green-500 hover:bg-green-600 text-white transition-colors"
                                 onClick={handleApprove}
                             >
                                 <CheckCircle className="h-4 w-4 mr-2" />

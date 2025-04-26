@@ -6,17 +6,14 @@ import { useForm } from "react-hook-form"
 import { User, Mail, Phone, MapPin, Camera, Save } from "lucide-react"
 import { Button } from "../../Components/ui/button"
 import { Input } from "../../Components/ui/input"
-import { Textarea } from "../../Components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar"
 import { Label } from "../../Components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../Components/ui/card"
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
-import { Loader } from "../../Components/loader"
 import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogFooter } from "../../Components/ui/dialog"
 import { Otpresend, Otpsend, updatePassword, UserUpdate, VerifyEmail } from "../../api/auth.api"
 import { useDispatch } from "react-redux"
-import { set } from "date-fns"
 
 export default function Settings() {
     const { user } = useAuth()

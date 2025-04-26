@@ -71,7 +71,6 @@ export default function BrowsePage() {
         }));
       },
       (err) => {
-        // Optionally handle error or fallback
       }
     );
   }, []);
@@ -90,7 +89,7 @@ export default function BrowsePage() {
       setLoading(true);
       try {
         const res = await fetchAllItems(filters);
-        setitems(res.data.message.items.filter((item) => item.owner._id !== user._id));
+        setitems(res.data.message.items); //removed filter
         setCountItems(res.data.message.totalItems);
       } catch (err) {
         console.log(err);

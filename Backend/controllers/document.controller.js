@@ -8,6 +8,8 @@ import { User } from "../models/user.model.js";
 
 export const createDocument = asyncHandler(async (req, res) => {
     const { country } = req.body;
+    console.log(req)
+
 
     if (!country) {
         throw new ApiError(400, "Country is required");
@@ -142,4 +144,3 @@ export const getDocumentByUserId = asyncHandler(async (req, res) => {
         })
     );
 });
-

@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Plus, Upload, X, Edit, Trash2, Sparkles } from "lucide-react"
