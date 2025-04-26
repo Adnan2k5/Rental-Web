@@ -18,12 +18,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '../../Components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../../Components/ui/dropdown-menu';
 import { Badge } from '../../Components/ui/badge';
 import { Card, CardContent } from '../../Components/ui/card';
 import {
@@ -182,6 +176,8 @@ export default function ManageUsers() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  console.log(users)
 
   const updateUserStatus = async () => {
     console.log(selectedUser._id, selectedUser.status);
@@ -343,7 +339,7 @@ export default function ManageUsers() {
                             {user.bookings.length}
                           </TableCell>
                           <TableCell className="text-center">
-                            {user.verified ? (
+                            {user.documentVerified ? (
                               <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                             ) : (
                               <XCircle className="h-5 w-5 text-red-500 mx-auto" />
