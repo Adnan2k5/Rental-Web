@@ -36,10 +36,11 @@ export const createBooking = asyncHandler(async (req, res) => {
             });
 
             req.user.bookings.push(booking._id);
-            await req.user.save();
             return booking;
         }
     ));
+
+    await req.user.save();
 
     // Clear the cart after booking
     cart.items = [];
