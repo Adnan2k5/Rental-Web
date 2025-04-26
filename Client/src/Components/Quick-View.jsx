@@ -4,7 +4,6 @@ import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "./ui/dialog"
 import { Badge } from "./ui/badge"
 import { Separator } from "./ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import { Link } from "react-router-dom"
 import { addItemToCartApi } from "../api/carts.api"
 import { toast } from "sonner"
@@ -16,6 +15,9 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
   const [startDate, setStart] = useState(new Date());
   const [endDate, setEnd] = useState(new Date());
   const [duration, setDuration] = useState(1);
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
 
   const updateQuantity = (value) => {
     if (value >= 1) {
@@ -47,24 +49,6 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
     }
   }
 
-  const description = product.description || "Premium quality rental item with reliable performance and regular maintenance."
-
-  const features = [
-    "High-quality build and materials",
-    "Energy efficient design",
-    "Latest technology and features",
-    "Regular maintenance included",
-    "Free delivery and setup",
-  ]
-
-  const specifications = {
-    Dimensions: "Variable based on model",
-    Weight: "Depends on configuration",
-    Power: "Standard electrical requirements",
-    Warranty: "Covered during rental period",
-    Condition: "Excellent (regularly maintained)",
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[600px] md:max-w-[800px] max-h-[90vh] md:max-h-[800px] overflow-y-auto bg-white text-black border-none">
@@ -78,9 +62,9 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
         </DialogHeader>
 
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Product Image */}
-            <div className="relative rounded-lg overflow-hidden bg-gray-100 aspect-square group">
+            <div className="relative rounded-lg overflow-hidden bg-gray-100 aspect-square group shadow-md">
               <img
                 src={product.images[0] || "/placeholder.svg"}
                 alt={product.name}
@@ -100,8 +84,8 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
             </div>
 
             {/* Product Details */}
-            <div className="flex flex-col">
-              <div className="mb-4">
+            <div className="flex flex-col h-full justify-between">
+              <div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
                   <span>{product.category}</span>
                   <span>•</span>
@@ -126,104 +110,77 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                   </Badge>
                 </div>
 
-                <p className="text-sm text-gray-800 mb-6">{description}</p>
-              </div>
-
-              <Separator className="mb-4 bg-gray-400" />
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-sm font-medium mb-1 block text-black">Quantity</label>
-                  <div className="flex items-center">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 rounded-r-none border-gray-400 text-black hover:bg-black hover:text-white"
-                      onClick={() => updateQuantity(quantity - 1)}
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <div className="h-8 px-4 flex items-center justify-center border-y border-gray-400 bg-white text-black">
-                      {quantity}
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block text-black">Quantity</label>
+                    <div className="flex items-center">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-r-none border-gray-400 text-black hover:bg-black hover:text-white"
+                        onClick={() => updateQuantity(quantity - 1)}
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <div className="h-8 px-4 flex items-center justify-center border-y border-gray-400 bg-white text-black">
+                        {quantity}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-l-none border-gray-400 text-black hover:bg-black hover:text-white"
+                        onClick={() => updateQuantity(quantity + 1)}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
                     </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <Label className="text-sm font-medium mb-1 block text-black">Rental Duration (Days)</Label>
+                    <div className="inputs flex flex-col gap-5">
+                      <input placeholder="Start Date" type="date" min={today} onChange={(e) => { setStart(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md " />
+                      <input placeholder="End Date" type="date" min={today} onChange={(e) => { setEnd(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+                  {product.availableQuantity > 0 && (
                     <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8 rounded-l-none border-gray-400 text-black hover:bg-black hover:text-white"
-                      onClick={() => updateQuantity(quantity + 1)}
+                      className="flex-1 bg-black hover:bg-gray-900 text-white gap-2"
+                      onClick={handleAddToCart}
+                      disabled={isLoading}
                     >
-                      <Plus className="h-3 w-3" />
+                      <ShoppingCart className="h-4 w-4" />
+                      {isLoading ? "Adding..." : "Add to Cart"}
                     </Button>
-                  </div>
+                  )}
+          
                 </div>
-
-                <div className="flex flex-col">
-                  <Label className="text-sm font-medium mb-1 block text-black">Rental Duration (Days)</Label>
-                  <div className="inputs flex flex-col gap-5">
-                    <input placeholder="Start Date" type="date" onChange={(e) => { setStart(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md " />
-                    <input placeholder="End Date" type="date" onChange={(e) => { setEnd(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md" />
-                  </div>
-
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                <Button
-                  className="flex-1 bg-black hover:bg-gray-900 text-white gap-2"
-                  onClick={handleAddToCart}
-                  disabled={isLoading}
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  {isLoading ? "Adding..." : "Add to Cart"}
-                </Button>
-                <Link to={`/product/${product.id}`} className="flex-1">
-                  <Button
-                    variant="outline"
-                    className="w-full border-black text-black hover:bg-black hover:text-white gap-2"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    View Details
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
 
-          <Tabs defaultValue="features" className="mt-8">
-            <TabsList className="grid w-full grid-cols-2 bg-gray-100">
-              <TabsTrigger value="features" className="data-[state=active]:bg-black data-[state=active]:text-white">
-                Features
-              </TabsTrigger>
-              <TabsTrigger value="specifications" className="data-[state=active]:bg-black data-[state=active]:text-white">
-                Specifications
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="features" className="pt-4">
-              <ul className="space-y-2">
-                {features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <div className="h-5 w-5 rounded-full bg-black/10 flex items-center justify-center mt-0.5">
-                      <svg className="h-3 w-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <span className="text-black">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </TabsContent>
-            <TabsContent value="specifications" className="pt-4">
-              <div className="space-y-2">
-                {Object.entries(specifications).map(([key, value], index) => (
-                  <div key={index} className="grid grid-cols-2 gap-2 py-2 border-b border-gray-300 last:border-0">
-                    <div className="font-medium text-black">{key}</div>
-                    <div className="text-gray-700">{value}</div>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+          {/* Description first, then map below */}
+          <div className="bg-gray-50 rounded-lg p-4 min-h-[80px] max-h-64 overflow-y-auto text-black text-sm leading-relaxed shadow-inner mb-6 mt-6">
+            {product.description}
+          </div>
+          {product.location && product.location.coordinates && (
+            <div className="mb-6 w-full h-56 md:h-64 rounded overflow-hidden shadow-sm">
+              <iframe
+                title="Item Location"
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: 180 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps?q=${product.location.coordinates[1]},${product.location.coordinates[0]}&z=15&output=embed`}
+              ></iframe>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

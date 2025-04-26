@@ -119,8 +119,6 @@ export const createItem = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid location provided");
     }
 
-    console.log(lat, lng)
-
     const item = await Item.create({
         name,
         description,
