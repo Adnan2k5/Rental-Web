@@ -162,14 +162,14 @@ export default function Settings() {
                 >
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profile Picture</CardTitle>
+                            <CardTitle>Profile</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center">
                             <div className="relative mb-4">
                                 <Avatar className="h-24 w-24">
 
                                     <AvatarFallback className="text-2xl">
-                                        {user?.name?.charAt(0) || user?.email?.charAt(0)}
+                                        {user?.name?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
@@ -178,11 +178,6 @@ export default function Settings() {
                                 <p className="text-sm text-muted-foreground">{user?.email}</p>
                             </div>
                         </CardContent>
-                        <CardFooter className="flex justify-center border-t pt-4">
-                            <Button variant="outline" size="sm" className="w-full">
-                                Remove Photo
-                            </Button>
-                        </CardFooter>
                     </Card>
                 </motion.div>
 
