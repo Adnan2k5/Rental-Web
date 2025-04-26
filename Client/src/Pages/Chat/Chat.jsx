@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 import io from "socket.io-client"
 import Header from "./Header"
