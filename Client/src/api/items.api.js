@@ -8,6 +8,8 @@ export const fetchAllItems = async ({
   query,
   page,
   limit,
+  lat,
+  long,
 } = {}) => {
   const res = await axiosClient.get('/api/item/discover', {
     withCredentials: true,
@@ -21,6 +23,8 @@ export const fetchAllItems = async ({
       query,
       page,
       limit,
+      lat, 
+      long,
     },
   });
   return res;
@@ -68,4 +72,11 @@ export const postItemReview = async (data) => {
   } else {
     return false;
   }
+};
+
+export const fetchTopReviewedItems = async () => {
+  const res = await axiosClient.get('/api/item/top-reviewed', {
+    withCredentials: true,
+  });
+  return res.data;
 };
