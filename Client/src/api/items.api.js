@@ -36,7 +36,6 @@ export const fetchByUserId = async (userId) => {
 };
 
 export const createItems = async (data) => {
-  console.log('data', data);
   const res = await axiosClient.post('/api/item/upload', data, {
     withCredentials: true,
     headers: { 'Content-Type': 'multipart/form-data' },
