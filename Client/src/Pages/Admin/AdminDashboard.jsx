@@ -45,6 +45,7 @@ import {
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import { getStats } from '../../api/admin.api';
+import { format } from 'date-fns';
 
 export default function AdminDashboard() {
 
@@ -623,7 +624,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-sm text-right">
-                          <div>Joined {user.createdAt}</div>
+                          <div>Joined {format(user.createdAt, "dd-MM-yyyy")}</div>
                         </div>
                         <Button variant="ghost" size="icon">
                           <ChevronDown className="h-4 w-4" />

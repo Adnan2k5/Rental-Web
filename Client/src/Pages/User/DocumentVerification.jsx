@@ -12,48 +12,19 @@ import { Alert, AlertDescription } from "../../Components/ui/alert"
 import { itemFadeIn, pageTransition } from "../../assets/Animations"
 import { colors } from "../../assets/Color"
 import { toast } from "sonner"
+import { useAuth } from "../../Middleware/AuthProvider"
+import { getDocumentByUserId, submitDocument } from "../../api/documents.api"
 
-// Mock API function - replace with your actual API call
-const fetchVerificationStatus = async () => {
-    // Simulate API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            // For demo purposes, return a status
-            // In a real app, this would come from your backend
-            const statuses = ["not_submitted", "pending", "verified", "declined"]
-            const randomStatus = statuses[0] // Change index to test different states
-            resolve({
-                status: randomStatus,
-                message: "Your verification is being processed",
-                submittedAt: new Date().toISOString(),
-                verifiedAt: randomStatus === "verified" ? new Date().toISOString() : null,
-                declinedReason: randomStatus === "declined" ? "The ID document was not clearly visible" : null,
-            })
-        }, 1000)
-    })
-}
 
-// Mock submit function - replace with your actual API call
-const submitDocuments = async (formData) => {
-    // Simulate API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                success: true,
-                status: "pending",
-                message: "Your verification is being processed",
-                submittedAt: new Date().toISOString(),
-            })
-        }, 1500)
-    })
-}
+
+
+
 
 export default function DocumentVerification() {
     const [verificationStatus, setVerificationStatus] = useState("loading")
     const [statusDetails, setStatusDetails] = useState(null)
-    const [loading, setLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [error, setError] = useState(null)
+    const [document, setDocument] = useState(null)
 
     // Document upload state
     const [governmentId, setGovernmentId] = useState(null)
@@ -61,47 +32,25 @@ export default function DocumentVerification() {
     const [governmentIdPreview, setGovernmentIdPreview] = useState(null)
     const [selfiePreview, setSelfiePreview] = useState(null)
     const [errors, setErrors] = useState({})
+    const [country, setCountry] = useState("")
 
     const governmentIdRef = useRef(null)
     const selfieRef = useRef(null)
 
-    useEffect(() => {
-        const getStatus = async () => {
-            try {
-                setLoading(true)
-                const result = await fetchVerificationStatus()
-                setVerificationStatus(result.status)
-                setStatusDetails(result)
-            } catch (err) {
-                console.error("Error fetching verification status:", err)
-                setError("Failed to load verification status. Please try again.")
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        getStatus()
-    }, [])
 
     const handleGovernmentIdChange = (e) => {
         const file = e.target.files[0]
         if (file) {
-            // Validate file type and size
             if (!["image/jpeg", "image/png", "image/jpg", "application/pdf"].includes(file.type)) {
                 setErrors((prev) => ({ ...prev, governmentId: "Please upload a valid image (JPEG, PNG) or PDF file" }))
                 return
             }
-
             if (file.size > 5 * 1024 * 1024) {
-                // 5MB limit
                 setErrors((prev) => ({ ...prev, governmentId: "File size should be less than 5MB" }))
                 return
             }
-
             setGovernmentId(file)
             setErrors((prev) => ({ ...prev, governmentId: null }))
-
-            // Create preview for image files
             if (file.type.startsWith("image/")) {
                 const reader = new FileReader()
                 reader.onload = () => {
@@ -109,7 +58,6 @@ export default function DocumentVerification() {
                 }
                 reader.readAsDataURL(file)
             } else {
-                // For PDF, just show an icon
                 setGovernmentIdPreview("pdf")
             }
         }
@@ -118,14 +66,12 @@ export default function DocumentVerification() {
     const handleSelfieChange = (e) => {
         const file = e.target.files[0]
         if (file) {
-            // Validate file type and size
             if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
                 setErrors((prev) => ({ ...prev, selfie: "Please upload a valid image (JPEG, PNG)" }))
                 return
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                // 5MB limit
                 setErrors((prev) => ({ ...prev, selfie: "File size should be less than 5MB" }))
                 return
             }
@@ -133,7 +79,6 @@ export default function DocumentVerification() {
             setSelfie(file)
             setErrors((prev) => ({ ...prev, selfie: null }))
 
-            // Create preview
             const reader = new FileReader()
             reader.onload = () => {
                 setSelfiePreview(reader.result)
@@ -160,8 +105,6 @@ export default function DocumentVerification() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-
-        // Validate form
         const newErrors = {}
         if (!governmentId) {
             newErrors.governmentId = "Government ID is required"
@@ -174,19 +117,14 @@ export default function DocumentVerification() {
             setErrors(newErrors)
             return
         }
-
         setIsSubmitting(true)
-
-        // Create form data
-        const formData = new FormData()
-        formData.append("governmentId", governmentId)
-        formData.append("selfie", selfie)
-
+        const formData = new FormData();
+        formData.append("document", governmentId)
+        formData.append("image", selfie)
+        formData.append("country", country)
         try {
-            const result = await submitDocuments(formData)
-            if (result.success) {
-                setVerificationStatus("pending")
-                setStatusDetails(result)
+            const result = await submitDocument(formData)
+            if (result.status === 201) {
                 toast.success("Documents submitted successfully!")
             } else {
                 throw new Error(result.error || "Failed to submit documents")
@@ -208,47 +146,34 @@ export default function DocumentVerification() {
         setErrors({})
     }
 
+    const { user } = useAuth()
     const getStatusBadge = () => {
-        switch (verificationStatus) {
-            case "loading":
-                return (
-                    <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-                        <div className="animate-spin h-3 w-3 border-b-2 border-current rounded-full mr-1"></div>
-                        <span>Loading...</span>
-                    </Badge>
-                )
-            case "not_submitted":
-                return (
-                    <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                        <span>Not Verified</span>
-                    </Badge>
-                )
-            case "pending":
-                return (
-                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                        <Clock className="h-3 w-3 mr-1" />
-                        <span>Pending Review</span>
-                    </Badge>
-                )
-            case "verified":
-                return (
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        <span>Verified</span>
-                    </Badge>
-                )
-            case "declined":
-                return (
-                    <Badge className="bg-red-100 text-red-800 border-red-200">
-                        <AlertCircle className="h-3 w-3 mr-1" />
-                        <span>Declined</span>
-                    </Badge>
-                )
-            default:
-                return null
+        try {
+            if (user.documentVerified) {
+                return <Badge variant="success">Verified</Badge>
+            }
+            else if (document && document.verified === false) {
+                return <Badge variant="">Pending</Badge>
+            }
+            else if (document && document.verified === true) {
+                return <Badge variant="success">Verified</Badge>
+            }
+            else {
+                return <Badge variant="default">Unknown</Badge>
+            }
+
+        }
+        catch (error) {
+            return <Badge variant="destructive">Unknown</Badge>
+        }
+        finally {
         }
     }
+
+    useEffect(() => {
+        getStatusBadge()
+    }, [user.documentVerified])
+
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A"
@@ -259,6 +184,32 @@ export default function DocumentVerification() {
             day: "numeric",
         }).format(date)
     }
+
+    const fetchDocuments = async () => {
+        const res = await getDocumentByUserId(user._id);
+        if (res.status === 200) {
+            setDocument(res.data.message.documents[0])
+        }
+    }
+
+    useEffect(() => {
+        if (user && user._id) {
+            fetchDocuments()
+        }
+    }, [user])
+
+
+    useEffect(() => {
+        if (document) {
+            if (document.verified) {
+                setVerificationStatus("verified")
+            }
+            else {
+                setVerificationStatus("pending")
+            }
+        }
+    })
+
 
     return (
         <motion.div initial="hidden" animate="visible" variants={pageTransition}>
@@ -291,21 +242,22 @@ export default function DocumentVerification() {
                         <CardDescription>We need to verify your identity to ensure the security of your account</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {loading && verificationStatus === "loading" ? (
-                            <div className="flex items-center justify-center py-8">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                            </div>
-                        ) : verificationStatus === "not_submitted" ? (
+                        {user.documentVerified === false && document === null ? (
                             <div className="space-y-6">
-                                {errors.submit && (
-                                    <Alert variant="destructive">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertDescription>{errors.submit}</AlertDescription>
-                                    </Alert>
-                                )}
-
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-4">
+                                        <div>
+                                            <Label htmlFor="country" className="text-base font-medium">
+                                                Country of Residence
+                                            </Label>
+                                            <input
+                                                id="country"
+                                                type="text"
+                                                placeholder="Enter your country"
+                                                className="mt-2 Input"
+                                                onChange={(e) => setCountry(e.target.value)}
+                                            />
+                                        </div>
                                         <div>
                                             <Label htmlFor="government-id" className="text-base font-medium">
                                                 Government ID
@@ -466,7 +418,7 @@ export default function DocumentVerification() {
                                 <div className="bg-muted/30 rounded-lg p-4 w-full max-w-md">
                                     <div className="flex justify-between text-sm mb-2">
                                         <span className="text-muted-foreground">Submitted on:</span>
-                                        <span className="font-medium">{formatDate(statusDetails?.submittedAt)}</span>
+                                        <span className="font-medium">{formatDate(document.createdAt)}</span>
                                     </div>
                                     <div className="w-full bg-muted/50 rounded-full h-2.5 mb-4">
                                         <div className="bg-amber-500 h-2.5 rounded-full w-1/2"></div>
@@ -495,11 +447,11 @@ export default function DocumentVerification() {
                                 <div className="mt-6 bg-muted/30 rounded-lg p-4 w-full max-w-md">
                                     <div className="flex justify-between text-sm mb-1">
                                         <span className="text-muted-foreground">Submitted on:</span>
-                                        <span className="font-medium">{formatDate(statusDetails?.submittedAt)}</span>
+                                        <span className="font-medium">{formatDate(document?.createdAt)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">Verified on:</span>
-                                        <span className="font-medium">{formatDate(statusDetails?.verifiedAt)}</span>
+                                        <span className="font-medium">{formatDate(document?.updatedAt)}</span>
                                     </div>
                                 </div>
                             </div>
