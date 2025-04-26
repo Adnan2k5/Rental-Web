@@ -7,16 +7,14 @@ export const loginUser = async (data, dispatch) => {
     const res = await axiosClient.post('/api/auth/login', data, {
       withCredentials: true,
     });
-    console.log('res', res);
     if (res.status === 200) {
       dispatch(loginSuccess(res.data.data));
       return 200;
     }
-    if (res.status === 400) {
+    else {
       return 400;
     }
   } catch (err) {
-    // dispatch(loginFailure(err.response.status));
     if (err.response.status) {
       return err.response.status;
     }
