@@ -681,14 +681,6 @@ export default function ManageItems() {
                                   <DropdownMenuItem>
                                     View Details
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    Toggle Featured
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>
-                                    {item.status === 'active'
-                                      ? 'Deactivate'
-                                      : 'Activate'}
-                                  </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     Delete Item
                                   </DropdownMenuItem>
@@ -832,14 +824,6 @@ export default function ManageItems() {
                                       <DropdownMenuContent align="end">
                                         <DropdownMenuItem>
                                           View Details
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                          Toggle Featured
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                          {item.status === 'active'
-                                            ? 'Deactivate'
-                                            : 'Activate'}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="text-red-600">
                                           Delete Item
@@ -1015,10 +999,7 @@ export default function ManageItems() {
                         <SelectValue placeholder="Select period" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="hour">Hour</SelectItem>
                         <SelectItem value="day">Day</SelectItem>
-                        <SelectItem value="week">Week</SelectItem>
-                        <SelectItem value="month">Month</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

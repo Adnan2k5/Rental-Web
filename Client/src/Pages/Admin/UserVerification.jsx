@@ -1,7 +1,5 @@
-"use client"
-
 import { useState, useEffect } from "react"
-import { Search, Filter, RefreshCw, Eye, CheckCircle, XCircle, Clock } from "lucide-react"
+import { Search, Filter, RefreshCw, Eye, CheckCircle, XCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "../../Components/ui/button"
 import { Input } from "../../Components/ui/input"
@@ -31,6 +29,8 @@ import { toast } from "sonner"
 import { colors } from "../../assets/Color"
 import { pageTransition, itemFadeIn } from "../../assets/Animations"
 import { Particles } from "../../Components/Particles"
+import { getAllDocuments, updateDocument } from "../../api/documents.api"
+import { format } from "date-fns"
 
 export default function UserVerification() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -41,169 +41,87 @@ export default function UserVerification() {
     const [loading, setLoading] = useState(true)
 
 
-    // Mock data for verification requests
-    useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            const mockUsers = [
-                {
-                    _id: "usr1",
-                    name: "John Doe",
-                    email: "john.doe@example.com",
-                    avatar: "/placeholder.svg?height=40&width=40",
-                    status: "pending",
-                    submittedAt: new Date("2023-05-15"),
-                    documents: {
-                        idCard: "/placeholder.svg?height=600&width=400&text=ID+Card",
-                        proofOfAddress: "/placeholder.svg?height=600&width=400&text=Proof+of+Address",
-                    },
-                },
-                {
-                    _id: "usr2",
-                    name: "Jane Smith",
-                    email: "jane.smith@example.com",
-                    avatar: "/placeholder.svg?height=40&width=40",
-                    status: "pending",
-                    submittedAt: new Date("2023-05-16"),
-                    documents: {
-                        idCard: "/placeholder.svg?height=600&width=400&text=ID+Card",
-                        proofOfAddress: "/placeholder.svg?height=600&width=400&text=Proof+of+Address",
-                    },
-                },
-                {
-                    _id: "usr3",
-                    name: "Michael Johnson",
-                    email: "michael.johnson@example.com",
-                    avatar: "/placeholder.svg?height=40&width=40",
-                    status: "approved",
-                    submittedAt: new Date("2023-05-10"),
-                    verifiedAt: new Date("2023-05-12"),
-                    documents: {
-                        idCard: "/placeholder.svg?height=600&width=400&text=ID+Card",
-                        proofOfAddress: "/placeholder.svg?height=600&width=400&text=Proof+of+Address",
-                    },
-                },
-                {
-                    _id: "usr4",
-                    name: "Emily Williams",
-                    email: "emily.williams@example.com",
-                    avatar: "/placeholder.svg?height=40&width=40",
-                    status: "declined",
-                    submittedAt: new Date("2023-05-08"),
-                    verifiedAt: new Date("2023-05-09"),
-                    documents: {
-                        idCard: "/placeholder.svg?height=600&width=400&text=ID+Card",
-                        proofOfAddress: "/placeholder.svg?height=600&width=400&text=Proof+of+Address",
-                    },
-                    declineReason: "Documents unclear or expired",
-                },
-                {
-                    _id: "usr5",
-                    name: "David Brown",
-                    email: "david.brown@example.com",
-                    avatar: "/placeholder.svg?height=40&width=40",
-                    status: "pending",
-                    submittedAt: new Date("2023-05-17"),
-                    documents: {
-                        idCard: "/placeholder.svg?height=600&width=400&text=ID+Card",
-                        proofOfAddress: "/placeholder.svg?height=600&width=400&text=Proof+of+Address",
-                    },
-                },
-            ]
-            setUsers(mockUsers)
+    const fetchDocuments = async () => {
+        const res = await getAllDocuments()
+        if (res.status === 200) {
+            setUsers(res.data.message.documents)
             setLoading(false)
-        }, 1000)
+        }
+        if (res.status === 400) {
+            toast.error("Failed to fetch documents")
+        }
+    }
+
+    useEffect(() => {
+        fetchDocuments()
     }, [])
 
-    // Filter users based on search query and status
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesStatus = selectedStatus === "all" || user.status === selectedStatus
+            user.owner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.owner.email.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesStatus = selectedStatus === "all" || user.verified === selectedStatus
         return matchesSearch && matchesStatus
     })
 
-    // Handle document view
     const handleViewDocuments = (user) => {
         setSelectedUser(user)
         setIsDocumentDialogOpen(true)
     }
 
-    // Get status badge
-    const getStatusBadge = (status) => {
-        switch (status) {
-            case "approved":
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Approved</Badge>
-            case "declined":
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Declined</Badge>
-            case "pending":
-                return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>
-            default:
-                return <Badge variant="outline">{status}</Badge>
+    const getStatusBadge = (verified) => {
+        if (verified) {
+            return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Approved</Badge>
+        }
+        else {
+            return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>
         }
     }
 
     // Handle verification approval
     const handleApprove = async () => {
+        const updatedUser = {
+            ...selectedUser,
+            verified: true,
+            verifiedAt: new Date(),
+        }
+        console.log(updatedUser)
         try {
-            // Simulate API call
-            // In a real app, you would call an API endpoint to update the user's verification status
-            setTimeout(() => {
-                setUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user._id === selectedUser._id ? { ...user, status: "approved", verifiedAt: new Date() } : user,
-                    ),
-                )
-                setIsDocumentDialogOpen(false)
-                toast.success("User verification approved successfully")
-            }, 500)
+            const res = await updateDocument(selectedUser._id, updatedUser);
+            if (res.status === 200) {
+                toast.success("User verification approved")
+                location.reload()
+            }
         } catch (error) {
             toast.error("Failed to approve verification")
         }
     }
-
     // Handle verification decline
     const handleDecline = async () => {
         try {
-            // Simulate API call
-            // In a real app, you would call an API endpoint to update the user's verification status
-            setTimeout(() => {
-                setUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user._id === selectedUser._id
-                            ? {
-                                ...user,
-                                status: "declined",
-                                verifiedAt: new Date(),
-                                declineReason: "Documents do not meet requirements",
-                            }
-                            : user,
-                    ),
-                )
-                setIsDocumentDialogOpen(false)
+            const updatedUser = {
+                ...selectedUser,
+                verified: false,
+                verifiedAt: new Date(),
+            }
+            const res = await updateDocument(updatedUser.owner._id, updatedUser);
+            if (res.status === 200) {
                 toast.success("User verification declined")
-            }, 500)
+            }
+            else {
+                toast.error("Failed to decline verification")
+            }
         } catch (error) {
             toast.error("Failed to decline verification")
         }
     }
 
-    // Format date
-    const formatDate = (date) => {
-        return new Date(date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        })
-    }
 
     return (
         <motion.div className="min-h-screen bg-light flex" initial="hidden" animate="visible" variants={pageTransition}>
             <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
                 <main className="flex-1 p-6 overflow-auto relative">
                     <Particles />
-
                     <div className="relative z-10">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                             <div>
@@ -272,9 +190,8 @@ export default function UserVerification() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">All Status</SelectItem>
-                                            <SelectItem value="pending">Pending</SelectItem>
-                                            <SelectItem value="approved">Approved</SelectItem>
-                                            <SelectItem value="declined">Declined</SelectItem>
+                                            <SelectItem value="false">Pending</SelectItem>
+                                            <SelectItem value="true">Approved</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -301,23 +218,24 @@ export default function UserVerification() {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {filteredUsers.map((user) => (
-                                                    <TableRow key={user._id} className="hover:bg-gray-50">
-                                                        <TableCell className="font-medium">{user._id}</TableCell>
+                                                {filteredUsers.map((user, index) => (
+                                                    <TableRow key={index} className="hover:bg-gray-50">
+                                                        <TableCell className="font-medium">{index + 1}</TableCell>
                                                         <TableCell>
                                                             <div className="flex items-center gap-3">
                                                                 <Avatar className="h-8 w-8">
-                                                                    <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                                                                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                                                    <AvatarFallback>{user.owner.name.charAt(0)}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div>
-                                                                    <div className="font-medium">{user.name}</div>
-                                                                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                                                                    <div className="font-medium">{user.owner.name}</div>
+                                                                    <div className="text-sm text-muted-foreground">{user.owner.email}</div>
                                                                 </div>
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell>{getStatusBadge(user.status)}</TableCell>
-                                                        <TableCell>{formatDate(user.submittedAt)}</TableCell>
+                                                        <TableCell>{getStatusBadge(user.verified)}</TableCell>
+                                                        <TableCell>
+                                                            {format(user.createdAt, "dd MMM yyyy")}
+                                                        </TableCell>
                                                         <TableCell className="">
                                                             <Button
                                                                 variant="outline"
@@ -337,30 +255,8 @@ export default function UserVerification() {
                                 </CardContent>
                             </Card>
 
-                            {/* Pagination */}
-                            <div className="mt-6 flex justify-center">
-                                <Pagination>
-                                    <PaginationContent>
-                                        <PaginationItem>
-                                            <PaginationPrevious href="#" />
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#" isActive>
-                                                1
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#">2</PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationEllipsis />
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationNext href="#" />
-                                        </PaginationItem>
-                                    </PaginationContent>
-                                </Pagination>
-                            </div>
+
+
                         </motion.div>
                     </div>
                 </main>
@@ -368,78 +264,78 @@ export default function UserVerification() {
 
             {/* Document Verification Dialog */}
             {selectedUser && (
-                <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
-                    <DialogContent className="sm:max-w-[900px]">
+                <Dialog open={isDocumentDialogOpen} className="sm:max-w-[300px] w-full" onOpenChange={setIsDocumentDialogOpen}>
+                    <DialogContent className="">
                         <DialogHeader>
                             <DialogTitle>Verify User Documents</DialogTitle>
                             <DialogDescription>
-                                Review {selectedUser.name}'s verification documents submitted on {formatDate(selectedUser.submittedAt)}
+                                Review {selectedUser.owner.name}'s verification documents and take action.
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium">ID Card</h3>
-                                <div className="border rounded-md overflow-hidden bg-muted h-[300px]">
-                                    <img
-                                        src={selectedUser.documents.idCard || "/placeholder.svg"}
-                                        alt="ID Card"
-                                        className="w-full h-full object-contain"
-                                    />
+                        <div className="documents flex flex-col">
+                            <div className="gap-4 py-4">
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-medium">ID Card</h3>
+                                    <div className="border rounded-md overflow-hidden bg-muted">
+                                        <img
+                                            src={selectedUser.documentUrl}
+                                            alt="ID Card"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium">Proof of Address</h3>
-                                <div className="border rounded-md overflow-hidden bg-muted h-[300px]">
-                                    <img
-                                        src={selectedUser.documents.proofOfAddress || "/placeholder.svg"}
-                                        alt="Proof of Address"
-                                        className="w-full h-full object-contain"
-                                    />
+                            <div className=" gap-4 py-4">
+                                <div className="space-y-2">
+                                    <h3 className="text-sm font-medium">User Selfie</h3>
+                                    <div className="border rounded-md overflow-hidden bg-muted">
+                                        <img
+                                            src={selectedUser.imageUrl}
+                                            alt="ID Card"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2 py-2">
                             <Avatar className="h-8 w-8">
-                                <AvatarImage src={selectedUser.avatar || "/placeholder.svg"} alt={selectedUser.name} />
-                                <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
+                                <AvatarFallback>{selectedUser.owner.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                                <div className="font-medium">{selectedUser.name}</div>
-                                <div className="text-sm text-muted-foreground">{selectedUser.email}</div>
+                                <div className="font-medium">{selectedUser.owner.name}</div>
+                                <div className="text-sm text-muted-foreground">{selectedUser.owner.email}</div>
                             </div>
-                            <div className="ml-auto">{getStatusBadge(selectedUser.status)}</div>
+                            <div className="ml-auto">{getStatusBadge(selectedUser.verified)}</div>
                         </div>
 
-                        {selectedUser.status === "declined" && selectedUser.declineReason && (
+                        {/* {selectedUser.status === "declined" && selectedUser.declineReason && (
                             <div className="bg-red-50 p-3 rounded-md text-sm text-red-800 mb-4">
                                 <span className="font-medium">Decline reason:</span> {selectedUser.declineReason}
                             </div>
-                        )}
+                        )} */}
 
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsDocumentDialogOpen(false)}>
                                 Cancel
                             </Button>
-                            {selectedUser.status === "pending" && (
-                                <>
-                                    <Button variant="destructive" onClick={handleDecline}>
-                                        <XCircle className="h-4 w-4 mr-2" />
-                                        Decline
-                                    </Button>
-                                    <Button
-                                        style={{
-                                            background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                                        }}
-                                        onClick={handleApprove}
-                                    >
-                                        <CheckCircle className="h-4 w-4 mr-2" />
-                                        Approve
-                                    </Button>
-                                </>
-                            )}
+                            <Button
+                                variant="destructive"
+                                className="bg-red-500 hover:bg-red-600 text-white"
+                                onClick={handleDecline}
+                            >
+                                <XCircle className="h-4 w-4 mr-2" />
+                                Decline
+                            </Button>
+                            <Button
+                                variant="default"
+                                className="bg-green-500 hover:bg-green-600 text-white"
+                                onClick={handleApprove}
+                            >
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Approve
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
