@@ -24,8 +24,10 @@ import { Particles } from "../../Components/Particles"
 import { getAllDocuments, updateDocument } from "../../api/documents.api"
 import { format } from "date-fns"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 export default function UserVerification() {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedStatus, setSelectedStatus] = useState("all")
     const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false)
@@ -63,9 +65,9 @@ export default function UserVerification() {
 
     const getStatusBadge = (verified) => {
         if (verified) {
-            return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Approved</Badge>
+            return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t('userVerificationAdmin.statusApproved')}</Badge>
         } else {
-            return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>
+            return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{t('userVerificationAdmin.statusPending')}</Badge>
         }
     }
 
@@ -119,7 +121,7 @@ export default function UserVerification() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    User Verification
+                                    {t('userVerificationAdmin.title')}
                                 </motion.h1>
                                 <motion.p
                                     className="text-muted-foreground"
@@ -127,7 +129,7 @@ export default function UserVerification() {
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.3 }}
                                 >
-                                    Review and verify user submitted documents
+                                    {t('userVerificationAdmin.subtitle')}
                                 </motion.p>
                             </div>
 
@@ -146,7 +148,7 @@ export default function UserVerification() {
                                     className="h-9"
                                 >
                                     <RefreshCw className="h-4 w-4 mr-2" />
-                                    Refresh
+                                    {t('userVerificationAdmin.refresh')}
                                 </Button>
                             </motion.div>
                         </div>
@@ -158,7 +160,7 @@ export default function UserVerification() {
                                     <div className="relative">
                                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
-                                            placeholder="Search by name or email..."
+                                            placeholder={t('userVerificationAdmin.searchPlaceholder')}
                                             className="pl-10"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -169,17 +171,17 @@ export default function UserVerification() {
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center">
                                         <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-                                        <span className="text-sm">Filter:</span>
+                                        <span className="text-sm">{t('userVerificationAdmin.filter')}:</span>
                                     </div>
 
                                     <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                         <SelectTrigger className="w-[140px]">
-                                            <SelectValue placeholder="Status" />
+                                            <SelectValue placeholder={t('userVerificationAdmin.status')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">All Status</SelectItem>
-                                            <SelectItem value="false">Pending</SelectItem>
-                                            <SelectItem value="true">Approved</SelectItem>
+                                            <SelectItem value="all">{t('userVerificationAdmin.statusAll')}</SelectItem>
+                                            <SelectItem value="false">{t('userVerificationAdmin.statusPending')}</SelectItem>
+                                            <SelectItem value="true">{t('userVerificationAdmin.statusApproved')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -198,11 +200,11 @@ export default function UserVerification() {
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
-                                                    <TableHead className="w-[50px]">ID</TableHead>
-                                                    <TableHead>User</TableHead>
-                                                    <TableHead>Status</TableHead>
-                                                    <TableHead>Submitted Date</TableHead>
-                                                    <TableHead className="text-left">Actions</TableHead>
+                                                    <TableHead className="w-[50px]">{t('userVerificationAdmin.table.id')}</TableHead>
+                                                    <TableHead>{t('userVerificationAdmin.table.user')}</TableHead>
+                                                    <TableHead>{t('userVerificationAdmin.table.status')}</TableHead>
+                                                    <TableHead>{t('userVerificationAdmin.table.submittedDate')}</TableHead>
+                                                    <TableHead className="text-left">{t('userVerificationAdmin.table.actions')}</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -230,7 +232,7 @@ export default function UserVerification() {
                                                                 className="flex items-center"
                                                             >
                                                                 <Eye className="h-4 w-4 mr-1" />
-                                                                Open Documents
+                                                                {t('userVerificationAdmin.openDocuments')}
                                                             </Button>
                                                         </TableCell>
                                                     </TableRow>
@@ -250,9 +252,9 @@ export default function UserVerification() {
                 <Dialog open={isDocumentDialogOpen} onOpenChange={setIsDocumentDialogOpen}>
                     <DialogContent className="max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-bold">Verify User Documents</DialogTitle>
+                            <DialogTitle className="text-xl font-bold">{t('userVerificationAdmin.dialogTitle')}</DialogTitle>
                             <DialogDescription>
-                                Review {selectedUser.owner.name}'s verification documents and take action.
+                                {t('userVerificationAdmin.dialogDesc', { name: selectedUser.owner.name })}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -265,15 +267,15 @@ export default function UserVerification() {
                             >
                                 <h3 className="text-sm font-medium flex items-center">
                                     <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
-                                        ID Card
+                                        {t('userVerificationAdmin.idCard')}
                                     </Badge>
-                                    Identification Document
+                                    {t('userVerificationAdmin.idCardDesc')}
                                 </h3>
                                 <Link to={selectedUser.documentUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
                                     <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow flex items-center justify-center">
                                         <img
                                             src={selectedUser.documentUrl}
-                                            alt="ID Card"
+                                            alt={t('userVerificationAdmin.idCard')}
                                             className="w-full h-full object-contain"
                                         />
                                     </div>
@@ -288,15 +290,15 @@ export default function UserVerification() {
                             >
                                 <h3 className="text-sm font-medium flex items-center">
                                     <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
-                                        Selfie
+                                        {t('userVerificationAdmin.selfie')}
                                     </Badge>
-                                    User Photo Verification
+                                    {t('userVerificationAdmin.selfieDesc')}
                                 </h3>
                                 <Link to={selectedUser.imageUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
                                     <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow  flex items-center justify-center">
                                         <img
                                             src={selectedUser.imageUrl}
-                                            alt="User Selfie"
+                                            alt={t('userVerificationAdmin.selfie')}
                                             className="w-full h-full object-contain"
                                         />
                                     </div>
@@ -323,7 +325,7 @@ export default function UserVerification() {
 
                         <DialogFooter className="flex-col sm:flex-row gap-3 mt-4">
                             <Button variant="outline" onClick={() => setIsDocumentDialogOpen(false)}>
-                                Cancel
+                                {t('dialogbox.cancel')}
                             </Button>
                             <Button
                                 variant="destructive"
@@ -331,7 +333,7 @@ export default function UserVerification() {
                                 onClick={handleDecline}
                             >
                                 <XCircle className="h-4 w-4 mr-2" />
-                                Decline
+                                {t('userVerificationAdmin.decline')}
                             </Button>
                             <Button
                                 variant="default"
@@ -339,7 +341,7 @@ export default function UserVerification() {
                                 onClick={handleApprove}
                             >
                                 <CheckCircle className="h-4 w-4 mr-2" />
-                                Approve
+                                {t('userVerificationAdmin.approve')}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

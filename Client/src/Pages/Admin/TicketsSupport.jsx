@@ -1,6 +1,7 @@
 "use client"
 
 import { Label } from "../../Components/ui/label"
+import { useTranslation } from "react-i18next"
 
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
@@ -35,6 +36,7 @@ import { getAllTickets, addTicketResponse, updateTicketStatus } from "../../api/
 import { toast } from "sonner"
 
 export default function TicketsSupport() {
+    const { t } = useTranslation();
     const [tickets, setTickets] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
@@ -120,10 +122,10 @@ export default function TicketsSupport() {
                 ...prev,
                 status: status
             }));
-            toast.success(`Ticket status updated to ${status}`);
+            toast.success(t("adminTickets.statusUpdated", { status: t(`adminTickets.status.${status}`) }));
         } catch (err) {
             console.error("Error reopening ticket:", err);
-            toast.error("Failed to update ticket status");
+            toast.error(t("adminTickets.statusUpdateFailed"));
         }
     }
 
@@ -133,25 +135,25 @@ export default function TicketsSupport() {
                 return (
                     <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
                         <Clock className="h-3 w-3 mr-1" />
-                        Open
+                        {t("adminTickets.status.open")}
                     </Badge>
                 )
             case "in-progress":
                 return (
                     <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
                         <RefreshCw className="h-3 w-3 mr-1" />
-                        In Progress
+                        {t("adminTickets.status.inProgress")}
                     </Badge>
                 )
             case "closed":
                 return (
                     <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Closed
+                        {t("adminTickets.status.closed")}
                     </Badge>
                 )
             default:
-                return <Badge variant="outline">{status}</Badge>
+                return <Badge variant="outline">{t(`adminTickets.status.${status}`)}</Badge>
         }
     }
 
@@ -160,23 +162,23 @@ export default function TicketsSupport() {
             case "high":
                 return (
                     <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
-                        High
+                        {t("adminTickets.priority.high")}
                     </Badge>
                 )
             case "medium":
                 return (
                     <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
-                        Medium
+                        {t("adminTickets.priority.medium")}
                     </Badge>
                 )
             case "low":
                 return (
                     <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                        Low
+                        {t("adminTickets.priority.low")}
                     </Badge>
                 )
             default:
-                return <Badge variant="outline">{priority}</Badge>
+                return <Badge variant="outline">{t(`adminTickets.priority.${priority}`)}</Badge>
         }
     }
 
@@ -192,7 +194,7 @@ export default function TicketsSupport() {
     }
 
     return (
-        <motion.div className="p-6" initial="hidden" animate="visible" variants={pageTransition}>
+        <motion.div className="p-6 flex flex-col justify-baseline " initial="hidden" animate="visible" variants={pageTransition}>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                 <div>
                     <motion.h1
@@ -201,7 +203,7 @@ export default function TicketsSupport() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        Tickets & Support
+                        {t("adminTickets.title")}
                     </motion.h1>
                     <motion.p
                         className="text-muted-foreground"
@@ -209,7 +211,7 @@ export default function TicketsSupport() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        Manage customer support tickets and inquiries
+                        {t("adminTickets.subtitle")}
                     </motion.p>
                 </div>
             </div>
@@ -223,7 +225,7 @@ export default function TicketsSupport() {
                                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         type="search"
-                                        placeholder="Search tickets by ID, subject, or customer..."
+                                        placeholder={t("adminTickets.searchPlaceholder")}
                                         className="pl-8"
                                         value={searchQuery}
                                         onChange={handleSearch}
@@ -234,13 +236,13 @@ export default function TicketsSupport() {
                                 <Select value={statusFilter} onValueChange={handleStatusFilter}>
                                     <SelectTrigger className="w-[180px]">
                                         <Filter className="h-4 w-4 mr-2" />
-                                        <SelectValue placeholder="Filter by status" />
+                                        <SelectValue placeholder={t("adminTickets.filterByStatus")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">All Tickets</SelectItem>
-                                        <SelectItem value="open">Open</SelectItem>
-                                        <SelectItem value="in-progress">In Progress</SelectItem>
-                                        <SelectItem value="closed">Closed</SelectItem>
+                                        <SelectItem value="all">{t("adminTickets.status.all")}</SelectItem>
+                                        <SelectItem value="open">{t("adminTickets.status.open")}</SelectItem>
+                                        <SelectItem value="in-progress">{t("adminTickets.status.inProgress")}</SelectItem>
+                                        <SelectItem value="closed">{t("adminTickets.status.closed")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -254,22 +256,22 @@ export default function TicketsSupport() {
                         ) : tickets.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 text-center">
                                 <AlertCircle className="h-8 w-8 text-muted-foreground mb-2" />
-                                <h3 className="font-medium text-lg">No tickets found</h3>
+                                <h3 className="font-medium text-lg">{t("adminTickets.noTicketsTitle")}</h3>
                                 <p className="text-muted-foreground">
                                     {searchQuery
-                                        ? "Try adjusting your search or filter criteria"
-                                        : "There are no support tickets to display"}
+                                        ? t("adminTickets.noTicketsSearch")
+                                        : t("adminTickets.noTicketsDesc")}
                                 </p>
                             </div>
                         ) : (
                             <>
                                 <div className="rounded-md border">
                                     <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
-                                        <div className="col-span-5 md:col-span-4">Ticket</div>
-                                        <div className="col-span-3 hidden md:block">Customer</div>
-                                        <div className="col-span-3 md:col-span-2">Status</div>
-                                        <div className="col-span-2 hidden md:block">Priority</div>
-                                        <div className="col-span-4 md:col-span-1 text-right">Actions</div>
+                                        <div className="col-span-5 md:col-span-4">{t("adminTickets.table.ticket")}</div>
+                                        <div className="col-span-3 hidden md:block">{t("adminTickets.table.customer")}</div>
+                                        <div className="col-span-3 md:col-span-2">{t("adminTickets.table.status")}</div>
+                                        <div className="col-span-2 hidden md:block">{t("adminTickets.table.priority")}</div>
+                                        <div className="col-span-4 md:col-span-1 text-right">{t("adminTickets.table.actions")}</div>
                                     </div>
                                     <div className="divide-y">
                                         {tickets.filter((ticket) => {
@@ -328,7 +330,7 @@ export default function TicketsSupport() {
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     >
-                                        Previous
+                                        {t("pagination.previous")}
                                     </Button>
                                     {Array.from({ length: totalPages }, (_, i) => (
                                         <Button
@@ -346,7 +348,7 @@ export default function TicketsSupport() {
                                         disabled={currentPage === totalPages}
                                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     >
-                                        Next
+                                        {t("pagination.next")}
                                     </Button>
                                 </div>
                             </>
@@ -358,7 +360,6 @@ export default function TicketsSupport() {
             {/* Ticket Detail Dialog */}
             <Dialog open={ticketDialogOpen} onOpenChange={(open) => {
                 setTicketDialogOpen(open);
-                // Reset focus issues by ensuring state is properly updated
                 if (!open) {
                     setTimeout(() => setSelectedTicket(null), 100);
                 }
@@ -367,9 +368,7 @@ export default function TicketsSupport() {
                     <DialogContent
                         ref={dialogRef}
                         onOpenAutoFocus={(e) => {
-                            // Prevent default autofocus behavior
                             e.preventDefault();
-                            // Manually focus a safe element
                             if (dialogRef.current) {
                                 const safeToFocus = dialogRef.current.querySelector('[role="dialog"]');
                                 if (safeToFocus) safeToFocus.focus();
@@ -390,18 +389,15 @@ export default function TicketsSupport() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => handleStatusChange("open")}>Mark as Open</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleStatusChange("in-progress")}>
-                                            Mark as In Progress
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleStatusChange("closed")}>Mark as Closed</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleStatusChange("open")}>{t("adminTickets.markOpen")}</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleStatusChange("in-progress")}>{t("adminTickets.markInProgress")}</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleStatusChange("closed")}>{t("adminTickets.markClosed")}</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
                             <DialogDescription>
-                                Status: {selectedTicket.status}, Priority: {selectedTicket.priority}, Category: {selectedTicket.category}
+                                {t("adminTickets.statusLabel", { status: t(`adminTickets.status.${selectedTicket.status}`), priority: t(`adminTickets.priority.${selectedTicket.priority}`), category: selectedTicket.category })}
                             </DialogDescription>
-                            {/* Put badges after DialogDescription */}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {getStatusBadge(selectedTicket.status)}
                                 {getPriorityBadge(selectedTicket.priority)}
@@ -410,7 +406,6 @@ export default function TicketsSupport() {
                                 </Badge>
                             </div>
                         </DialogHeader>
-
                         <div className="flex-1 overflow-y-auto py-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Avatar>
@@ -422,13 +417,11 @@ export default function TicketsSupport() {
                                     <div className="text-sm text-muted-foreground">{selectedTicket.user.email}</div>
                                 </div>
                             </div>
-
                             <Tabs defaultValue="conversation" className="w-full">
                                 <TabsList className="mb-4">
-                                    <TabsTrigger value="conversation">Conversation</TabsTrigger>
-                                    <TabsTrigger value="details">Details</TabsTrigger>
+                                    <TabsTrigger value="conversation">{t("adminTickets.tabs.conversation")}</TabsTrigger>
+                                    <TabsTrigger value="details">{t("adminTickets.tabs.details")}</TabsTrigger>
                                 </TabsList>
-
                                 <TabsContent value="conversation" className="space-y-4">
                                     {selectedTicket.responses.map((message) => (
                                         <div
@@ -444,7 +437,7 @@ export default function TicketsSupport() {
                                                         <AvatarImage src={"/placeholder.svg"} alt={selectedTicket.user.name} />
                                                         <AvatarFallback>{selectedTicket.user.name.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <span className="text-sm font-medium">{selectedTicket.user.name}</span>
+                                                    <span className="text-sm font-medium">{message.isAdmin ? t("adminTickets.staff") : selectedTicket.user.name}</span>
                                                     <span className="text-xs opacity-70">{formatDate(message.timestamp)}</span>
                                                 </div>
                                                 <div className="whitespace-pre-wrap">{message.message}</div>
@@ -452,27 +445,23 @@ export default function TicketsSupport() {
                                         </div>
                                     ))}
                                 </TabsContent>
-
                                 <TabsContent value="details">
                                     <div className="space-y-4">
                                         <div>
-                                            <h3 className="text-sm font-medium mb-1">Description</h3>
+                                            <h3 className="text-sm font-medium mb-1">{t("adminTickets.details.description")}</h3>
                                             <p className="text-sm text-muted-foreground">{selectedTicket.description}</p>
                                         </div>
-
                                         <div>
-                                            <h3 className="text-sm font-medium mb-1">Created</h3>
+                                            <h3 className="text-sm font-medium mb-1">{t("adminTickets.details.created")}</h3>
                                             <p className="text-sm text-muted-foreground">{formatDate(selectedTicket.createdAt)}</p>
                                         </div>
-
                                         <div>
-                                            <h3 className="text-sm font-medium mb-1">Last Updated</h3>
+                                            <h3 className="text-sm font-medium mb-1">{t("adminTickets.details.lastUpdated")}</h3>
                                             <p className="text-sm text-muted-foreground">{formatDate(selectedTicket.updatedAt)}</p>
                                         </div>
-
                                         {selectedTicket.attachments.length > 0 && (
                                             <div>
-                                                <h3 className="text-sm font-medium mb-1">Attachments</h3>
+                                                <h3 className="text-sm font-medium mb-1">{t("adminTickets.details.attachments")}</h3>
                                                 <div className="space-y-2">
                                                     {selectedTicket.attachments.map((attachment, index) => (
                                                         <div key={index} className="flex items-center gap-2 p-2 rounded border">
@@ -480,7 +469,7 @@ export default function TicketsSupport() {
                                                                 {index + 1}
                                                             </div>
                                                             <Button variant="ghost" size="sm" onClick={() => window.open(attachment, "_blank")}>
-                                                                View
+                                                                {t("adminTickets.details.view")}
                                                             </Button>
                                                         </div>
                                                     ))}
@@ -491,34 +480,32 @@ export default function TicketsSupport() {
                                 </TabsContent>
                             </Tabs>
                         </div>
-
                         <Separator />
-
                         <div className="pt-4">
                             <div className="mb-2">
-                                <Label htmlFor="reply">Reply</Label>
+                                <Label htmlFor="reply">{t("adminTickets.reply")}</Label>
                             </div>
                             <Textarea
                                 id="reply"
-                                placeholder="Type your reply here..."
+                                placeholder={t("adminTickets.replyPlaceholder")}
                                 className="min-h-[100px]"
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
                             />
                             <div className="flex justify-end mt-4 gap-2">
                                 <Button variant="outline" onClick={() => setTicketDialogOpen(false)}>
-                                    Close
+                                    {t("adminTickets.close")}
                                 </Button>
                                 <Button onClick={handleReply} disabled={!replyText.trim() || isReplying}>
                                     {isReplying ? (
                                         <>
                                             <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                            Sending...
+                                            {t("adminTickets.sending")}
                                         </>
                                     ) : (
                                         <>
                                             <MessageSquare className="mr-2 h-4 w-4" />
-                                            Send Reply
+                                            {t("adminTickets.sendReply")}
                                         </>
                                     )}
                                 </Button>

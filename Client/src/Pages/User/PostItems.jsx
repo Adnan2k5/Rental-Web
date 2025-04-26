@@ -32,6 +32,7 @@ import {
 } from "../../Components/ui/pagination"
 
 import { useCategories } from "../../hooks/useCategories"
+import { useTranslation } from "react-i18next"
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("grid")
@@ -46,6 +47,7 @@ export default function Dashboard() {
   const ITEMS_PER_PAGE = 8
   const { categories } = useCategories();
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation();
 
   const {
     register,
@@ -246,7 +248,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            My Items
+            {t("dashboard.myitems")}
           </motion.h1>
           <motion.p
             className="text-muted-foreground"
@@ -254,7 +256,7 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Manage your rental listings and post new items
+            {t("dashboard.myitemsdesc")}
           </motion.p>
         </div>
 
@@ -283,7 +285,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.6 }}
               />
               <Plus className="h-4 w-4 mr-2" />
-              <span className="relative">New Item</span>
+              <span className="relative">{t('dashboard.newItem')}</span>
             </Button>
           </motion.div>
         </motion.div>
@@ -293,12 +295,12 @@ export default function Dashboard() {
       <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" variants={itemFadeIn}>
         {[
           {
-            label: "Total Items",
+            label: t("dashboard.totalitems"),
             value: fetchItemsfrombackend.length,
             icon: <Plus className="h-5 w-5 text-primary" />,
           },
           {
-            label: "Active Listings",
+            label: t("dashboard.activeListings"),
             value: fetchItemsfrombackend.length,
             icon: <Sparkles className="h-5 w-5 text-primary" />,
           },
@@ -504,8 +506,8 @@ export default function Dashboard() {
       <Dialog open={isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
         <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">Post New Item</DialogTitle>
-            <DialogDescription>Fill in the details and upload images of your item</DialogDescription>
+            <DialogTitle className="text-xl">{t('addItem.title')}</DialogTitle>
+            <DialogDescription>{t('addItem.desc')}</DialogDescription>
           </DialogHeader>
 
           <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
@@ -513,7 +515,7 @@ export default function Dashboard() {
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="Name">Item Title</Label>
+                  <Label htmlFor="Name">{t('addItem.name')}</Label>
                   <Input
                     id="name"
                     placeholder="e.g. Professional DSLR Camera"
@@ -524,7 +526,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('addItem.description')}</Label>
                   <Textarea
                     id="description"
                     placeholder="Describe your item in detail..."
@@ -538,11 +540,11 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location">{t('addItem.location')}</Label>
                     <input placeholder="e.g. New York" className="mt-1.5 Input border" {...register("location")} />
                   </div>
                   <div>
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('addItem.category')}</Label>
                     <Select
                       defaultValue="Electronics"
                       onValueChange={(value) => {
@@ -565,7 +567,7 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">{t('addItem.price')} ($)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -586,7 +588,7 @@ export default function Dashboard() {
 
               {/* Media Upload */}
               <div>
-                <Label className="block mb-2">Upload Images</Label>
+                <Label className="block mb-2">{t('addItem.upload')}</Label>
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging ? "border-primary bg-primary/5" : "border-gray-200"
                     }`}
@@ -612,10 +614,10 @@ export default function Dashboard() {
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                       <Upload className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <p className="text-sm font-medium mb-1">Drag and drop your images here</p>
-                    <p className="text-xs text-muted-foreground mb-3">Support for JPG, PNG, WEBP (max 5MB each)</p>
+                    <p className="text-sm font-medium mb-1">{t('uploadContaier.desc')}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{t('uploadContaier.support')}</p>
                     <Button type="button" variant="outline" onClick={triggerFileInput} className="text-sm">
-                      Browse Files
+                      {t('uploadContaier.browse')}
                     </Button>
                   </motion.div>
                 </div>
@@ -660,7 +662,7 @@ export default function Dashboard() {
 
           <DialogFooter className="px-6 py-4 bg-gray-50">
             <Button variant="outline" onClick={() => setIsNewItemDialogOpen(false)}>
-              Cancel
+              {t('dialogbox.cancel')}
             </Button>
             <motion.div variants={buttonHover} initial="rest" whileHover="hover">
               <Button
@@ -677,7 +679,7 @@ export default function Dashboard() {
                   whileHover={{ x: "100%", opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative">{loading ? 'Posting...' : 'Post Item'}</span>
+                <span className="relative">{loading ? 'Posting...' : t('addItem.post')}</span>
               </Button>
             </motion.div>
           </DialogFooter>
@@ -688,8 +690,8 @@ export default function Dashboard() {
       <Dialog open={isEditItemDialogOpen} onOpenChange={setIsEditItemDialogOpen}>
         <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">Edit Item</DialogTitle>
-            <DialogDescription>Update the details of your item</DialogDescription>
+            <DialogTitle className="text-xl">{t('addItem.edit')}</DialogTitle>
+            <DialogDescription>{t('addItem.editdesc')}</DialogDescription>
           </DialogHeader>
 
           <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
@@ -697,7 +699,7 @@ export default function Dashboard() {
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="Name">Item Title</Label>
+                  <Label htmlFor="Name">{t('addItem.name')}</Label>
                   <Input
                     id="name"
                     placeholder="e.g. Professional DSLR Camera"
@@ -708,7 +710,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('addItem.description')}</Label>
                   <Textarea
                     id="description"
                     placeholder="Describe your item in detail..."
@@ -722,11 +724,11 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location">{t('addItem.location')}</Label>
                     <input placeholder="e.g. New York" className="mt-1.5 Input border" {...register("location")} />
                   </div>
                   <div>
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('addItem.category')}</Label>
                     <Select
                       defaultValue={editingItem?.category || "electronics"}
                       onValueChange={(value) => {
@@ -749,7 +751,7 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">{t('addItem.price')} ($)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -770,7 +772,7 @@ export default function Dashboard() {
 
               {/* Media Upload */}
               <div>
-                <Label className="block mb-2">Images</Label>
+                <Label className="block mb-2">{t('addItem.upload')}</Label>
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging ? "border-primary bg-primary/5" : "border-gray-200"
                     }`}
@@ -796,10 +798,10 @@ export default function Dashboard() {
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                       <Upload className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <p className="text-sm font-medium mb-1">Add or replace images</p>
-                    <p className="text-xs text-muted-foreground mb-3">Support for JPG, PNG, WEBP (max 5MB each)</p>
+                    <p className="text-sm font-medium mb-1">{t('uploadContaier.title')}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{t('uploadContaier.support')}</p>
                     <Button type="button" variant="outline" onClick={triggerFileInput} className="text-sm">
-                      Browse Files
+                      {t('uploadContaier.browse')}
                     </Button>
                   </motion.div>
                 </div>
@@ -844,7 +846,7 @@ export default function Dashboard() {
 
           <DialogFooter className="px-6 py-4 bg-gray-50">
             <Button variant="outline" onClick={() => setIsEditItemDialogOpen(false)}>
-              Cancel
+              {t('dialogbox.cancel')}
             </Button>
             <motion.div variants={buttonHover} initial="rest" whileHover="hover">
               <Button
@@ -861,7 +863,7 @@ export default function Dashboard() {
                   whileHover={{ x: "100%", opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative">Update Item</span>
+                <span className="relative">{t('addItem.update')}</span>
               </Button>
             </motion.div>
           </DialogFooter>

@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react"
 import { Button } from "../Components/ui/button"
@@ -8,15 +6,17 @@ import { Separator } from "../Components/ui/separator"
 import { Label } from "../Components/ui/label"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
-import { useAuth } from "../Middleware/AuthProvider"
 import { addItemToCartApi, fetchCartItemsApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Navbar } from "../Components/Navbar"
 import DateRangePicker from "../Components/DateRangePicker"
 import { createBookingApi } from "../api/bookings.api"
 import { fadeIn, staggerChildren } from "../assets/Animations"
+import { useTranslation } from "react-i18next"
+import { Footer } from "../Components/Footer"
 
 export default function CartPage() {
+  const { t } = useTranslation()
   const [cartItems, setCartItems] = useState([])
   const [promoCode, setPromoCode] = useState("")
   const [refreshCart, setRefreshCart] = useState(false)
@@ -31,15 +31,14 @@ export default function CartPage() {
     fetchCartItems()
   }, [refreshCart])
 
-
   // Cart actions
   const removeItem = async (id) => {
     try {
       await addItemToCartApi(id, 0, 0)
       setRefreshCart(!refreshCart)
-      toast.success("Item removed from cart", { description: "Item has been removed from your cart." })
+      toast.success(t("cartPage.itemRemoved"), { description: t("cartPage.itemRemovedDesc") })
     } catch (e) {
-      toast.error("Error removing item from cart", { description: e.message })
+      toast.error(t("cartPage.errorRemovingItem"), { description: e.message })
     }
   }
 
@@ -56,7 +55,7 @@ export default function CartPage() {
       // Send API request
       await addItemToCartApi(id, newQuantity, null)
     } catch (err) {
-      toast.error("Failed to update quantity", { description: err.message })
+      toast.error(t("cartPage.failedUpdateQuantity"), { description: err.message })
       setRefreshCart(!refreshCart)
     }
   }
@@ -73,15 +72,15 @@ export default function CartPage() {
               startDate: startDate,
               endDate: endDate
             }
-            : item,
-        ),
+            : item
+        )
       )
 
       // Send API request
       // await addItemToCartApi(id, null, newDuration, startDate, endDate)
       console.log("API call to update duration", id, null, newDuration, startDate, endDate)
     } catch (err) {
-      toast.error("Failed to update duration", { description: err.message })
+      toast.error(t("cartPage.failedUpdateDuration"), { description: err.message })
       setRefreshCart(!refreshCart)
     }
   }
@@ -91,10 +90,10 @@ export default function CartPage() {
     try {
       setCartItems([])
       await addItemToCartApi(undefined, undefined, undefined, true) // Assuming this API call clears the cart
-      toast.success("Cart cleared successfully")
+      toast.success(t("cartPage.cartCleared"))
       setRefreshCart(!refreshCart)
     } catch (err) {
-      toast.error("Error clearing cart", { description: err.message })
+      toast.error(t("cartPage.errorClearingCart"), { description: err.message })
       setRefreshCart(!refreshCart)
     }
   }
@@ -113,7 +112,7 @@ export default function CartPage() {
   }
 
   const calculateDaysBetween = (startDate, endDate) => {
-    if (!startDate || !endDate) return 1;
+    if (!startDate || !endDate) return 1
 
     const start = new Date(startDate)
     const end = new Date(endDate)
@@ -124,15 +123,18 @@ export default function CartPage() {
 
   const createBookings = async () => {
     try {
-      await createBookingApi(cartItems);
+      await createBookingApi(cartItems)
       setCartItems([]) // Clear cart after booking
-      toast.success("Bookings created successfully", { description: "Your bookings have been created." })
+      toast.success(t("cartPage.bookingsCreated"), { description: t("cartPage.bookingsCreatedDesc") })
     } catch (e) {
-      toast.error("Error creating bookings", { description: e.message })
+      toast.error(t("cartPage.errorCreatingBookings"), { description: e.message })
     }
   }
 
-  const subtotal = cartItems.reduce((total, item) => total + item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate), 0)
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate),
+    0
+  )
   const discount = 0
   const total = subtotal
 
@@ -144,10 +146,10 @@ export default function CartPage() {
         <motion.div className="mb-8" initial="hidden" animate="visible" variants={fadeIn}>
           <div className="flex items-center text-sm text-muted-foreground">
             <Link to="/" className="hover:text-primary">
-              Home
+              {t("cartPage.breadcrumbHome")}
             </Link>
             <ChevronRight className="h-4 w-4 mx-1" />
-            <span>Shopping Cart</span>
+            <span>{t("cartPage.breadcrumbCart")}</span>
           </div>
         </motion.div>
 
@@ -165,14 +167,14 @@ export default function CartPage() {
               <ShoppingCart className="h-12 w-12 text-muted-foreground" />
             </motion.div>
             <motion.h2 className="text-2xl font-bold mb-2" variants={fadeIn}>
-              Your cart is empty
+              {t("cartPage.emptyTitle")}
             </motion.h2>
             <motion.p className="text-muted-foreground mb-8" variants={fadeIn}>
-              Looks like you haven't added any items to your cart yet.
+              {t("cartPage.emptyDesc")}
             </motion.p>
             <motion.div variants={fadeIn}>
               <Link to="/browse">
-                <Button size="lg">Browse Products</Button>
+                <Button size="lg">{t("cartPage.browseProducts")}</Button>
               </Link>
             </motion.div>
           </motion.div>
@@ -183,9 +185,9 @@ export default function CartPage() {
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">Cart Items ({cartItems.length})</h2>
+                    <h2 className="text-xl font-semibold">{t("cartPage.cartItems", { count: cartItems.length })}</h2>
                     <Button variant="ghost" size="sm" className="text-sm text-muted-foreground" onClick={clearCart}>
-                      Clear All
+                      {t("cartPage.clearAll")}
                     </Button>
                   </div>
                 </div>
@@ -216,7 +218,9 @@ export default function CartPage() {
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">${item.item.price}/day per unit</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {t("cartPage.pricePerDay", { price: item.item.price })}
+                        </p>
 
                         <div className="flex flex-wrap gap-6 mt-2">
                           <div>
@@ -224,7 +228,7 @@ export default function CartPage() {
                               htmlFor={`quantity-${item.item._id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
-                              Quantity
+                              {t("cartPage.quantity")}
                             </Label>
                             <div className="flex items-center">
                               <Button
@@ -255,7 +259,7 @@ export default function CartPage() {
                               htmlFor={`duration-${item.item._id}`}
                               className="text-xs text-muted-foreground mb-1 block"
                             >
-                              Rental Period
+                              {t("cartPage.rentalPeriod")}
                             </Label>
                             <DateRangePicker
                               startDate={item.startDate ? new Date(item.startDate) : null}
@@ -289,16 +293,16 @@ export default function CartPage() {
 
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium mb-2">Have a promo code?</h3>
+                  <h3 className="font-medium mb-2">{t("cartPage.havePromo")}</h3>
                   <div className="flex">
                     <Input
                       type="text"
-                      placeholder="Enter promo code"
+                      placeholder={t("cartPage.promoPlaceholder")}
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       className="rounded-r-none"
                     />
-                    <Button className="rounded-l-none">Apply</Button>
+                    <Button className="rounded-l-none">{t("cartPage.applyPromo")}</Button>
                   </div>
                 </div>
               </div>
@@ -313,17 +317,17 @@ export default function CartPage() {
             >
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden sticky top-24">
                 <div className="p-6 border-b border-gray-100">
-                  <h2 className="text-xl font-semibold">Order Summary</h2>
+                  <h2 className="text-xl font-semibold">{t("cartPage.orderSummary")}</h2>
                 </div>
 
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{t("cartPage.subtotal")}</span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
-                      <span>Discount</span>
+                      <span>{t("cartPage.discount")}</span>
                       <span>-${discount.toFixed(2)}</span>
                     </div>
                   )}
@@ -331,20 +335,20 @@ export default function CartPage() {
                   <Separator />
 
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
+                    <span>{t("cartPage.total")}</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
 
                   <div className="text-sm text-muted-foreground">
-                    <span className="font-bold">Deposite amount should be paid directly to the owner.</span>
+                    <span className="font-bold">{t("cartPage.depositNote")}</span>
                   </div>
                   <Button type="button" className="w-full" size="lg" onClick={createBookings}>
-                    Proceed to Checkout
+                    {t("cartPage.proceedCheckout")}
                   </Button>
 
                   <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <CreditCard className="h-3 w-3" />
-                    <span>Secure Checkout</span>
+                    <span>{t("cartPage.secureCheckout")}</span>
                   </div>
                 </div>
               </div>
@@ -353,24 +357,7 @@ export default function CartPage() {
         )}
       </main>
 
-      <footer className="bg-gray-50 border-t border-gray-200 py-8 mt-20">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-gray-500">© {new Date().getFullYear()} Rental. All rights reserved.</p>
-            <div className="mt-4 md:mt-0 flex space-x-4">
-              <Link to="#" className="text-sm text-gray-500 hover:text-primary">
-                Terms
-              </Link>
-              <Link to="#" className="text-sm text-gray-500 hover:text-primary">
-                Privacy
-              </Link>
-              <Link to="#" className="text-sm text-gray-500 hover:text-primary">
-                Support
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

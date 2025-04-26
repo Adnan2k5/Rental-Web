@@ -19,6 +19,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "../../Components/ui/pagination"
+import { useTranslation } from "react-i18next"
 
 export default function UserItems() {
     const { user } = useAuth()
@@ -30,6 +31,7 @@ export default function UserItems() {
     const [totalPages, setTotalPages] = useState(1)
     const [comment, setComment] = useState("")
     const [itemid, setitemid] = useState("");
+    const { t } = useTranslation();
     const ITEMS_PER_PAGE = 10
 
     const fetchItems = async () => {
@@ -89,7 +91,7 @@ export default function UserItems() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        Items Rented
+                        {t('userbooks.title')}
                     </motion.h1>
                     <motion.p
                         className="text-muted-foreground"
@@ -97,7 +99,7 @@ export default function UserItems() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        Manage your rented items
+                        {t('userbooks.desc')}
                     </motion.p>
                 </div>
             </div>
@@ -115,7 +117,7 @@ export default function UserItems() {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-bl-full" />
                     <div className="flex items-center justify-between">
                         <div>
-                            <div className="text-muted-foreground text-sm mb-1">Total Items</div>
+                            <div className="text-muted-foreground text-sm mb-1">{t('userbooks.totalitems')}</div>
                             <div className="text-2xl font-bold text-dark">{fetchItemsfrombackend.length}</div>
                         </div>
                     </div>

@@ -22,6 +22,8 @@ import { colors } from '../assets/Color';
 import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover } from '../assets/Animations';
 import { Particles } from '../Components/Particles';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../Components/LanguageSelector';
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,12 +37,13 @@ export default function SignUp() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useAuth();
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (user?.user) {
       navigate('/browse');
     }
   }, [user, navigate]);
-
 
   const handleFieldFocus = (fieldName) => {
     setActiveField(fieldName);
@@ -57,11 +60,11 @@ export default function SignUp() {
         setEmail(data.email);
         setIsOpen(true);
       } else if (res === 409) {
-        alert('Email already exists. Please use a different email.');
+        alert(t('signUp.emailExists'));
       }
     } catch (err) {
       if (err === 409) {
-        alert('Email already exists. Please use a different email.');
+        alert(t('signUp.emailExists'));
       }
     }
   };
@@ -70,15 +73,14 @@ export default function SignUp() {
     try {
       const res = await Otpresend({ email });
       if (res === true) {
-        toast.success('OTP resent successfully');
+        toast.success(t('signUp.otpResentSuccess'));
       } else {
-        toast.error('Failed to resend OTP');
+        toast.error(t('signUp.otpResentFail'));
       }
     } catch (err) {
-      toast.error('Failed to resend OTP');
+      toast.error(t('signUp.otpResentFail'));
     }
   };
-
 
   const handleOtpSubmit = async () => {
     setIsLoading(true);
@@ -88,10 +90,10 @@ export default function SignUp() {
       if (res === true) {
         reset();
         setIsOpen(false);
-        toast.success('Account created successfully.');
+        toast.success(t('signUp.accountCreated'));
         navigate('/browse');
       } else {
-        toast.error('Invalid OTP. Please try again.');
+        toast.error(t('signUp.invalidOtp'));
       }
     } catch (err) {
       console.log(err);
@@ -150,7 +152,7 @@ export default function SignUp() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              Rental
+              {t('signUp.brand')}
             </motion.div>
 
             <motion.h2
@@ -159,7 +161,7 @@ export default function SignUp() {
               initial="initial"
               animate="animate"
             >
-              Start your rental journey today
+              {t('signUp.headline')}
             </motion.h2>
 
             <motion.p
@@ -168,25 +170,22 @@ export default function SignUp() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 1 }}
             >
-              Join our community and experience the freedom of renting instead
-              of buying.
+              {t('signUp.subheadline')}
             </motion.p>
 
             <div className="space-y-8">
               {[
                 {
-                  title: 'Flexible Plans',
-                  description:
-                    'Choose rental durations that fit your needs and budget',
+                  title: t('signUp.feature1Title'),
+                  description: t('signUp.feature1Desc'),
                 },
                 {
-                  title: 'Premium Selection',
-                  description:
-                    'Access high-quality products without the commitment',
+                  title: t('signUp.feature2Title'),
+                  description: t('signUp.feature2Desc'),
                 },
                 {
-                  title: 'Easy Returns',
-                  description: 'Change your mind? Return or swap anytime',
+                  title: t('signUp.feature3Title'),
+                  description: t('signUp.feature3Desc'),
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -224,7 +223,10 @@ export default function SignUp() {
         variants={itemFadeIn}
       >
         <Particles />
-
+        {/* Language Selector bottom right */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <LanguageSelector />
+        </div>
         <div className="max-w-md w-full relative z-10">
           <motion.div variants={itemFadeIn} className="text-center mb-8">
             <motion.div
@@ -236,7 +238,7 @@ export default function SignUp() {
               }}
               {...shimmerAnimation}
             >
-              Rental
+              {t('signUp.brand')}
             </motion.div>
             <motion.h1
               className="text-2xl font-bold mb-2 text-dark"
@@ -244,7 +246,7 @@ export default function SignUp() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Create an account
+              {t('signUp.createAccount')}
             </motion.h1>
             <motion.p
               className="text-muted-foreground"
@@ -252,7 +254,7 @@ export default function SignUp() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              Join thousands of happy renters today
+              {t('signUp.joinToday')}
             </motion.p>
           </motion.div>
 
@@ -268,10 +270,10 @@ export default function SignUp() {
               transition={{ type: 'spring', stiffness: 300 }}
             >
               <label
-                htmlFor="email"
+                htmlFor="name"
                 className="text-sm font-medium leading-none text-dark"
               >
-                Name
+                {t('signUp.name')}
               </label>
               <div
                 className={`relative w-full ${activeField === 'name' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
@@ -279,7 +281,7 @@ export default function SignUp() {
                 <input
                   {...register('name', { required: true })}
                   id="name"
-                  placeholder="Full Name"
+                  placeholder={t('signUp.namePlaceholder')}
                   type="text"
                   autoCapitalize="none"
                   autoComplete="name"
@@ -300,7 +302,7 @@ export default function SignUp() {
                 htmlFor="email"
                 className="text-sm font-medium leading-none text-dark"
               >
-                Email
+                {t('signUp.email')}
               </label>
               <div
                 className={`relative w-full ${activeField === 'email' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
@@ -308,7 +310,7 @@ export default function SignUp() {
                 <input
                   {...register('email', { required: true })}
                   id="email"
-                  placeholder="name@example.com"
+                  placeholder={t('signUp.emailPlaceholder')}
                   type="email"
                   autoCapitalize="none"
                   autoComplete="email"
@@ -330,7 +332,7 @@ export default function SignUp() {
                 htmlFor="password"
                 className="text-sm font-medium leading-none text-dark"
               >
-                Password
+                {t('signUp.password')}
               </label>
               <div
                 className={`relative w-full ${activeField === 'password' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
@@ -338,7 +340,7 @@ export default function SignUp() {
                 <input
                   {...register('password', { required: true })}
                   id="password"
-                  placeholder="Create a password"
+                  placeholder={t('signUp.passwordPlaceholder')}
                   type={showPassword ? 'text' : 'password'}
                   autoCapitalize="none"
                   autoComplete="new-password"
@@ -368,11 +370,11 @@ export default function SignUp() {
                       )}
                     </motion.div>
                   </AnimatePresence>
-                  <span className="sr-only">Toggle password visibility</span>
+                  <span className="sr-only">{t('signIn.togglePassword')}</span>
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters and include a number and a symbol
+                {t('signUp.passwordHint')}
               </p>
             </motion.div>
 
@@ -390,19 +392,19 @@ export default function SignUp() {
                 htmlFor="terms"
                 className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-dark"
               >
-                I agree to the{' '}
+                {t('signUp.terms1')}
                 <Link
                   href="#"
                   className="font-medium text-primary hover:underline underline-offset-4"
                 >
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
+                  {t('signUp.terms2')}
+                </Link>
+                {t('signUp.and')}
                 <Link
                   href="#"
                   className="font-medium text-primary hover:underline underline-offset-4"
                 >
-                  Privacy Policy
+                  {t('signUp.privacy')}
                 </Link>
               </label>
             </motion.div>
@@ -430,7 +432,7 @@ export default function SignUp() {
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
-                  Create Account
+                  {t('signUp.createAccountBtn')}
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}
@@ -453,7 +455,7 @@ export default function SignUp() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-light px-2 text-muted-foreground">
-                  Or continue with
+                  {t('signUp.orContinueWith')}
                 </span>
               </div>
             </div>
@@ -468,7 +470,7 @@ export default function SignUp() {
                   className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5"
                 >
                   <Facebook className="h-4 w-4 mr-2 text-primary" />
-                  Facebook
+                  {t('signUp.facebook')}
                 </Button>
               </motion.div>
               <motion.div
@@ -480,7 +482,7 @@ export default function SignUp() {
                   className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5"
                 >
                   <Twitter className="h-4 w-4 mr-2 text-primary" />
-                  Twitter
+                  {t('signUp.twitter')}
                 </Button>
               </motion.div>
             </div>
@@ -490,12 +492,12 @@ export default function SignUp() {
             variants={itemFadeIn}
             className="mt-8 text-center text-sm text-muted-foreground"
           >
-            Already have an account?{' '}
+            {t('signUp.alreadyHaveAccount')}{' '}
             <Link
               to="/login"
               className="font-medium text-primary hover:underline underline-offset-4 relative inline-block"
             >
-              <span>Sign in</span>
+              <span>{t('signUp.signIn')}</span>
               <motion.span
                 className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
                 initial={{ scaleX: 0, originX: 0 }}
@@ -537,7 +539,7 @@ export default function SignUp() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          Why choose Rental?
+          {t('signUp.whyChoose')}
         </motion.h3>
         <motion.p
           className="text-white/90 text-sm relative z-10"
@@ -545,26 +547,25 @@ export default function SignUp() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          Access premium products without commitment. Easy upgrades, flexible
-          returns, and free maintenance included.
+          {t('signUp.mobileDesc')}
         </motion.p>
       </motion.div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Enter OTP</DialogTitle>
+            <DialogTitle>{t('signUp.otpTitle')}</DialogTitle>
           </DialogHeader>
           <Input
             type="text"
-            placeholder="Enter OTP"
+            placeholder={t('signUp.otpPlaceholder')}
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
           />
           <DialogFooter>
             <Button variant="outline" onClick={resendOtp}>
-              Resend OTP
+              {t('signUp.resendOtp')}
             </Button>
-            <Button onClick={handleOtpSubmit}>Submit</Button>
+            <Button onClick={handleOtpSubmit}>{t('signUp.submit')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

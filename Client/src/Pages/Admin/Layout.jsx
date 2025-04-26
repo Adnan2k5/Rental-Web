@@ -30,6 +30,8 @@ import { useDispatch } from 'react-redux';
 import { logout } from "../../Store/UserSlice"
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../api/auth.api';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../../Components/LanguageSelector';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -37,6 +39,7 @@ export default function AdminLayout() {
   const [isMounted, setIsMounted] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setIsMounted(true);
@@ -64,7 +67,7 @@ export default function AdminLayout() {
   return (
     <SidebarProvider>
       <div className="flex h-screen overflow-hidden">
-        <AdminSidebar pathname={pathname} handleLogout={handleLogout} />
+        <AdminSidebar pathname={pathname} handleLogout={handleLogout} t={t} />
         <header className="bg-white border-b border-gray-100 py-4 px-6">
           <div className="flex items-center justify-between">
             <div className="md:hidden">
@@ -77,7 +80,7 @@ export default function AdminLayout() {
                 }}
                 {...shimmerAnimation}
               >
-                Rental Admin
+                {t('adminSidebar.rentalAdmin')}
               </motion.div>
             </div>
           </div>
@@ -90,7 +93,7 @@ export default function AdminLayout() {
   );
 }
 
-function AdminSidebar({ pathname, handleLogout }) {
+function AdminSidebar({ pathname, handleLogout, t }) {
 
   const shimmerAnimation = {
     initial: { backgroundPosition: '0 0' },
@@ -117,20 +120,20 @@ function AdminSidebar({ pathname, handleLogout }) {
             }}
             {...shimmerAnimation}
           >
-            Rental Admin
+            {t('adminSidebar.rentalAdmin')}
           </motion.div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('adminSidebar.overview')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === '/admin'}>
                   <Link to="/admin">
                     <Home className="h-4 w-4" />
-                    <span>Dashboard</span>
+                    <span>{t('adminSidebar.dashboard')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -140,7 +143,7 @@ function AdminSidebar({ pathname, handleLogout }) {
 
         {/* Other sidebar groups with Link Components instead of <a> tags */}
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('adminSidebar.management')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -150,7 +153,7 @@ function AdminSidebar({ pathname, handleLogout }) {
                 >
                   <Link to="/admin/items">
                     <Package className="h-4 w-4" />
-                    <span>Items Management</span>
+                    <span>{t('adminSidebar.itemsManagement')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -161,7 +164,7 @@ function AdminSidebar({ pathname, handleLogout }) {
                 >
                   <Link to="/admin/users">
                     <Users className="h-4 w-4" />
-                    <span>User Management</span>
+                    <span>{t('adminSidebar.userManagement')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -172,7 +175,7 @@ function AdminSidebar({ pathname, handleLogout }) {
                 >
                   <Link to="/admin/users/verification">
                     <Users className="h-4 w-4" />
-                    <span>User Verification</span>
+                    <span>{t('adminSidebar.userVerification')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -183,7 +186,7 @@ function AdminSidebar({ pathname, handleLogout }) {
                 >
                   <Link to="/admin/tickets">
                     <TicketCheck className="h-4 w-4" />
-                    <span>Tickets & Support</span>
+                    <span>{t('adminSidebar.ticketsSupport')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -194,7 +197,7 @@ function AdminSidebar({ pathname, handleLogout }) {
                 >
                   <Link to="/admin/terms">
                     <FileCheck className="h-4 w-4" />
-                    <span>Terms & Condition</span>
+                    <span>{t('adminSidebar.termsCondition')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -204,10 +207,11 @@ function AdminSidebar({ pathname, handleLogout }) {
 
         {/* Continue with other sidebar groups */}
       </SidebarContent>
+      <LanguageSelector className="ml-5" />
       <SidebarFooter className="border-t p-4">
         <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          Logout
+          {t('adminSidebar.logout')}
         </Button>
       </SidebarFooter>
     </Sidebar>

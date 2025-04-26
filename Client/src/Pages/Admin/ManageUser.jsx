@@ -56,8 +56,10 @@ import { Label } from '../../Components/ui/label';
 import { format } from 'date-fns';
 import { getAllUsers, changeUserStatus } from '../../api/admin.api';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function ManageUsers() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false);
@@ -89,12 +91,7 @@ export default function ManageUsers() {
     dark: '#455A64', // Blue Grey
   };
 
-  // Sample admin data
-  const admin = {
-    name: 'Sarah Johnson',
-    role: 'Super Admin',
-    avatar: '/placeholder.svg?height=40&width=40',
-  };
+
 
 
   // Animation variants
@@ -164,26 +161,24 @@ export default function ManageUsers() {
       case 'active':
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-            Active
+            {t('manageUsers.statusActive')}
           </Badge>
         );
       case 'suspended':
         return (
           <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
-            Suspended
+            {t('manageUsers.statusSuspended')}
           </Badge>
         ); default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline">{t('manageUsers.statusOther', { status })}</Badge>;
     }
   };
-
-  console.log(users)
 
   const updateUserStatus = async () => {
     console.log(selectedUser._id, selectedUser.status);
     const res = await changeUserStatus(selectedUser._id, selectedUser.status);
     if (res) {
-      toast.success('User status updated successfully');
+      toast.success(t('manageUsers.statusUpdateSuccess'));
       setIsUserDialogOpen(false);
       setSelectedUser(null);
       setUsers((prevUsers) =>
@@ -193,13 +188,13 @@ export default function ManageUsers() {
       );
     }
     else {
-      toast.error('Failed to update user status');
+      toast.error(t('manageUsers.statusUpdateFail'));
     }
   }
 
   return (
     <motion.div
-      className="min-h-screen bg-light flex"
+      className="min-h-screen bg-light flex flex-col"
       initial="hidden"
       animate="visible"
       variants={pageTransition}
@@ -219,7 +214,7 @@ export default function ManageUsers() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  Manage Users
+                  {t('manageUsers.title')}
                 </motion.h1>
                 <motion.p
                   className="text-muted-foreground"
@@ -227,7 +222,7 @@ export default function ManageUsers() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  View and manage all users on the platform
+                  {t('manageUsers.subtitle')}
                 </motion.p>
               </div>
 
@@ -239,12 +234,12 @@ export default function ManageUsers() {
               >
                 <Button onClick={() => { location.reload() }} variant="outline" className="h-9">
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
+                  {t('manageUsers.refresh')}
                 </Button>
 
                 <Button variant="outline" className="h-9">
                   <Download className="h-4 w-4 mr-2" />
-                  Export
+                  {t('manageUsers.export')}
                 </Button>
               </motion.div>
             </div>
@@ -259,7 +254,7 @@ export default function ManageUsers() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by name or email..."
+                      placeholder={t('manageUsers.searchPlaceholder')}
                       className="pl-10"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -270,7 +265,7 @@ export default function ManageUsers() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">Filter:</span>
+                    <span className="text-sm">{t('manageUsers.filter')}:</span>
                   </div>
 
                   <Select
@@ -278,12 +273,12 @@ export default function ManageUsers() {
                     onValueChange={setSelectedStatus}
                   >
                     <SelectTrigger className="w-[140px]">
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder={t('manageUsers.status')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="suspended">Suspended</SelectItem>
+                      <SelectItem value="all">{t('manageUsers.statusAll')}</SelectItem>
+                      <SelectItem value="active">{t('manageUsers.statusActive')}</SelectItem>
+                      <SelectItem value="suspended">{t('manageUsers.statusSuspended')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -297,15 +292,15 @@ export default function ManageUsers() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[50px]">ID</TableHead>
-                        <TableHead>User</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Join Date</TableHead>
+                        <TableHead className="w-[50px]">{t('manageUsers.table.id')}</TableHead>
+                        <TableHead>{t('manageUsers.table.user')}</TableHead>
+                        <TableHead>{t('manageUsers.table.status')}</TableHead>
+                        <TableHead>{t('manageUsers.table.joinDate')}</TableHead>
                         <TableHead className="text-center">
-                          Items Rented
+                          {t('manageUsers.table.itemsRented')}
                         </TableHead>
-                        <TableHead className="text-center">Verified</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead className="text-center">{t('manageUsers.table.verified')}</TableHead>
+                        <TableHead className="text-right">{t('manageUsers.table.actions')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -373,6 +368,7 @@ export default function ManageUsers() {
                         href="#"
                         onClick={e => { e.preventDefault(); if (pagination.hasPreviousPage) setPage(p => p - 1); }}
                         className={pagination.hasPreviousPage ? '' : 'pointer-events-none opacity-50'}
+                        aria-label={t('pagination.previous')}
                       />
                     </PaginationItem>
                     {Array.from({ length: pagination.totalPages }, (_, i) => (
@@ -391,6 +387,7 @@ export default function ManageUsers() {
                         href="#"
                         onClick={e => { e.preventDefault(); if (pagination.hasNextPage) setPage(p => p + 1); }}
                         className={pagination.hasNextPage ? '' : 'pointer-events-none opacity-50'}
+                        aria-label={t('pagination.next')}
                       />
                     </PaginationItem>
                   </PaginationContent>
@@ -406,9 +403,9 @@ export default function ManageUsers() {
         <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
+              <DialogTitle>{t('manageUsers.editUserTitle')}</DialogTitle>
               <DialogDescription>
-                Update user information and permissions
+                {t('manageUsers.editUserDesc')}
               </DialogDescription>
             </DialogHeader>
 
@@ -425,7 +422,7 @@ export default function ManageUsers() {
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">
-                  Name
+                  {t('manageUsers.name')}
                 </Label>
                 <Input
                   id="name"
@@ -438,7 +435,7 @@ export default function ManageUsers() {
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
-                  Email
+                  {t('manageUsers.email')}
                 </Label>
                 <Input
                   id="email"
@@ -449,7 +446,7 @@ export default function ManageUsers() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Verified</Label>
+                <Label className="text-right">{t('manageUsers.verified')}</Label>
                 <div className="flex items-center space-x-2 col-span-3">
                   <Switch
                     disabled
@@ -458,14 +455,14 @@ export default function ManageUsers() {
                   />
                   <Label htmlFor="verified">
                     {selectedUser.verified
-                      ? 'Verified Account'
-                      : 'Not Verified'}
+                      ? t('manageUsers.verifiedAccount')
+                      : t('manageUsers.notVerified')}
                   </Label>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="status" className="text-right">
-                  Status
+                  {t('manageUsers.status')}
                 </Label>
                 <Select
                   defaultValue={selectedUser.status}
@@ -475,16 +472,16 @@ export default function ManageUsers() {
                   }}
                 >
                   <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder={t('manageUsers.statusSelect')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
+                    <SelectItem value="active">{t('manageUsers.statusActive')}</SelectItem>
+                    <SelectItem value="suspended">{t('manageUsers.statusSuspended')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Verified</Label>
+                <Label className="text-right">{t('manageUsers.verified')}</Label>
                 <div className="flex items-center space-x-2 col-span-3">
                   <Switch
                     id="verified"
@@ -493,8 +490,8 @@ export default function ManageUsers() {
                   />
                   <Label htmlFor="verified">
                     {selectedUser.verified
-                      ? 'Verified Account'
-                      : 'Not Verified'}
+                      ? t('manageUsers.verifiedAccount')
+                      : t('manageUsers.notVerified')}
                   </Label>
                 </div>
               </div>
@@ -505,7 +502,7 @@ export default function ManageUsers() {
                 variant="outline"
                 onClick={() => setIsUserDialogOpen(false)}
               >
-                Cancel
+                {t('dialogbox.cancel')}
               </Button>
               <Button
                 style={{
@@ -513,7 +510,7 @@ export default function ManageUsers() {
                 }}
                 onClick={updateUserStatus}
               >
-                Save Changes
+                {t('manageUsers.saveChanges')}
               </Button>
             </DialogFooter>
           </DialogContent>

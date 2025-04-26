@@ -22,14 +22,20 @@ import { Particles } from '../Components/Particles';
 import { colors } from '../assets/Color';
 import { pageTransition, itemFadeIn, floatAnimation, shimmerAnimation, buttonHover, itemFadeInRight } from '../assets/Animations';
 import { Otpresend } from '../api/auth.api';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../Components/LanguageSelector';
+
 export default function SignIn() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (user) {
       navigate('/browse');
     }
   }, [user, navigate]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [activeField, setActiveField] = useState(null);
   const [passReset, setPassReset] = useState(false);
@@ -47,14 +53,14 @@ export default function SignIn() {
     try {
       const res = await resetPassword({ email });
       if (res) {
-        toast.success('Otp sent to your email');
+        toast.success(t('signIn.otpSent'));
         setsent(true);
         setloading(false);
       }
     }
     catch (err) {
       console.log(err);
-      toast.error('User not found');
+      toast.error(t('signIn.userNotFound'));
     }
     finally {
       setloading(false);
@@ -66,18 +72,14 @@ export default function SignIn() {
       console.log(email)
       const res = await Otpresend({ email });
       if (res === true) {
-        toast.success('OTP resent successfully');
+        toast.success(t('signIn.otpResent'));
       } else {
-        toast.error('Failed to resend OTP');
+        toast.error(t('signIn.otpResendFailed'));
       }
     } catch (err) {
-      toast.error('Failed to resend OTP');
+      toast.error(t('signIn.otpResendFailed'));
     }
   };
-
-
-
-
 
   const handleFieldFocus = (fieldName) => {
     setActiveField(fieldName);
@@ -86,6 +88,7 @@ export default function SignIn() {
   const handleFieldBlur = () => {
     setActiveField(null);
   };
+
   const dispatch = useDispatch();
 
   const { register, handleSubmit, reset } = useForm();
@@ -96,63 +99,71 @@ export default function SignIn() {
       const res = await loginUser(data, dispatch);
       if (res === 200) {
         reset();
-        toast.success('Login Successful');
+        toast.success(t('signIn.loginSuccess'));
         navigate('/browse');
       }
       else if (res === 403) {
         const res = await Otpresend({ email });
         if (res) {
-          toast.success('Verify your email to continue');
+          toast.success(t('signIn.verifyEmail'));
           setIsOpen(true);
         }
       }
       else {
-        toast.error('Invalid Credentials');
+        toast.error(t('signIn.invalidCredentials'));
       }
     } catch (err) {
-      toast.error('Server Error', err.message);
+      toast.error(t('signIn.serverError'), err.message);
     }
     finally {
       setloading(false);
     }
   }
+
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await verifyOtp({ email, otp });
       if (res) {
-        toast.success('Otp verified');
+        toast.success(t('signIn.otpVerified'));
         setIsOpen(false);
         navigate('/browse');
       } else {
-        toast.error('Invalid Otp');
+        toast.error(t('signIn.invalidOtp'));
       }
     } catch (err) {
       console.log(err);
     }
   }
+
   const handlePasswordUpdate = async (e) => {
     e.preventDefault();
     try {
       const res = await updatePassword({ email, password });
       if (res) {
-        toast.success('Password updated');
+        toast.success(t('signIn.passwordUpdated'));
         setPassReset(false);
         navigate('/browse');
       } else {
-        toast.error('Error updating password');
+        toast.error(t('signIn.passwordUpdateError'));
       }
     } catch (err) {
       console.log(err);
     }
   }
+
   return (
     <motion.div
-      className="min-h-screen flex flex-col lg:flex-row bg-light"
+      className="min-h-screen flex flex-col lg:flex-row bg-light relative"
       initial="hidden"
       animate="visible"
       variants={pageTransition}
     >
+      {/* Floating Language Selector */}
+      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
+        <LanguageSelector className="text-white" />
+      </div>
+
       {/* Left side - Login Form */}
       <motion.div
         className="flex-1 flex items-center justify-center p-8 relative"
@@ -171,7 +182,7 @@ export default function SignIn() {
               }}
               {...shimmerAnimation}
             >
-              Rental
+              {t('signIn.brand')}
             </motion.div>
             <motion.h1
               className="text-2xl font-bold mb-2 text-dark"
@@ -179,7 +190,7 @@ export default function SignIn() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Welcome back
+              {t('signIn.welcomeBack')}
             </motion.h1>
             <motion.p
               className="text-muted-foreground"
@@ -187,7 +198,7 @@ export default function SignIn() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              Sign in to continue to your account
+              {t('signIn.signInToContinue')}
             </motion.p>
           </motion.div>
 
@@ -206,14 +217,14 @@ export default function SignIn() {
                 htmlFor="email"
                 className="text-sm font-medium leading-none text-dark"
               >
-                Email
+                {t('signIn.email')}
               </label>
               <div
                 className={`relative ${activeField === 'email' ? 'ring-2 ring-primary/50 rounded-md' : ''}`}
               >
                 <input
                   id="email"
-                  placeholder="name@example.com"
+                  placeholder={t('signIn.emailPlaceholder')}
                   type="email"
                   autoCapitalize="none"
                   autoComplete="email"
@@ -249,7 +260,7 @@ export default function SignIn() {
                   htmlFor="password"
                   className="text-sm font-medium leading-none text-dark"
                 >
-                  Password
+                  {t('signIn.password')}
                 </label>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -259,7 +270,7 @@ export default function SignIn() {
                     type='button'
                     onClick={() => setPassReset(true)}
                   >
-                    Forgot password?
+                    {t('signIn.forgotPassword')}
                   </button>
                   <motion.span
                     className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
@@ -274,7 +285,7 @@ export default function SignIn() {
               >
                 <input
                   id="password"
-                  placeholder="••••••••"
+                  placeholder={t('signIn.passwordPlaceholder')}
                   type={showPassword ? 'text' : 'password'}
                   autoCapitalize="none"
                   autoComplete="current-password"
@@ -306,7 +317,7 @@ export default function SignIn() {
                       )}
                     </motion.div>
                   </AnimatePresence>
-                  <span className="sr-only">Toggle password visibility</span>
+                  <span className="sr-only">{t('signIn.togglePassword')}</span>
                 </Button>
               </div>
             </motion.div>
@@ -329,7 +340,7 @@ export default function SignIn() {
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
-                  Sign In
+                  {t('signIn.signIn')}
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}
@@ -352,7 +363,7 @@ export default function SignIn() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-light px-2 text-muted-foreground">
-                  Or continue with
+                  {t('signIn.orContinueWith')}
                 </span>
               </div>
             </div>
@@ -367,7 +378,7 @@ export default function SignIn() {
                   className="h-11 border-muted hover:border-primary hover:bg-primary/5"
                 >
                   <Facebook className="h-4 w-4 mr-2 text-primary" />
-                  Facebook
+                  {t('signIn.facebook')}
                 </Button>
               </motion.div>
               <motion.div
@@ -379,7 +390,7 @@ export default function SignIn() {
                   className="h-11 border-muted hover:border-primary hover:bg-primary/5"
                 >
                   <Instagram className="h-4 w-4 mr-2 text-primary" />
-                  Instagram
+                  {t('signIn.instagram')}
                 </Button>
               </motion.div>
             </div>
@@ -389,12 +400,12 @@ export default function SignIn() {
             variants={itemFadeIn}
             className="mt-8 text-center text-sm text-muted-foreground"
           >
-            Don't have an account?{' '}
+            {t('signIn.noAccount')}{' '}
             <Link
               to="/signup"
               className="font-medium text-primary hover:underline underline-offset-4 relative inline-block"
             >
-              <span>Create an account</span>
+              <span>{t('signIn.createAccount')}</span>
               <motion.span
                 className="absolute bottom-0 left-0 w-full h-0.5 bg-primary/30"
                 initial={{ scaleX: 0, originX: 0 }}
@@ -408,13 +419,13 @@ export default function SignIn() {
 
       <Dialog open={passReset} onOpenChange={setPassReset}>
         <DialogContent>
-          <DialogTitle>Reset Password</DialogTitle>
+          <DialogTitle>{t('signIn.resetPassword')}</DialogTitle>
           <DialogDescription>
-            Enter your registered email address to recieve Otp
+            {t('signIn.enterEmailForOtp')}
           </DialogDescription>
           <form className='flex flex-col space-y-2' onSubmit={handleRestPass}>
             <input
-              placeholder="Email"
+              placeholder={t('signIn.emailPlaceholder')}
               type="email"
               className="border Input bg-white/80 focus:border-primary"
               onChange={(e) => {
@@ -423,7 +434,7 @@ export default function SignIn() {
             />
             {sent ? (
               <input
-                placeholder="Otp"
+                placeholder={t('signIn.otpPlaceholder')}
                 type="text"
                 className="border Input bg-white/80 focus:border-primary"
                 onChange={(e) => {
@@ -434,7 +445,7 @@ export default function SignIn() {
             }
             {verified ? (
               <input
-                placeholder="New Password"
+                placeholder={t('signIn.newPasswordPlaceholder')}
                 type="password"
                 className="border Input bg-white/80 focus:border-primary"
                 onChange={(e) => {
@@ -450,13 +461,13 @@ export default function SignIn() {
                   onClick={handleOtpSubmit}
                   className={`${otp === '' ? 'hidden' : 'mt-2 items-center'}`}
                 >
-                  Verify
+                  {t('signIn.verify')}
                 </Button>
               ) : <Button
                 type="submit"
                 className={`${email === '' && sent ? 'hidden' : 'mt-2 items-center'}`}
               >
-                Submit
+                {t('signIn.submit')}
               </Button>
             }
             {
@@ -466,7 +477,7 @@ export default function SignIn() {
                   onClick={handlePasswordUpdate}
                   className={`${otp === '' ? 'hidden' : 'mt-2 items-center'}`}
                 >
-                  Update Password
+                  {t('signIn.updatePassword')}
                 </Button>
               ) : null
             }
@@ -543,7 +554,7 @@ export default function SignIn() {
             initial="initial"
             animate="animate"
           >
-            Secure Access to Your Rental Account
+            {t('signIn.secureAccess')}
           </motion.h2>
 
           <motion.p
@@ -552,24 +563,22 @@ export default function SignIn() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 1 }}
           >
-            Sign in to manage your rentals, view your history, and discover new
-            products.
+            {t('signIn.manageRentals')}
           </motion.p>
 
           <div className="space-y-8">
             {[
               {
-                title: 'Manage Your Rentals',
-                description: 'View active rentals and manage your subscription',
+                title: t('signIn.feature1Title'),
+                description: t('signIn.feature1Desc'),
               },
               {
-                title: 'Exclusive Offers',
-                description: 'Access special deals only available to members',
+                title: t('signIn.feature2Title'),
+                description: t('signIn.feature2Desc'),
               },
               {
-                title: '24/7 Support',
-                description:
-                  'Get help whenever you need it from our support team',
+                title: t('signIn.feature3Title'),
+                description: t('signIn.feature3Desc'),
               },
             ].map((feature, index) => (
               <motion.div
@@ -601,20 +610,20 @@ export default function SignIn() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Enter OTP</DialogTitle>
+              <DialogTitle>{t('signIn.enterOtp')}</DialogTitle>
             </DialogHeader>
             <input
               type="text"
-              placeholder="Enter OTP"
+              placeholder={t('signIn.otpPlaceholder')}
               className='Input'
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />
             <DialogFooter>
               <Button variant="outline" onClick={resendOtp}>
-                Resend OTP
+                {t('signIn.resendOtp')}
               </Button>
-              <Button onClick={handleOtpSubmit}>Submit</Button>
+              <Button onClick={handleOtpSubmit}>{t('signIn.submit')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

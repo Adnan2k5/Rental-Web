@@ -14,8 +14,11 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductQuickView from '../Components/Quick-View';
 import { fetchTopReviewedItems } from '../api/items.api';
+import { useTranslation } from 'react-i18next';
+import { Footer } from '../Components/Footer';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const openQuickView = (product) => {
     setQuickViewProduct(product);
@@ -51,24 +54,24 @@ export default function LandingPage() {
   // Mock categories data
   const categories = [
     {
-      name: 'Electronics',
+      name: t('landingPage.categories.electronics'),
       icon: <Monitor className="h-10 w-10 text-primary" />,
-      count: '1200+ items',
+      count: t('landingPage.categories.electronicsCount'),
     },
     {
-      name: 'Furniture',
+      name: t('landingPage.categories.furniture'),
       icon: <Sofa className="h-10 w-10 text-primary" />,
-      count: '800+ items',
+      count: t('landingPage.categories.furnitureCount'),
     },
     {
-      name: 'Appliances',
+      name: t('landingPage.categories.appliances'),
       icon: <Package className="h-10 w-10 text-primary" />,
-      count: '500+ items',
+      count: t('landingPage.categories.appliancesCount'),
     },
     {
-      name: 'Lifestyle',
+      name: t('landingPage.categories.lifestyle'),
       icon: <Coffee className="h-10 w-10 text-primary" />,
-      count: '300+ items',
+      count: t('landingPage.categories.lifestyleCount'),
     },
   ];
 
@@ -87,9 +90,9 @@ export default function LandingPage() {
 
   // Stats for the counter animation
   const stats = [
-    { value: 50000, label: 'Happy Customers' },
-    { value: 10000, label: 'Products Available' },
-    { value: 120, label: 'Cities Covered' },
+    { value: 50000, label: t('landingPage.stats.happyCustomers') },
+    { value: 10000, label: t('landingPage.stats.productsAvailable') },
+    { value: 120, label: t('landingPage.stats.citiesCovered') },
   ];
 
   useEffect(() => {
@@ -128,24 +131,21 @@ export default function LandingPage() {
               className="inline-flex items-center rounded-full px-4 py-1 mb-6 border border-primary/20 bg-primary/5 text-primary text-sm font-medium"
               variants={fadeIn}
             >
-              <span className="inline-block mr-1">🚀</span> Next-Gen Rental
-              Marketplace
+              <span className="inline-block mr-1">🚀</span> {t('landingPage.hero.badge')}
             </motion.div>
             <motion.h1
               className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 mb-6"
               variants={fadeIn}
             >
-              Rent Almost Anything
+              {t('landingPage.hero.title1')}
               <br />
-              <span className="text-primary">No Commitments</span>
+              <span className="text-primary">{t('landingPage.hero.title2')}</span>
             </motion.h1>
             <motion.p
               className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl"
               variants={fadeIn}
             >
-              From electronics to furniture, rent high-quality products with
-              flexible plans. No heavy upfront costs, just pay as you use and
-              upgrade anytime.
+              {t('landingPage.hero.description')}
             </motion.p>
             <motion.div
               className="flex flex-col sm:flex-row gap-4 mb-12"
@@ -158,7 +158,7 @@ export default function LandingPage() {
                 size="lg"
                 className="h-12 px-6 rounded-full cursor-pointer"
               >
-                Browse Products
+                {t('landingPage.hero.browseProducts')}
               </Button>
             </motion.div>
           </motion.div>
@@ -173,7 +173,7 @@ export default function LandingPage() {
               <div className="relative bg-white p-1 rounded-2xl shadow-xl">
                 <img
                   src="https://www.zdnet.com/a/img/resize/9a4433107e15b45c323112f14e67821bd222521b/2021/08/25/96fc3e1c-9e32-405c-9e28-f7f819a45625/m1-macbook-air.jpg?auto=webp&fit=crop&height=900&width=1200"
-                  alt="Feature products showcase"
+                  alt={t('landingPage.hero.featuredImageAlt')}
                   width={800}
                   height={600}
                   className="w-full rounded-xl shadow-sm"
@@ -184,10 +184,10 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800">
-                      Smart Upgrades
+                      {t('landingPage.hero.smartUpgrades')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      65% users upgrade quarterly
+                      {t('landingPage.hero.smartUpgradesDesc')}
                     </p>
                   </div>
                 </div>
@@ -197,10 +197,10 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800">
-                      50K+ Users
+                      {t('landingPage.hero.usersCount')}
                     </p>
                     <p className="text-xs text-gray-500">
-                      Trusted by thousands
+                      {t('landingPage.hero.usersTrusted')}
                     </p>
                   </div>
                 </div>
@@ -251,11 +251,10 @@ export default function LandingPage() {
               className="text-3xl md:text-4xl font-bold mb-6"
               variants={fadeIn}
             >
-              Browse by <span className="text-primary">Category</span>
+              {t('landingPage.categoriesSection.title')}
             </motion.h2>
             <motion.p className="text-gray-600 mb-8" variants={fadeIn}>
-              From work-from-home setups to home appliances, we've got
-              everything you need to make your space functional and stylish.
+              {t('landingPage.categoriesSection.description')}
             </motion.p>
           </motion.div>
 
@@ -282,7 +281,7 @@ export default function LandingPage() {
                   to="/browse"
                   className="inline-flex items-center text-primary font-medium"
                 >
-                  Explore <ChevronRight className="h-4 w-4 ml-1" />
+                  {t('landingPage.categoriesSection.explore')} <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
               </motion.div>
             ))}
@@ -302,18 +301,17 @@ export default function LandingPage() {
           >
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Trending <span className="text-primary">Products</span>
+                {t('landingPage.trendingSection.title')}
               </h2>
               <p className="text-gray-600 max-w-2xl">
-                Our most popular products based on what's flying off our virtual
-                shelves right now.
+                {t('landingPage.trendingSection.description')}
               </p>
             </div>
             <Link
               to="/browse"
               className="inline-flex items-center mt-6 md:mt-0 text-primary font-medium"
             >
-              View all products <ChevronRight className="h-4 w-4 ml-1" />
+              {t('landingPage.trendingSection.viewAll')} <ChevronRight className="h-4 w-4 ml-1" />
             </Link>
           </motion.div>
 
@@ -350,7 +348,7 @@ export default function LandingPage() {
                     }}
                     className="absolute bottom-3 left-0 right-0 mx-auto w-3/4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
                   >
-                    Quick View
+                    {t('landingPage.trendingSection.quickView')}
                   </Button>
                 </div>
                 <div className="p-5">
@@ -363,19 +361,19 @@ export default function LandingPage() {
                     </div>
                     <span className="mx-2 text-gray-300">•</span>
                     <span className="text-xs text-gray-500">
-                      {item.totalReviews} reviews
+                      {item.totalReviews} {t('landingPage.trendingSection.reviews')}
                     </span>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-1">
                     {item.name}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-primary">${item.price}/month</p>
+                    <p className="font-bold text-primary">${item.price}/{t('landingPage.trendingSection.perMonth')}</p>
                     <Link
                       to={`/product/${item._id}`}
                       className="text-xs text-gray-500 hover:text-primary flex items-center"
                     >
-                      See Details <ChevronRight className="h-3 w-3 ml-1" />
+                      {t('landingPage.trendingSection.seeDetails')} <ChevronRight className="h-3 w-3 ml-1" />
                     </Link>
                   </div>
                 </div>
@@ -399,11 +397,10 @@ export default function LandingPage() {
               className="text-3xl md:text-4xl font-bold mb-6"
               variants={fadeIn}
             >
-              How it <span className="text-primary">Works</span>
+              {t('landingPage.howItWorks.title')}
             </motion.h2>
             <motion.p className="text-gray-600" variants={fadeIn}>
-              Renting with us is simple, flexible, and designed with your
-              convenience in mind.
+              {t('landingPage.howItWorks.description')}
             </motion.p>
           </motion.div>
 
@@ -420,23 +417,20 @@ export default function LandingPage() {
             {[
               {
                 number: '01',
-                title: 'Choose Your Products',
-                description:
-                  'Browse our catalog and select the products that meet your needs.',
+                title: t('landingPage.howItWorks.step1.title'),
+                description: t('landingPage.howItWorks.step1.description'),
                 icon: '🔍',
               },
               {
                 number: '02',
-                title: 'Select Rental Period',
-                description:
-                  'Choose from flexible rental periods - daily, or monthly.',
+                title: t('landingPage.howItWorks.step2.title'),
+                description: t('landingPage.howItWorks.step2.description'),
                 icon: '📅',
               },
               {
                 number: '03',
-                title: 'Enjoy',
-                description:
-                  'Experience the convenience of renting without the hassle of ownership.',
+                title: t('landingPage.howItWorks.step3.title'),
+                description: t('landingPage.howItWorks.step3.description'),
                 icon: '🎉',
               },
             ].map((step, index) => (
@@ -477,12 +471,10 @@ export default function LandingPage() {
             <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
               <div className="max-w-2xl">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
-                  Ready to start renting? Join thousands of happy customers
-                  today!
+                  {t('landingPage.cta.title')}
                 </h2>
                 <p className="text-white/80 text-lg mb-0 lg:mb-8">
-                  Create an account now and get special offers on your first
-                  rental.
+                  {t('landingPage.cta.description')}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -491,14 +483,14 @@ export default function LandingPage() {
                   variant="secondary"
                   className="h-12 px-8 font-medium"
                 >
-                  Sign Up Now
+                  {t('landingPage.cta.signup')}
                 </Button>
                 <Button
                   size="lg"
                   variant="secondary"
                   className="h-12 px-8 font-medium"
                 >
-                  Learn More
+                  {t('landingPage.cta.learnMore')}
                 </Button>
               </div>
             </div>
@@ -513,17 +505,17 @@ export default function LandingPage() {
             <div className="md:col-span-1">
               <Link to="/" className="inline-flex items-center mb-6">
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">
-                  Rental
+                  {t('landingPage.footer.logo')}
                 </span>
               </Link>
               <p className="text-gray-600 mb-6">
-                The next-gen rental marketplace for your everyday needs.
+                {t('landingPage.footer.description')}
               </p>
               <div className="flex space-x-4 justify-center">
                 {[
-                  { icon: 'twitter', label: 'Twitter' },
-                  { icon: 'facebook', label: 'Facebook' },
-                  { icon: 'instagram', label: 'Instagram' },
+                  { icon: 'twitter', label: t('landingPage.footer.twitter') },
+                  { icon: 'facebook', label: t('landingPage.footer.facebook') },
+                  { icon: 'instagram', label: t('landingPage.footer.instagram') },
                 ].map((social, index) => (
                   <Link
                     key={index}
@@ -545,14 +537,14 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Product Categories</h3>
+              <h3 className="font-semibold text-lg mb-4">{t('landingPage.footer.productCategories')}</h3>
               <ul className="space-y-3">
                 {[
-                  'Electronics',
-                  'Furniture',
-                  'Appliances',
-                  'Fitness',
-                  'Lifestyle',
+                  t('landingPage.categories.electronics'),
+                  t('landingPage.categories.furniture'),
+                  t('landingPage.categories.appliances'),
+                  t('landingPage.footer.fitness'),
+                  t('landingPage.categories.lifestyle'),
                 ].map((item, index) => (
                   <li key={index}>
                     <Link to="#" className="text-gray-600 hover:text-primary">
@@ -564,30 +556,34 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Company</h3>
+              <h3 className="font-semibold text-lg mb-4">{t('landingPage.footer.company')}</h3>
               <ul className="space-y-3">
-                {['About Us', 'Careers', 'Blog', 'Press', 'Contact Us'].map(
-                  (item, index) => (
-                    <li key={index}>
-                      <Link to="#" className="text-gray-600 hover:text-primary">
-                        {item}
-                      </Link>
-                    </li>
-                  )
-                )}
+                {[
+                  t('landingPage.footer.aboutUs'),
+                  t('landingPage.footer.careers'),
+                  t('landingPage.footer.blog'),
+                  t('landingPage.footer.press'),
+                  t('landingPage.footer.contactUs'),
+                ].map((item, index) => (
+                  <li key={index}>
+                    <Link to="#" className="text-gray-600 hover:text-primary">
+                      {item}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">Support</h3>
+              <h3 className="font-semibold text-lg mb-4">{t('landingPage.footer.support')}</h3>
               <ul className="space-y-3">
                 {[
-                  'Help Center',
-                  'FAQs',
-                  'Shipping Policy',
-                  'Return Policy',
-                  'Terms of Service',
-                  'Privacy Policy',
+                  t('landingPage.footer.helpCenter'),
+                  t('landingPage.footer.faqs'),
+                  t('landingPage.footer.shippingPolicy'),
+                  t('landingPage.footer.returnPolicy'),
+                  t('landingPage.footer.termsOfService'),
+                  t('landingPage.footer.privacyPolicy'),
                 ].map((item, index) => (
                   <li key={index}>
                     <Link to="#" className="text-gray-600 hover:text-primary">
@@ -599,24 +595,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} Rental. All rights reserved.
-            </p>
-            <div className="mt-4 md:mt-0 flex flex-wrap gap-4 text-sm text-gray-500">
-              <Link to="#" className="hover:text-primary">
-                Terms
-              </Link>
-              <span>•</span>
-              <Link to="#" className="hover:text-primary">
-                Privacy
-              </Link>
-              <span>•</span>
-              <Link to="#" className="hover:text-primary">
-                Cookies
-              </Link>
-            </div>
-          </div>
+          <Footer />
         </div>
       </footer>
       {quickViewProduct && (
