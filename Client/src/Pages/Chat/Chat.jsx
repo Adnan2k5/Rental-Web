@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 import io from "socket.io-client"
 import Header from "./Header"
@@ -11,7 +11,7 @@ import { Avatar } from "../../Components/ui/avatar"
 import { X, Search, PlusCircle } from "lucide-react"
 
 // Create socket instance
-const socket = io(import.meta.env.VITE_BACKEND_URL || "http://localhost:8080")
+const socket = io(import.meta.env.VITE_API_URL || "http://localhost:8080")
 
 export default function Chat() {
     const [messages, setMessages] = useState([]);
