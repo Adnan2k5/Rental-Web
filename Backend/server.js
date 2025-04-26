@@ -26,8 +26,6 @@ import { ensureDefaultTerms } from "./controllers/terms.controller.js";
 
 const app = express();
 
-console.log(process.env.Client_URL);
-
 // Create HTTP server using Express app
 const server = createServer(app);
 // Initialize Socket.IO with the HTTP server
