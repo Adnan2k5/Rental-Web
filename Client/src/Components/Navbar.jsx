@@ -5,10 +5,12 @@ import { Button } from './ui/button';
 import { Headset, MessageCircleMore, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { getCartCountApi } from '../api/carts.api';
+import { useTranslation } from 'react-i18next';
 
 export const Navbar = () => {
     const { user } = useAuth();
     const [cartCount, setCartCount] = useState(0);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchCartCount = async () => {
@@ -42,19 +44,19 @@ export const Navbar = () => {
                         to="/"
                         className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
                     >
-                        Home
+                        {t('navbar.home')}
                     </Link>
                     <Link
                         to="/browse"
                         className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
                     >
-                        Browse
+                        {t('navbar.browse')}
                     </Link>
                     <Link
                         to="#"
                         className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
                     >
-                        About
+                        {t('navbar.about')}
                     </Link>
                 </div>
 
@@ -89,7 +91,7 @@ export const Navbar = () => {
                     ) : (
                         <Link to="/login">
                             <Button variant="ghost" size="sm">
-                                Sign In
+                                {t('navbar.signin')}
                             </Button>
                         </Link>
                     )}

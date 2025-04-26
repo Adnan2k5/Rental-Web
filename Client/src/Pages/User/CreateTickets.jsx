@@ -13,8 +13,10 @@ import { Textarea } from "../../Components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../Components/ui/select"
 import { pageTransition } from "../../assets/Animations"
 import { Alert, AlertDescription, AlertTitle } from "../../Components/ui/alert"
+import { useTranslation } from "react-i18next"
 
 export const CreateTicket = () => {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
         subject: "",
@@ -29,13 +31,13 @@ export const CreateTicket = () => {
     const [filePreview, setFilePreview] = useState([])
 
     const categories = [
-        "Account Issues",
-        "Billing & Payments",
-        "Technical Support",
-        "Product Inquiry",
-        "Feature Request",
-        "Bug Report",
-        "Other",
+        t("createTicket.categories.accountIssues"),
+        t("createTicket.categories.billingPayments"),
+        t("createTicket.categories.technicalSupport"),
+        t("createTicket.categories.productInquiry"),
+        t("createTicket.categories.featureRequest"),
+        t("createTicket.categories.bugReport"),
+        t("createTicket.categories.other"),
     ]
 
     const handleChange = (e) => {
@@ -72,7 +74,7 @@ export const CreateTicket = () => {
         const validFiles = files.filter((file) => file.size <= 5 * 1024 * 1024)
 
         if (validFiles.length !== files.length) {
-            setError("Some files were not added because they exceed the 5MB size limit.")
+            setError(t("createTicket.fileSizeError"))
         }
 
         // Update form data with new files
@@ -110,15 +112,15 @@ export const CreateTicket = () => {
         const newErrors = {}
 
         if (!formData.subject.trim()) {
-            newErrors.subject = "Subject is required"
+            newErrors.subject = t("createTicket.errors.subject")
         }
 
         if (!formData.description.trim()) {
-            newErrors.description = "Description is required"
+            newErrors.description = t("createTicket.errors.description")
         }
 
         if (!formData.category) {
-            newErrors.category = "Category is required"
+            newErrors.category = t("createTicket.errors.category")
         }
 
         setErrors(newErrors)
@@ -161,15 +163,15 @@ export const CreateTicket = () => {
         <motion.div className="container mx-auto" initial="hidden" animate="visible" variants={pageTransition}>
             <div className="flex items-center mb-6">
                 <Button variant="ghost" size="sm" className="mr-2" onClick={() => navigate("/dashboard/tickets")}>
-                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
+                    <ArrowLeft className="h-4 w-4 mr-1" /> {t("createTicket.back")}
                 </Button>
-                <h1 className="text-2xl font-bold">Create Support Ticket</h1>
+                <h1 className="text-2xl font-bold">{t("createTicket.title")}</h1>
             </div>
 
             {error && (
                 <Alert variant="destructive" className="mb-6">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
+                    <AlertTitle>{t("createTicket.errorTitle")}</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
@@ -177,20 +179,20 @@ export const CreateTicket = () => {
             <Card>
                 <form onSubmit={handleSubmit}>
                     <CardHeader>
-                        <CardTitle>New Support Ticket</CardTitle>
+                        <CardTitle>{t("createTicket.formTitle")}</CardTitle>
                         <CardDescription>
-                            Fill out the form below to create a new support ticket. Our team will respond as soon as possible.
+                            {t("createTicket.formDesc")}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="subject" className={errors.subject ? "text-red-500" : ""}>
-                                Subject {errors.subject && <span className="text-red-500">*</span>}
+                                {t("createTicket.subject")} {errors.subject && <span className="text-red-500">*</span>}
                             </Label>
                             <Input
                                 id="subject"
                                 name="subject"
-                                placeholder="Brief summary of your issue"
+                                placeholder={t("createTicket.subjectPlaceholder")}
                                 value={formData.subject}
                                 onChange={handleChange}
                                 className={errors.subject ? "border-red-500" : ""}
@@ -200,11 +202,11 @@ export const CreateTicket = () => {
 
                         <div className="space-y-2">
                             <Label htmlFor="category" className={errors.category ? "text-red-500" : ""}>
-                                Category {errors.category && <span className="text-red-500">*</span>}
+                                {t("createTicket.category")} {errors.category && <span className="text-red-500">*</span>}
                             </Label>
                             <Select value={formData.category} onValueChange={(value) => handleSelectChange("category", value)}>
                                 <SelectTrigger className={errors.category ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select a category" />
+                                    <SelectValue placeholder={t("createTicket.categoryPlaceholder")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {categories.map((category) => (
@@ -219,12 +221,12 @@ export const CreateTicket = () => {
 
                         <div className="space-y-2">
                             <Label htmlFor="description" className={errors.description ? "text-red-500" : ""}>
-                                Description {errors.description && <span className="text-red-500">*</span>}
+                                {t("createTicket.description")} {errors.description && <span className="text-red-500">*</span>}
                             </Label>
                             <Textarea
                                 id="description"
                                 name="description"
-                                placeholder="Please provide details about your issue"
+                                placeholder={t("createTicket.descriptionPlaceholder")}
                                 value={formData.description}
                                 onChange={handleChange}
                                 className={`min-h-[150px] ${errors.description ? "border-red-500" : ""}`}
@@ -233,7 +235,7 @@ export const CreateTicket = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="attachments">Attachments (Optional)</Label>
+                            <Label htmlFor="attachments">{t("createTicket.attachments")}</Label>
                             <div className="flex items-center justify-center w-full">
                                 <label
                                     htmlFor="file-upload"
@@ -242,9 +244,9 @@ export const CreateTicket = () => {
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                         <Upload className="w-8 h-8 mb-2 text-gray-500" />
                                         <p className="mb-2 text-sm text-gray-500">
-                                            <span className="font-semibold">Click to upload</span> or drag and drop
+                                            <span className="font-semibold">{t("createTicket.uploadClick")}</span> {t("createTicket.orDragDrop")}
                                         </p>
-                                        <p className="text-xs text-gray-500">Max 5 files (5MB each)</p>
+                                        <p className="text-xs text-gray-500">{t("createTicket.maxFiles")}</p>
                                     </div>
                                     <input
                                         id="file-upload"
@@ -259,7 +261,7 @@ export const CreateTicket = () => {
 
                             {filePreview.length > 0 && (
                                 <div className="mt-4">
-                                    <p className="text-sm font-medium mb-2">Attached Files:</p>
+                                    <p className="text-sm font-medium mb-2">{t("createTicket.attachedFiles")}</p>
                                     <div className="space-y-2">
                                         {filePreview.map((file, index) => (
                                             <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
@@ -303,16 +305,16 @@ export const CreateTicket = () => {
                             onClick={() => navigate("/dashboard/tickets")}
                             disabled={submitting}
                         >
-                            Cancel
+                            {t("createTicket.cancel")}
                         </Button>
                         <Button type="submit" disabled={submitting}>
                             {submitting ? (
                                 <>
                                     <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                    Submitting...
+                                    {t("createTicket.submitting")}
                                 </>
                             ) : (
-                                "Submit Ticket"
+                                t("createTicket.submit")
                             )}
                         </Button>
                     </CardFooter>

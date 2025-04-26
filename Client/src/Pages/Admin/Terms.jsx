@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { motion } from "framer-motion"
 import { Save, RefreshCw, Clock, CheckCircle, History, AlertTriangle, Eye, Globe } from "lucide-react"
 import { Button } from "../../Components/ui/button"
@@ -26,6 +27,7 @@ import {
 } from "../../api/admin.api"
 
 export default function TermsConditions() {
+    const { t } = useTranslation()
     const user = useAuth()
     const [terms, setTerms] = useState({
         current: {
@@ -214,7 +216,7 @@ export default function TermsConditions() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        Terms & Conditions
+                        {t('termsPage.title')}
                     </motion.h1>
                     <motion.p
                         className="text-muted-foreground"
@@ -222,7 +224,7 @@ export default function TermsConditions() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        Manage your platform's terms and conditions
+                        {t('termsPage.subtitle')}
                     </motion.p>
                 </div>
             </div>
@@ -232,8 +234,8 @@ export default function TermsConditions() {
                     <CardHeader className="pb-3">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
-                                <CardTitle>Terms & Conditions Editor</CardTitle>
-                                <CardDescription>Edit and publish your platform's terms and conditions</CardDescription>
+                                <CardTitle>{t('termsPage.editorTitle')}</CardTitle>
+                                <CardDescription>{t('termsPage.editorDesc')}</CardDescription>
                             </div>
                         </div>
                     </CardHeader>
@@ -242,15 +244,15 @@ export default function TermsConditions() {
                             <TabsList className="mb-4">
                                 <TabsTrigger value="current">
                                     <CheckCircle className="h-4 w-4 mr-2" />
-                                    Published
+                                    {t('termsPage.publishedTab')}
                                 </TabsTrigger>
                                 <TabsTrigger value="draft">
                                     <Clock className="h-4 w-4 mr-2" />
-                                    Draft
+                                    {t('termsPage.draftTab')}
                                 </TabsTrigger>
                                 <TabsTrigger value="history">
                                     <History className="h-4 w-4 mr-2" />
-                                    History
+                                    {t('termsPage.historyTab')}
                                 </TabsTrigger>
                             </TabsList>
 
@@ -259,10 +261,10 @@ export default function TermsConditions() {
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
                                             <CheckCircle className="h-3 w-3 mr-1" />
-                                            Published
+                                            {t('termsPage.published')}
                                         </Badge>
                                         <span className="text-sm text-muted-foreground">
-                                            Version {terms.current.id} • Published on {formatDate(terms.current.publishedAt)}
+                                            {t('termsPage.versionPublished', { version: terms.current.id, date: formatDate(terms.current.publishedAt) })}
                                         </span>
                                     </div>
                                     <div className="flex gap-2">
@@ -274,7 +276,7 @@ export default function TermsConditions() {
                                                 setActiveTab("draft")
                                             }}
                                         >
-                                            Edit
+                                            {t('termsPage.editBtn')}
                                         </Button>
                                     </div>
                                 </div>
@@ -292,21 +294,21 @@ export default function TermsConditions() {
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
                                             <Clock className="h-3 w-3 mr-1" />
-                                            Draft
+                                            {t('termsPage.draft')}
                                         </Badge>
                                         <span className="text-sm text-muted-foreground">
-                                            Version {terms.draft.id} • Last updated {formatDate(terms.draft.updatedAt)}
+                                            {t('termsPage.versionUpdated', { version: terms.draft.id, date: formatDate(terms.draft.updatedAt) })}
                                         </span>
                                     </div>
                                     <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={() => setShowPreviewDialog(true)}>
-                                            Preview
+                                            {t('termsPage.previewBtn')}
                                         </Button>
                                         <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving}>
-                                            {saving ? <><RefreshCw className="mr-2 h-4 w-4 animate-spin" />Saving...</> : <> <Save className="h-4 w-4 mr-1" /> Save Draft</>}
+                                            {saving ? <><RefreshCw className="mr-2 h-4 w-4 animate-spin" />{t('termsPage.saving')}</> : <> <Save className="h-4 w-4 mr-1" /> {t('termsPage.saveDraftBtn')}</>}
                                         </Button>
                                         <Button size="sm" onClick={() => setShowPublishDialog(true)} disabled={publishing}>
-                                            <Globe className="h-4 w-4 mr-1" /> Publish
+                                            <Globe className="h-4 w-4 mr-1" /> {t('termsPage.publishBtn')}
                                         </Button>
                                     </div>
                                 </div>
@@ -314,17 +316,17 @@ export default function TermsConditions() {
                                     className="w-full min-h-[300px] border rounded-md p-3 font-mono text-sm bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary"
                                     value={editor}
                                     onChange={e => setEditor(e.target.value)}
-                                    placeholder="Enter terms and conditions..."
+                                    placeholder={t('termsPage.editorPlaceholder')}
                                 />
                             </TabsContent>
 
                             <TabsContent value="history" className="mt-0">
                                 <div className="border rounded-md overflow-hidden">
                                     <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
-                                        <div className="col-span-3">Version</div>
-                                        <div className="col-span-5">Published Date</div>
-                                        <div className="col-span-3">Published By</div>
-                                        <div className="col-span-1 text-right">Actions</div>
+                                        <div className="col-span-3">{t('termsPage.version')}</div>
+                                        <div className="col-span-5">{t('termsPage.publishedDate')}</div>
+                                        <div className="col-span-3">{t('termsPage.publishedBy')}</div>
+                                        <div className="col-span-1 text-right">{t('termsPage.actions')}</div>
                                     </div>
                                     <div className="divide-y">
                                         {terms.history.map((version) => (
@@ -355,32 +357,32 @@ export default function TermsConditions() {
             <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Publish Terms & Conditions</DialogTitle>
+                        <DialogTitle>{t('termsPage.publishDialogTitle')}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to publish this version? This will make it immediately visible to all users.
+                            {t('termsPage.publishDialogDesc')}
                         </DialogDescription>
                     </DialogHeader>
 
                     <Alert variant="warning" className="mt-4">
                         <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>Important</AlertTitle>
+                        <AlertTitle>{t('termsPage.important')}</AlertTitle>
                         <AlertDescription>
-                            Publishing new terms may require notifying users according to your privacy policy and applicable laws.
+                            {t('termsPage.importantDesc')}
                         </AlertDescription>
                     </Alert>
 
                     <DialogFooter className="mt-6">
                         <Button variant="outline" onClick={() => setShowPublishDialog(false)} disabled={publishing}>
-                            Cancel
+                            {t('dialogbox.cancel')}
                         </Button>
                         <Button onClick={handlePublish} disabled={publishing}>
                             {publishing ? (
                                 <>
                                     <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                    Publishing...
+                                    {t('termsPage.publishing')}
                                 </>
                             ) : (
-                                "Publish"
+                                t('termsPage.publishBtn')
                             )}
                         </Button>
                     </DialogFooter>
@@ -392,9 +394,9 @@ export default function TermsConditions() {
                 {selectedVersion && (
                     <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                         <DialogHeader>
-                            <DialogTitle>Version {selectedVersion.id}</DialogTitle>
+                            <DialogTitle>{t('termsPage.versionDialogTitle', { version: selectedVersion.id })}</DialogTitle>
                             <DialogDescription>
-                                Published on {formatDate(selectedVersion.publishedAt)} by {selectedVersion.publishedBy}
+                                {t('termsPage.versionDialogDesc', { date: formatDate(selectedVersion.publishedAt), by: selectedVersion.publishedBy })}
                             </DialogDescription>
                         </DialogHeader>
 
@@ -406,10 +408,10 @@ export default function TermsConditions() {
 
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setShowHistoryDialog(false)}>
-                                Close
+                                {t('dialogbox.cancel')}
                             </Button>
                             <Button onClick={() => handleRestoreVersion(selectedVersion)}>
-                                Restore This Version
+                                {t('termsPage.restoreBtn')}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
@@ -420,8 +422,8 @@ export default function TermsConditions() {
             <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
-                        <DialogTitle>Preview Terms & Conditions</DialogTitle>
-                        <DialogDescription>This is how your terms will appear to users</DialogDescription>
+                        <DialogTitle>{t('termsPage.previewDialogTitle')}</DialogTitle>
+                        <DialogDescription>{t('termsPage.previewDialogDesc')}</DialogDescription>
                     </DialogHeader>
 
                     <div className="flex-1 overflow-y-auto py-4">
@@ -434,7 +436,7 @@ export default function TermsConditions() {
 
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>
-                            Close
+                            {t('dialogbox.cancel')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

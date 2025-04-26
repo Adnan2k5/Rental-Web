@@ -46,8 +46,14 @@ import {
 import { useState, useEffect } from 'react';
 import { getStats } from '../../api/admin.api';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { colors } from '../../assets/Color';
+import { itemFadeIn, pageTransition } from '../../assets/Animations';
+import { Particles } from '../../Components/Particles';
+import { useAuth } from '../../Middleware/AuthProvider';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
 
   const [dashboardData, setDashboardData] = useState({
     totalRevenue: 0,
@@ -110,82 +116,9 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  // Rental Color Palette
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
 
   // Sample admin data
-  const admin = {
-    name: 'Sarah Johnson',
-    role: 'Super Admin',
-    avatar: '/placeholder.svg?height=40&width=40',
-  };
-
-  const COLORS = [
-    colors.primary,
-    colors.secondary,
-    colors.accent,
-    '#9575CD',
-    '#4DB6AC',
-  ];
-
-  const pageTransition = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        when: 'beforeChildren',
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemFadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-primary/10 to-secondary/10"
-            style={{
-              width: Math.random() * 40 + 10,
-              height: Math.random() * 40 + 10,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: 'easeInOut',
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    );
-  };
+  const admin = useAuth();
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -201,9 +134,11 @@ export default function AdminDashboard() {
     return new Intl.NumberFormat('en-US').format(value);
   };
 
+  console.log(admin.user)
+
   return (
     <motion.div
-      className="min-h-screen bg-light flex"
+      className="min-h-screen bg-light flex flex-col"
       initial="hidden"
       animate="visible"
       variants={pageTransition}
@@ -221,7 +156,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                Dashboard
+                {t('adminDashboard.title')}
               </motion.h1>
               <motion.p
                 className="text-muted-foreground"
@@ -229,7 +164,7 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                Welcome back, {admin.name}. Here's what's happening today.
+                {t('adminDashboard.welcome', { name: admin.user.name })}
               </motion.p>
             </div>
 
@@ -252,7 +187,7 @@ export default function AdminDashboard() {
                   transition={{ duration: 0.6 }}
                 />
                 <Calendar className="h-4 w-4 mr-2" />
-                <span className="relative">Export Report</span>
+                <span className="relative">{t('adminDashboard.exportReport')}</span>
               </Button>
             </motion.div>
           </div>
@@ -286,7 +221,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-muted-foreground text-sm mb-1">
-                Total Revenue
+                {t('adminDashboard.totalRevenue')}
               </div>
               <div className="text-2xl font-bold text-dark">
                 {formatCurrency(dashboardData.totalRevenue)}
@@ -317,13 +252,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-muted-foreground text-sm mb-1">
-                Total Users
+                {t('adminDashboard.totalUsers')}
               </div>
               <div className="text-2xl font-bold text-dark">
                 {formatNumber(dashboardData.totalUsers)}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                +{dashboardData.newUsers} new users this month
+                {t('adminDashboard.newUsers', { count: dashboardData.newUsers })}
               </div>
             </motion.div>
 
@@ -342,13 +277,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-muted-foreground text-sm mb-1">
-                Total Items
+                {t('adminDashboard.totalItems')}
               </div>
               <div className="text-2xl font-bold text-dark">
                 {formatNumber(dashboardData.totalItems)}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                +{dashboardData.newItems} new items this month
+                {t('adminDashboard.newItems', { count: dashboardData.newItems })}
               </div>
             </motion.div>
 
@@ -367,16 +302,13 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="text-muted-foreground text-sm mb-1">
-                Active Items
+                {t('adminDashboard.activeItems')}
               </div>
               <div className="text-2xl font-bold text-dark">
                 {formatNumber(dashboardData.activeItems)}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                {Math.round(
-                  (dashboardData.activeItems / dashboardData.totalItems) * 100
-                )}
-                % of total items
+                {t('adminDashboard.activeItemsPercent', { percent: Math.round((dashboardData.activeItems / dashboardData.totalItems) * 100) })}
               </div>
             </motion.div>
           </motion.div>
@@ -390,19 +322,19 @@ export default function AdminDashboard() {
                     value="revenue"
                     className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                   >
-                    Revenue
+                    {t('adminDashboard.revenueTab')}
                   </TabsTrigger>
                   <TabsTrigger
                     value="users"
                     className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                   >
-                    Users
+                    {t('adminDashboard.usersTab')}
                   </TabsTrigger>
                   <TabsTrigger
                     value="items"
                     className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                   >
-                    Items
+                    {t('adminDashboard.itemsTab')}
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -410,9 +342,9 @@ export default function AdminDashboard() {
               <TabsContent value="revenue" className="mt-0">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle>Revenue Overview</CardTitle>
+                    <CardTitle>{t('adminDashboard.revenueOverview')}</CardTitle>
                     <CardDescription>
-                      Monthly revenue trends for the current year
+                      {t('adminDashboard.revenueOverviewDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -464,9 +396,9 @@ export default function AdminDashboard() {
               <TabsContent value="users" className="mt-0">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle>User Growth</CardTitle>
+                    <CardTitle>{t('adminDashboard.userGrowth')}</CardTitle>
                     <CardDescription>
-                      Monthly user acquisition trends
+                      {t('adminDashboard.userGrowthDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -515,9 +447,9 @@ export default function AdminDashboard() {
               <TabsContent value="items" className="mt-0">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle>Item Categories</CardTitle>
+                    <CardTitle>{t('adminDashboard.itemCategories')}</CardTitle>
                     <CardDescription>
-                      Distribution of items by category
+                      {t('adminDashboard.itemCategoriesDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -540,7 +472,7 @@ export default function AdminDashboard() {
                               {categoryData.map((entry, index) => (
                                 <Cell
                                   key={`cell-${index}`}
-                                  fill={COLORS[index % COLORS.length]}
+                                  fill={colors[index % colors.length]}
                                 />
                               ))}
                             </Pie>
@@ -599,8 +531,8 @@ export default function AdminDashboard() {
             {/* Recent Users */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle>Recent Users</CardTitle>
-                <CardDescription>New users who joined recently</CardDescription>
+                <CardTitle>{t('adminDashboard.recentUsers')}</CardTitle>
+                <CardDescription>{t('adminDashboard.recentUsersDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -624,7 +556,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="text-sm text-right">
-                          <div>Joined {format(user.createdAt, "dd-MM-yyyy")}</div>
+                          <div>{t('adminDashboard.joined', { date: format(user.createdAt, 'dd-MM-yyyy') })}</div>
                         </div>
                         <Button variant="ghost" size="icon">
                           <ChevronDown className="h-4 w-4" />

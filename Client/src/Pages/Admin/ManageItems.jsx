@@ -54,8 +54,10 @@ import { fetchAllItems } from '../../api/items.api';
 import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
 import { useCategories } from '../../hooks/useCategories';
+import { useTranslation } from 'react-i18next';
 
 export default function ManageItems() {
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -73,15 +75,6 @@ export default function ManageItems() {
   const itemsPerPage = 12;
 
   const { categories, setCategories } = useCategories();
-
-  // Rental Color Palette
-  const colors = {
-    primary: '#4D39EE', // Coral
-    secondary: '#191B24', // Amber
-    accent: '#4FC3F7', // Light Blue
-    light: '#FAFAFA', // Almost White
-    dark: '#455A64', // Blue Grey
-  };
 
   // Fetch items from API
   const fetchItems = async (page = currentPage) => {
@@ -384,10 +377,9 @@ export default function ManageItems() {
     );
   };
 
-
   return (
     <motion.div
-      className="min-h-screen bg-light flex"
+      className="min-h-screen bg-light flex flex-col"
       initial="hidden"
       animate="visible"
       variants={pageTransition}
@@ -405,7 +397,7 @@ export default function ManageItems() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  Manage Items
+                  {t('adminSidebar.itemsManagement')}
                 </motion.h1>
                 <motion.p
                   className="text-muted-foreground"
@@ -413,7 +405,7 @@ export default function ManageItems() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  View, edit and manage all rental items
+                  {t('manageItems.desc', 'View, edit and manage all rental items')}
                 </motion.p>
               </div>
 
@@ -444,7 +436,7 @@ export default function ManageItems() {
                   onClick={() => setIsNewCategoryDialogOpen(true)}
                 >
                   <Tag className="h-4 w-4 mr-2" />
-                  Add Category
+                  {t('manageItems.addCategory', 'Add Category')}
                 </Button>
 
                 <Button
@@ -461,7 +453,7 @@ export default function ManageItems() {
                     transition={{ duration: 0.6 }}
                   />
                   <Plus className="h-4 w-4 mr-2" />
-                  <span className="relative">Add Item</span>
+                  <span className="relative">{t('manageItems.addItem', 'Add Item')}</span>
                 </Button>
               </motion.div>
             </div>
@@ -481,7 +473,7 @@ export default function ManageItems() {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setSelectedCategory('all')}
                   >
-                    All Categories
+                    {t('manageItems.allCategories', 'All Categories')}
                   </motion.button>
 
                   {categories && categories.length > 0 && categories.map((category) => (
@@ -518,7 +510,7 @@ export default function ManageItems() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by title or description..."
+                      placeholder={t('manageItems.searchPlaceholder', 'Search by title or description...')}
                       className="pl-10"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -529,7 +521,7 @@ export default function ManageItems() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">Filter:</span>
+                    <span className="text-sm">{t('manageItems.filter', 'Filter:')}</span>
                   </div>
 
                   <Select
@@ -537,12 +529,12 @@ export default function ManageItems() {
                     onValueChange={setSelectedStatus}
                   >
                     <SelectTrigger className="w-[140px]">
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder={t('manageItems.status', 'Status')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="unavailable">Unavailable</SelectItem>
+                      <SelectItem value="all">{t('manageItems.all', 'All')}</SelectItem>
+                      <SelectItem value="available">{t('manageItems.available', 'Available')}</SelectItem>
+                      <SelectItem value="unavailable">{t('manageItems.unavailable', 'Unavailable')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -604,7 +596,7 @@ export default function ManageItems() {
                           <div className="absolute top-3 right-3 flex space-x-2">
                             {item.featured && (
                               <Badge className="bg-secondary text-white">
-                                Featured
+                                {t('manageItems.featured', 'Featured')}
                               </Badge>
                             )}
                             <Badge
@@ -679,10 +671,10 @@ export default function ManageItems() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem>
-                                    View Details
+                                    {t('manageItems.viewDetails', 'View Details')}
                                   </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
-                                    Delete Item
+                                    {t('manageItems.deleteItem', 'Delete Item')}
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -706,13 +698,13 @@ export default function ManageItems() {
                           <TableHeader>
                             <TableRow>
                               <TableHead className="w-[50px]">ID</TableHead>
-                              <TableHead>Item</TableHead>
-                              <TableHead>Category</TableHead>
-                              <TableHead>Price</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Owner</TableHead>
+                              <TableHead>{t('manageItems.item', 'Item')}</TableHead>
+                              <TableHead>{t('manageItems.category', 'Category')}</TableHead>
+                              <TableHead>{t('manageItems.price', 'Price')}</TableHead>
+                              <TableHead>{t('manageItems.status', 'Status')}</TableHead>
+                              <TableHead>{t('manageItems.owner', 'Owner')}</TableHead>
                               <TableHead className="text-right">
-                                Actions
+                                {t('manageItems.actions', 'Actions')}
                               </TableHead>
                             </TableRow>
                           </TableHeader>
@@ -742,7 +734,7 @@ export default function ManageItems() {
                                         {item.name || item.title}
                                         {item.featured && (
                                           <Badge className="ml-2 bg-secondary text-white text-xs">
-                                            Featured
+                                            {t('manageItems.featured', 'Featured')}
                                           </Badge>
                                         )}
                                       </div>
@@ -823,10 +815,10 @@ export default function ManageItems() {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
                                         <DropdownMenuItem>
-                                          View Details
+                                          {t('manageItems.viewDetails', 'View Details')}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="text-red-600">
-                                          Delete Item
+                                          {t('manageItems.deleteItem', 'Delete Item')}
                                         </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
@@ -904,9 +896,9 @@ export default function ManageItems() {
       <Dialog open={isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
         <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">Add New Item</DialogTitle>
+            <DialogTitle className="text-xl">{t('manageItems.addNewItem', 'Add New Item')}</DialogTitle>
             <DialogDescription>
-              Fill in the details and upload images of the item
+              {t('manageItems.addNewItemDesc', 'Fill in the details and upload images of the item')}
             </DialogDescription>
           </DialogHeader>
 
@@ -919,22 +911,22 @@ export default function ManageItems() {
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Item Title</Label>
+                  <Label htmlFor="title">{t('addItem.name')}</Label>
                   <Input
                     id="title"
                     name="title"
-                    placeholder="e.g. Professional DSLR Camera"
+                    placeholder={t('addItem.namePlaceholder', 'e.g. Professional DSLR Camera')}
                     className="mt-1.5"
                     required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('addItem.description')}</Label>
                   <Textarea
                     id="description"
                     name="description"
-                    placeholder="Describe the item in detail..."
+                    placeholder={t('addItem.descriptionPlaceholder', 'Describe the item in detail...')}
                     className="mt-1.5 min-h-[100px]"
                     required
                   />
@@ -942,10 +934,10 @@ export default function ManageItems() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('addItem.category')}</Label>
                     <Select defaultValue="electronics" name="category">
                       <SelectTrigger id="category" className="mt-1.5">
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t('addItem.categoryPlaceholder', 'Select category')} />
                       </SelectTrigger>
                       <SelectContent>
                         {categories && categories.length > 0 && categories.map((category) => (
@@ -961,17 +953,17 @@ export default function ManageItems() {
                   </div>
 
                   <div>
-                    <Label htmlFor="condition">Condition</Label>
+                    <Label htmlFor="condition">{t('manageItems.condition', 'Condition')}</Label>
                     <Select defaultValue="excellent" name="condition">
                       <SelectTrigger id="condition" className="mt-1.5">
-                        <SelectValue placeholder="Select condition" />
+                        <SelectValue placeholder={t('manageItems.conditionPlaceholder', 'Select condition')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="excellent">Excellent</SelectItem>
-                        <SelectItem value="good">Good</SelectItem>
-                        <SelectItem value="fair">Fair</SelectItem>
-                        <SelectItem value="poor">Poor</SelectItem>
+                        <SelectItem value="new">{t('manageItems.new', 'New')}</SelectItem>
+                        <SelectItem value="excellent">{t('manageItems.excellent', 'Excellent')}</SelectItem>
+                        <SelectItem value="good">{t('manageItems.good', 'Good')}</SelectItem>
+                        <SelectItem value="fair">{t('manageItems.fair', 'Fair')}</SelectItem>
+                        <SelectItem value="poor">{t('manageItems.poor', 'Poor')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -979,7 +971,7 @@ export default function ManageItems() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">{t('addItem.price')} ($)</Label>
                     <Input
                       id="price"
                       name="price"
@@ -993,13 +985,13 @@ export default function ManageItems() {
                   </div>
 
                   <div>
-                    <Label htmlFor="period">Rental Period</Label>
+                    <Label htmlFor="period">{t('manageItems.rentalPeriod', 'Rental Period')}</Label>
                     <Select defaultValue="day" name="period">
                       <SelectTrigger id="period" className="mt-1.5">
-                        <SelectValue placeholder="Select period" />
+                        <SelectValue placeholder={t('manageItems.periodPlaceholder', 'Select period')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="day">Day</SelectItem>
+                        <SelectItem value="day">{t('manageItems.day', 'Day')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1007,20 +999,20 @@ export default function ManageItems() {
 
                 <div className="flex items-center space-x-2">
                   <Switch id="featured" name="featured" />
-                  <Label htmlFor="featured">Mark as featured item</Label>
+                  <Label htmlFor="featured">{t('manageItems.markFeatured', 'Mark as featured item')}</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Switch id="available" name="available" defaultChecked />
                   <Label htmlFor="available">
-                    List as available immediately
+                    {t('manageItems.listAvailable', 'List as available immediately')}
                   </Label>
                 </div>
               </div>
 
               {/* Media Upload */}
               <div>
-                <Label className="block mb-2">Upload Images</Label>
+                <Label className="block mb-2">{t('addItem.upload')}</Label>
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
                     ? 'border-primary bg-primary/5'
@@ -1053,10 +1045,10 @@ export default function ManageItems() {
                       <Upload className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm font-medium mb-1">
-                      Drag and drop your images here
+                      {t('uploadContaier.desc')}
                     </p>
                     <p className="text-xs text-muted-foreground mb-3">
-                      Support for JPG, PNG, WEBP (max 5MB each)
+                      {t('uploadContaier.support')}
                     </p>
                     <Button
                       type="button"
@@ -1064,7 +1056,7 @@ export default function ManageItems() {
                       onClick={triggerFileInput}
                       className="text-sm"
                     >
-                      Browse Files
+                      {t('uploadContaier.browse')}
                     </Button>
                   </motion.div>
                 </div>
@@ -1112,7 +1104,7 @@ export default function ManageItems() {
               variant="outline"
               onClick={() => setIsNewItemDialogOpen(false)}
             >
-              Cancel
+              {t('dialogbox.cancel')}
             </Button>
             <motion.div
               variants={buttonHover}
@@ -1133,7 +1125,7 @@ export default function ManageItems() {
                   whileHover={{ x: '100%', opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative">Add Item</span>
+                <span className="relative">{t('manageItems.addItem', 'Add Item')}</span>
               </Button>
             </motion.div>
           </DialogFooter>
@@ -1147,7 +1139,7 @@ export default function ManageItems() {
       >
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
+            <DialogTitle>{t('manageItems.addNewCategory', 'Add New Category')}</DialogTitle>
             <DialogDescription>
             </DialogDescription>
           </DialogHeader>
@@ -1158,11 +1150,11 @@ export default function ManageItems() {
             className="space-y-4 py-4"
           >
             <div className="space-y-2">
-              <Label htmlFor="categoryName">Category Name</Label>
+              <Label htmlFor="categoryName">{t('manageItems.categoryName', 'Category Name')}</Label>
               <Input
                 id="categoryName"
                 name="categoryName"
-                placeholder="e.g. Electronics, Furniture"
+                placeholder={t('manageItems.categoryNamePlaceholder', 'e.g. Electronics, Furniture')}
                 onChange={(e) => setCategoryName(e.target.value)}
                 value={categoryName}
                 required
@@ -1175,7 +1167,7 @@ export default function ManageItems() {
               variant="outline"
               onClick={() => setIsNewCategoryDialogOpen(false)}
             >
-              Cancel
+              {t('dialogbox.cancel')}
             </Button>
             <Button
               type="submit"
@@ -1184,7 +1176,7 @@ export default function ManageItems() {
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
               }}
             >
-              Add Category
+              {t('manageItems.addCategory', 'Add Category')}
             </Button>
           </DialogFooter>
         </DialogContent>

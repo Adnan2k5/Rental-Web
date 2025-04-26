@@ -22,44 +22,46 @@ import { useNavigate } from "react-router-dom"
 import { logout } from "../../Store/UserSlice"
 import { useDispatch } from 'react-redux';
 import { logoutUser } from "../../api/auth.api"
+import { useTranslation } from "react-i18next"
+import { Footer } from "../../Components/Footer"
 
 const UserDashboardLayout = () => {
     const { user } = useAuth()
+    const { t } = useTranslation();
     const dispatch = useDispatch()
     const location = useLocation()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const navigate = useNavigate()
 
-    // Navigation items configuration
     const navItems = [
         {
             icon: <Package className="h-4 w-4 mr-3" />,
-            label: "My Dashboard",
+            label: t('sidebar.dashboard'),
             path: "/dashboard",
         },
         {
             icon: <Box className="h-4 w-4 mr-3" />,
-            label: "My Bookings",
+            label: t('sidebar.myitems'),
             path: "/dashboard/myitems",
         },
         {
             icon: <LayoutGrid className="h-4 w-4 mr-3" />,
-            label: "Browse",
+            label: t('sidebar.browse'),
             path: "/browse",
         },
         {
             icon: <Badge className="h-4 w-4 mr-3" />,
-            label: "Get Verified",
+            label: t('sidebar.getverified'),
             path: "/dashboard/verification",
         },
         {
             icon: <Settings className="h-4 w-4 mr-3" />,
-            label: "Settings",
+            label: t('sidebar.settings'),
             path: "/dashboard/settings",
         },
         {
             icon: <TicketCheck className="h-4 w-4 mr-3" />,
-            label: "Tickets & Support",
+            label: t('sidebar.tickets'),
             path: "/dashboard/tickets",
         },
     ]
@@ -149,7 +151,7 @@ const UserDashboardLayout = () => {
                             onClick={handleLogout}
                         >
                             <LogOut className="h-4 w-4 mr-3" />
-                            Logout
+                            {t('sidebar.logout')}
                         </motion.button>
                     </div>
                 </div>
@@ -278,9 +280,13 @@ const UserDashboardLayout = () => {
                     <div className="relative z-10">
                         {/* This is where child Components will be rendered */}
                         <Outlet />
+
                     </div>
+
                 </main>
+                <Footer />
             </motion.div>
+
         </motion.div>
     )
 }

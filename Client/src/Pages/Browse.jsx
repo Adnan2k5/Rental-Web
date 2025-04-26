@@ -24,12 +24,14 @@ import { fadeIn, staggerChildren } from '../assets/Animations';
 import { Footer } from '../Components/Footer';
 import { Loader } from '../Components/loader';
 import { useCategories } from '../hooks/useCategories';
+import { useTranslation } from 'react-i18next';
 
 
 export default function BrowsePage() {
   const [products, setitems] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [filters, setFilters] = useState({
     priceRange: [0, 200],
@@ -160,20 +162,20 @@ export default function BrowsePage() {
   const FilterPanel = () => (
     <div className="space-y-6 ">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Filters</h3>
+        <h3 className="text-lg font-semibold">{t('filterPanel.filters')}</h3>
         <Button
           variant="ghost"
           size="sm"
           onClick={clearFilters}
           className="h-8 text-xs text-muted-foreground"
         >
-          Clear all
+          {t('filterPanel.clearall')}
         </Button>
       </div>
 
       <div className="space-y-4">
         <div>
-          <h4 className="font-medium mb-3">Price Range ($/month)</h4>
+          <h4 className="font-medium mb-3">{t('filterPanel.priceRange')}</h4>
           <div className="px-2">
             <Slider
               defaultValue={50}
@@ -191,7 +193,7 @@ export default function BrowsePage() {
         </div>
 
         <div>
-          <h4 className="font-medium mb-3">Category</h4>
+          <h4 className="font-medium mb-3">{t('filterPanel.category')}</h4>
           <div className="space-y-2">
             {categories && categories.length != 0 && categories.map((category) => (
               <div key={category._id} className="flex items-center">
@@ -211,7 +213,7 @@ export default function BrowsePage() {
           </div>
         </div>
         <div>
-          <h4 className="font-medium mb-3">Availability</h4>
+          <h4 className="font-medium mb-3">{t('filterPanel.availability')}</h4>
           <div className="space-y-2">
             {availability.map((availability) => (
               <div key={availability} className="flex items-center">
@@ -232,7 +234,7 @@ export default function BrowsePage() {
         </div>
 
         <div>
-          <h4 className="font-medium mb-3">Rating</h4>
+          <h4 className="font-medium mb-3">{t('filterPanel.rating')}</h4>
           <div className="flex flex-wrap gap-2">
             {[4, 3, 2, 1].map((rating) => (
               <Button
@@ -266,13 +268,13 @@ export default function BrowsePage() {
         >
           <div>
             <p className="text-gray-600">
-              Find the perfect items to rent for your needs
+              {t('browsePage.title')}
             </p>
           </div>
           <Link to="/cart" className="relative">
             <Button variant="outline" className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
-              <span>Cart</span>
+              <span>{t("browsePage.cart")}</span>
             </Button>
           </Link>
         </motion.div>
@@ -297,7 +299,7 @@ export default function BrowsePage() {
                   className="w-full flex items-center justify-center gap-2"
                 >
                   <Filter className="h-4 w-4" />
-                  Filters
+                  {t('filterPanel.filters')}
                 </Button>
               </SheetTrigger>
               <SheetContent
@@ -346,7 +348,7 @@ export default function BrowsePage() {
               filters.priceRange[1] < 200) && (
                 <div className="mb-6 flex flex-wrap gap-2 items-center">
                   <span className="text-sm text-muted-foreground">
-                    Active filters:
+                    {t('filterPanel.activeFilters')}
                   </span>
 
                   {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
@@ -420,7 +422,7 @@ export default function BrowsePage() {
                     className="h-8 px-2 text-xs text-muted-foreground"
                     onClick={clearFilters}
                   >
-                    Clear all
+                    {t('filterPanel.clearall')}
                   </Button>
                 </div>
               )}
@@ -454,11 +456,11 @@ export default function BrowsePage() {
                 <div className="bg-gray-50 inline-flex rounded-full p-4 mb-4">
                   <Search className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-medium mb-2">No products found</h3>
+                <h3 className="text-lg font-medium mb-2">{t('browsePage.noproducts')}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters to find what you're looking for.
+                  {t('browsePage.noproductsdesc')}
                 </p>
-                <Button onClick={clearFilters}>Clear all filters</Button>
+                <Button onClick={clearFilters}>{t('filterPanel.clearall')}</Button>
               </motion.div>
             )}
 
@@ -476,7 +478,7 @@ export default function BrowsePage() {
                     }
                     disabled={filters.page <= 1}
                   >
-                    Previous
+                    {t('pagination.previous')}
                   </Button>
 
                   {/* Page numbers */}
@@ -572,7 +574,7 @@ export default function BrowsePage() {
                       filters.page >= Math.ceil(countItems / filters.limit)
                     }
                   >
-                    Next
+                    {t('pagination.next')}
                   </Button>
                 </div>
               </div>

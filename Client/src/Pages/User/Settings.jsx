@@ -14,9 +14,11 @@ import { useAuth } from "../../Middleware/AuthProvider"
 import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogFooter } from "../../Components/ui/dialog"
 import { Otpresend, Otpsend, updatePassword, UserUpdate, VerifyEmail } from "../../api/auth.api"
 import { useDispatch } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 export default function Settings() {
     const { user } = useAuth()
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false)
     const [avatarPreview, setAvatarPreview] = useState(null)
     const [changePass, setChangePass] = useState(false)
@@ -25,7 +27,6 @@ export default function Settings() {
     const [newEmail, setNewEmail] = useState(user?.email)
     const [verifyButton, setVerifyButton] = useState(false)
     const [emailsent, setemailsent] = useState(false)
-
 
     const {
         register,
@@ -59,20 +60,18 @@ export default function Settings() {
         }
     }, [newEmail])
 
-
     const dispatch = useDispatch();
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
-            // Simulate API call
             const updatedData = { ...data, _id: user._id, }
             const res = await UserUpdate(updatedData, dispatch)
             if (res) {
-                toast.success("Profile updated successfully!")
+                toast.success(t('settings.profileUpdateSuccess'))
             }
         } catch (error) {
-            console.error("Error updating profile:", error)
-            toast.error("Failed to update profile")
+            console.error(t('settings.profileUpdateError'), error)
+            toast.error(t('settings.profileUpdateFail'))
         } finally {
             setIsLoading(false)
         }
@@ -83,7 +82,7 @@ export default function Settings() {
             const res = await Otpsend(data)
             if (res) {
                 setVerifyButton(false)
-                toast.success("Otp sent successfully!")
+                toast.success(t('settings.otpSentSuccess'))
                 setemailsent(true)
                 setChangePass(true)
             }
@@ -92,10 +91,10 @@ export default function Settings() {
             const res = await Otpresend(user?.email)
             if (res) {
                 setChangePass(true)
-                toast.success("Otp sent successfully!")
+                toast.success(t('settings.otpSentSuccess'))
             }
             else {
-                toast.error("Failed to send Otp")
+                toast.error(t('settings.otpSentFail'))
             }
         }
     }
@@ -107,13 +106,13 @@ export default function Settings() {
             const res = await updatePassword(data);
             if (res) {
                 setChangePass(false)
-                toast.success("Password updated successfully!")
+                toast.success(t('settings.passwordUpdateSuccess'))
             } else {
-                toast.error("Failed to update password")
+                toast.error(t('settings.passwordUpdateFail'))
             }
         } catch (error) {
-            console.error("Error updating password:", error)
-            toast.error("Failed to update password")
+            console.error(t('settings.passwordUpdateError'), error)
+            toast.error(t('settings.passwordUpdateFail'))
         } finally {
             setIsLoading(false)
         }
@@ -125,17 +124,16 @@ export default function Settings() {
             const res = await VerifyEmail(data, dispatch)
             if (res) {
                 setChangePass(false)
-                toast.success("Email updated successfully!")
+                toast.success(t('settings.emailUpdateSuccess'))
             } else {
-                toast.error("Failed to update email")
+                toast.error(t('settings.emailUpdateFail'))
             }
         }
         catch (error) {
-            console.error("Error updating email:", error)
-            toast.error("Failed to update email")
+            console.error(t('settings.emailUpdateError'), error)
+            toast.error(t('settings.emailUpdateFail'))
         }
     }
-
 
     return (
         <div>
@@ -145,8 +143,8 @@ export default function Settings() {
                 transition={{ delay: 0.2 }}
                 className="mb-8"
             >
-                <h1 className="text-2xl font-bold text-dark mb-2">Account Settings</h1>
-                <p className="text-muted-foreground">Manage your account information and preferences</p>
+                <h1 className="text-2xl font-bold text-dark mb-2">{t('settings.title')}</h1>
+                <p className="text-muted-foreground">{t('settings.subtitle')}</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -159,19 +157,18 @@ export default function Settings() {
                 >
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profile</CardTitle>
+                            <CardTitle>{t('settings.profile')}</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center">
                             <div className="relative mb-4">
                                 <Avatar className="h-24 w-24">
-
                                     <AvatarFallback className="text-2xl">
                                         {user?.name?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
                             <div className="text-center">
-                                <h3 className="font-medium">{user?.name || "User"}</h3>
+                                <h3 className="font-medium">{user?.name || t('settings.user')}</h3>
                                 <p className="text-sm text-muted-foreground">{user?.email}</p>
                             </div>
                         </CardContent>
@@ -187,62 +184,59 @@ export default function Settings() {
                 >
                     <Card>
                         <CardHeader>
-                            <CardTitle>Personal Information</CardTitle>
-                            <CardDescription>Update your personal details</CardDescription>
+                            <CardTitle>{t('settings.personalInfo')}</CardTitle>
+                            <CardDescription>{t('settings.updatePersonal')}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form id="profile-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Full Name</Label>
+                                        <Label htmlFor="name">{t('settings.fullName')}</Label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 id="name"
-                                                placeholder="Your full name"
+                                                placeholder={t('settings.fullNamePlaceholder')}
                                                 className="pl-10"
-                                                {...register("name", { required: "Name is required" })}
+                                                {...register("name", { required: t('settings.nameRequired') })}
                                             />
                                         </div>
                                         {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
-
                                     </div>
-
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">Email Address</Label>
+                                        <Label htmlFor="email">{t('settings.email')}</Label>
                                         <div className="relative">
                                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input
                                                 id="email"
                                                 type="email"
-                                                placeholder="Your email address"
+                                                placeholder={t('settings.emailPlaceholder')}
                                                 className="pl-10"
                                                 {...register("email", {
-                                                    required: "Email is required",
+                                                    required: t('settings.emailRequired'),
                                                     pattern: {
                                                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                        message: "Invalid email address",
+                                                        message: t('settings.emailInvalid'),
                                                     },
                                                     onChange: (e) => { setNewEmail(e.target.value) }
                                                 })}
                                             />
                                         </div>
                                         {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
-                                        {verifyButton ? <Button type="button" onClick={() => handleOpen({ email: true })} variant="outline">Verify Email</Button> : ``}
+                                        {verifyButton ? <Button type="button" onClick={() => handleOpen({ email: true })} variant="outline">{t('settings.verifyEmail')}</Button> : ``}
                                     </div>
-
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Phone Number</Label>
+                                        <Label htmlFor="phone">{t('settings.phone')}</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input id="phone" value={user.phoneNumber} placeholder="Your phone number" className="pl-10" {...register("phoneNumber")} />
+                                            <Input id="phone" value={user.phoneNumber} placeholder={t('settings.phonePlaceholder')} className="pl-10" {...register("phoneNumber")} />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="address">Address</Label>
+                                        <Label htmlFor="address">{t('settings.address')}</Label>
                                         <div className="relative">
                                             <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input id="address" placeholder="Your address" className="pl-10" {...register("address")} />
+                                            <Input id="address" placeholder={t('settings.addressPlaceholder')} className="pl-10" {...register("address")} />
                                         </div>
                                     </div>
                                 </div>
@@ -251,17 +245,16 @@ export default function Settings() {
                         <CardFooter className="flex justify-end border-t pt-4">
                             <Button type="submit" form="profile-form" disabled={isLoading}>
                                 {isLoading ? (
-                                    <>Saving...</>
+                                    <>{t('settings.saving')}</>
                                 ) : (
                                     <>
                                         <Save className="mr-2 h-4 w-4" />
-                                        Save Changes
+                                        {t('settings.saveChanges')}
                                     </>
                                 )}
                             </Button>
                         </CardFooter>
                     </Card>
-
                     {/* Security Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -271,11 +264,11 @@ export default function Settings() {
                     >
                         <Card>
                             <CardHeader>
-                                <CardTitle>Security</CardTitle>
-                                <CardDescription>Manage your password and security settings</CardDescription>
+                                <CardTitle>{t('settings.security')}</CardTitle>
+                                <CardDescription>{t('settings.securityDesc')}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <Button type="button" onClick={() => handleOpen()} variant="outline">Change Password</Button>
+                                <Button type="button" onClick={() => handleOpen()} variant="outline">{t('settings.changePassword')}</Button>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -283,27 +276,26 @@ export default function Settings() {
                 <Dialog open={changePass} onOpenChange={setChangePass}>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>{emailsent ? 'Update Your Email' : 'Change Password'}</DialogTitle>
+                            <DialogTitle>{emailsent ? t('settings.updateEmailTitle') : t('settings.changePasswordTitle')}</DialogTitle>
                         </DialogHeader>
                         {emailsent ? `` : <input
                             type="text"
-                            placeholder="New Password"
+                            placeholder={t('settings.newPasswordPlaceholder')}
                             className='Input'
                             value={newPass}
                             onChange={(e) => setNewPass(e.target.value)}
                         />}
                         <input
                             type="text"
-                            placeholder="Enter Otp"
+                            placeholder={t('settings.otpPlaceholder')}
                             className='Input'
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                         />
                         <DialogFooter>
-                            {emailsent ? <Button variant="outline" onClick={() => verifyEmail()}>Update Email</Button> : <Button variant="outline" onClick={() => handleUpdatePass()}>
-                                Change Password
+                            {emailsent ? <Button variant="outline" onClick={() => verifyEmail()}>{t('settings.updateEmail')}</Button> : <Button variant="outline" onClick={() => handleUpdatePass()}>
+                                {t('settings.changePassword')}
                             </Button>}
-
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

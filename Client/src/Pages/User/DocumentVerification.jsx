@@ -14,11 +14,7 @@ import { colors } from "../../assets/Color"
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { getDocumentByUserId, submitDocument } from "../../api/documents.api"
-
-
-
-
-
+import { useTranslation } from "react-i18next"
 
 export default function DocumentVerification() {
     const [verificationStatus, setVerificationStatus] = useState("loading")
@@ -33,20 +29,20 @@ export default function DocumentVerification() {
     const [selfiePreview, setSelfiePreview] = useState(null)
     const [errors, setErrors] = useState({})
     const [country, setCountry] = useState("")
+    const { t } = useTranslation();
 
     const governmentIdRef = useRef(null)
     const selfieRef = useRef(null)
-
 
     const handleGovernmentIdChange = (e) => {
         const file = e.target.files[0]
         if (file) {
             if (!["image/jpeg", "image/png", "image/jpg", "application/pdf"].includes(file.type)) {
-                setErrors((prev) => ({ ...prev, governmentId: "Please upload a valid image (JPEG, PNG) or PDF file" }))
+                setErrors((prev) => ({ ...prev, governmentId: t('userverification.governmentid_invalid') }))
                 return
             }
             if (file.size > 5 * 1024 * 1024) {
-                setErrors((prev) => ({ ...prev, governmentId: "File size should be less than 5MB" }))
+                setErrors((prev) => ({ ...prev, governmentId: t('userverification.file_too_large') }))
                 return
             }
             setGovernmentId(file)
@@ -67,12 +63,12 @@ export default function DocumentVerification() {
         const file = e.target.files[0]
         if (file) {
             if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
-                setErrors((prev) => ({ ...prev, selfie: "Please upload a valid image (JPEG, PNG)" }))
+                setErrors((prev) => ({ ...prev, selfie: t('userverification.selfie_invalid') }))
                 return
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                setErrors((prev) => ({ ...prev, selfie: "File size should be less than 5MB" }))
+                setErrors((prev) => ({ ...prev, selfie: t('userverification.file_too_large') }))
                 return
             }
 
@@ -107,10 +103,10 @@ export default function DocumentVerification() {
         e.preventDefault()
         const newErrors = {}
         if (!governmentId) {
-            newErrors.governmentId = "Government ID is required"
+            newErrors.governmentId = t('userverification.governmentid_required')
         }
         if (!selfie) {
-            newErrors.selfie = "Selfie photo is required"
+            newErrors.selfie = t('userverification.selfie_required')
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -125,13 +121,13 @@ export default function DocumentVerification() {
         try {
             const result = await submitDocument(formData)
             if (result.status === 201) {
-                toast.success("Documents submitted successfully!")
+                toast.success(t('userverification.submit_success'))
             } else {
-                throw new Error(result.error || "Failed to submit documents")
+                throw new Error(result.error || t('userverification.submit_failed'))
             }
         } catch (error) {
             setErrors((prev) => ({ ...prev, submit: error.message }))
-            toast.error("Failed to submit documents. Please try again.")
+            toast.error(t('userverification.submit_failed'))
         } finally {
             setIsSubmitting(false)
         }
@@ -150,21 +146,21 @@ export default function DocumentVerification() {
     const getStatusBadge = () => {
         try {
             if (user.documentVerified) {
-                return <Badge variant="success">Verified</Badge>
+                return <Badge variant="success">{t('userverification.verified')}</Badge>
             }
             else if (document && document.verified === false) {
-                return <Badge variant="">Pending</Badge>
+                return <Badge variant="">{t('userverification.pending')}</Badge>
             }
             else if (document && document.verified === true) {
-                return <Badge variant="success">Verified</Badge>
+                return <Badge variant="success">{t('userverification.verified')}</Badge>
             }
             else {
-                return <Badge variant="default">Unknown</Badge>
+                return <Badge variant="default">{t('userverification.unknown')}</Badge>
             }
 
         }
         catch (error) {
-            return <Badge variant="destructive">Unknown</Badge>
+            return <Badge variant="destructive">{t('userverification.unknown')}</Badge>
         }
         finally {
         }
@@ -173,7 +169,6 @@ export default function DocumentVerification() {
     useEffect(() => {
         getStatusBadge()
     }, [user.documentVerified])
-
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A"
@@ -198,7 +193,6 @@ export default function DocumentVerification() {
         }
     }, [user])
 
-
     useEffect(() => {
         if (document) {
             if (document.verified) {
@@ -209,7 +203,6 @@ export default function DocumentVerification() {
             }
         }
     })
-
 
     return (
         <motion.div initial="hidden" animate="visible" variants={pageTransition}>
@@ -223,14 +216,6 @@ export default function DocumentVerification() {
                     >
                         Identity Verification
                     </motion.h1>
-                    <motion.p
-                        className="text-muted-foreground"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        Verify your identity to unlock all features
-                    </motion.p>
                 </div>
                 <div className="mt-4 md:mt-0">{getStatusBadge()}</div>
             </div>
@@ -238,8 +223,8 @@ export default function DocumentVerification() {
             <motion.div variants={itemFadeIn}>
                 <Card className="mb-6">
                     <CardHeader>
-                        <CardTitle>Document Verification</CardTitle>
-                        <CardDescription>We need to verify your identity to ensure the security of your account</CardDescription>
+                        <CardTitle>{t('userverification.doctitle')}</CardTitle>
+                        <CardDescription>{t('userverification.docdesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {user.documentVerified === false && document === null ? (
@@ -248,19 +233,19 @@ export default function DocumentVerification() {
                                     <div className="space-y-4">
                                         <div>
                                             <Label htmlFor="country" className="text-base font-medium">
-                                                Country of Residence
+                                                {t('userverification.country')}
                                             </Label>
                                             <input
                                                 id="country"
                                                 type="text"
-                                                placeholder="Enter your country"
+                                                placeholder={t('userverification.country_placeholder')}
                                                 className="mt-2 Input"
                                                 onChange={(e) => setCountry(e.target.value)}
                                             />
                                         </div>
                                         <div>
                                             <Label htmlFor="government-id" className="text-base font-medium">
-                                                Government ID
+                                                {t('userverification.governmentid')}
                                             </Label>
 
                                             {!governmentIdPreview ? (
@@ -272,8 +257,8 @@ export default function DocumentVerification() {
                                                 >
                                                     <div className="flex flex-col items-center justify-center text-center">
                                                         <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-                                                        <p className="mb-2 text-sm font-medium">Click to upload or drag and drop</p>
-                                                        <p className="text-xs text-muted-foreground mb-3">JPG, PNG or PDF (max. 5MB)</p>
+                                                        <p className="mb-2 text-sm font-medium">{t('userverification.upload_instruction')}</p>
+                                                        <p className="text-xs text-muted-foreground mb-3">{t('userverification.governmentid_hint')}</p>
                                                         <Button
                                                             type="button"
                                                             variant="outline"
@@ -281,7 +266,7 @@ export default function DocumentVerification() {
                                                             onClick={() => governmentIdRef.current?.click()}
                                                         >
                                                             <Upload className="h-4 w-4 mr-2" />
-                                                            Select File
+                                                            {t('userverification.selectfile')}
                                                         </Button>
                                                         <Input
                                                             id="government-id"
@@ -329,7 +314,7 @@ export default function DocumentVerification() {
 
                                         <div>
                                             <Label htmlFor="selfie" className="text-base font-medium">
-                                                Selfie Photo
+                                                {t('userverification.selfie')}
                                             </Label>
 
                                             {!selfiePreview ? (
@@ -341,8 +326,8 @@ export default function DocumentVerification() {
                                                 >
                                                     <div className="flex flex-col items-center justify-center text-center">
                                                         <Camera className="h-10 w-10 text-muted-foreground mb-2" />
-                                                        <p className="mb-2 text-sm font-medium">Click to upload or drag and drop</p>
-                                                        <p className="text-xs text-muted-foreground mb-3">JPG or PNG (max. 5MB)</p>
+                                                        <p className="mb-2 text-sm font-medium">{t('userverification.upload_instruction')}</p>
+                                                        <p className="text-xs text-muted-foreground mb-3">{t('userverification.selfie_hint')}</p>
                                                         <Button
                                                             type="button"
                                                             variant="outline"
@@ -350,7 +335,7 @@ export default function DocumentVerification() {
                                                             onClick={() => selfieRef.current?.click()}
                                                         >
                                                             <Upload className="h-4 w-4 mr-2" />
-                                                            Select File
+                                                            {t('userverification.selectfile')}
                                                         </Button>
                                                         <Input
                                                             id="selfie"
@@ -396,10 +381,10 @@ export default function DocumentVerification() {
                                         {isSubmitting ? (
                                             <>
                                                 <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                                                Submitting...
+                                                {t('userverification.submitting')}
                                             </>
                                         ) : (
-                                            "Submit Documents for Verification"
+                                            t('userverification.submit')
                                         )}
                                     </Button>
                                 </form>
@@ -409,22 +394,21 @@ export default function DocumentVerification() {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
                                     <Clock className="h-8 w-8 text-amber-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-2">Verification in Progress</h3>
+                                <h3 className="text-xl font-semibold mb-2">{t('userverification.inprogress')}</h3>
                                 <p className="text-muted-foreground mb-6">
-                                    Your documents have been submitted and are currently being reviewed. This process typically takes
-                                    24-48 hours.
+                                    {t('userverification.inprogdesc')}
                                 </p>
 
                                 <div className="bg-muted/30 rounded-lg p-4 w-full max-w-md">
                                     <div className="flex justify-between text-sm mb-2">
-                                        <span className="text-muted-foreground">Submitted on:</span>
+                                        <span className="text-muted-foreground"> {t('userverification.submittedon')} </span>
                                         <span className="font-medium">{formatDate(document.createdAt)}</span>
                                     </div>
                                     <div className="w-full bg-muted/50 rounded-full h-2.5 mb-4">
                                         <div className="bg-amber-500 h-2.5 rounded-full w-1/2"></div>
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        We'll notify you once the verification process is complete.
+                                        {t('userverification.inprogdesc')}
                                     </p>
                                 </div>
                             </div>
@@ -433,24 +417,23 @@ export default function DocumentVerification() {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
                                     <CheckCircle className="h-8 w-8 text-green-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-2">Verification Successful</h3>
+                                <h3 className="text-xl font-semibold mb-2">{t('userverification.success')}</h3>
                                 <p className="text-muted-foreground mb-6">
-                                    Congratulations! Your identity has been successfully verified. You now have full access to all
-                                    features.
+                                    {t('userverification.successdesc')}
                                 </p>
 
                                 <Alert className="bg-green-50 border-green-200 w-full max-w-md">
                                     <CheckCircle className="h-4 w-4 text-green-500" />
-                                    <AlertDescription className="text-green-700">Your account is now fully verified.</AlertDescription>
+                                    <AlertDescription className="text-green-700">{t('userverification.fully')}</AlertDescription>
                                 </Alert>
 
                                 <div className="mt-6 bg-muted/30 rounded-lg p-4 w-full max-w-md">
                                     <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-muted-foreground">Submitted on:</span>
+                                        <span className="text-muted-foreground">{t('userverification.submittedon')}</span>
                                         <span className="font-medium">{formatDate(document?.createdAt)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Verified on:</span>
+                                        <span className="text-muted-foreground">{t('userverification.verifiedon')}</span>
                                         <span className="font-medium">{formatDate(document?.updatedAt)}</span>
                                     </div>
                                 </div>
@@ -460,16 +443,15 @@ export default function DocumentVerification() {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
                                     <AlertCircle className="h-8 w-8 text-red-500" />
                                 </div>
-                                <h3 className="text-xl font-semibold mb-2">Verification Declined</h3>
+                                <h3 className="text-xl font-semibold mb-2">{t('userverification.declined')}</h3>
                                 <p className="text-muted-foreground mb-6">
-                                    Unfortunately, your verification was declined. Please review the reason below and resubmit your
-                                    documents.
+                                    {t('userverification.declineddesc')}
                                 </p>
 
                                 <Alert variant="destructive" className="w-full max-w-md mb-6">
                                     <AlertCircle className="h-4 w-4" />
                                     <AlertDescription>
-                                        {statusDetails?.declinedReason || "Your documents did not meet our verification requirements."}
+                                        {statusDetails?.declinedReason || t('userverification.declined_reason_default')}
                                     </AlertDescription>
                                 </Alert>
 
@@ -480,11 +462,11 @@ export default function DocumentVerification() {
                                         background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                                     }}
                                 >
-                                    Resubmit Documents
+                                    {t('userverification.resubmit')}
                                 </Button>
                             </div>
                         ) : (
-                            <div>Unknown status</div>
+                            <div>{t('userverification.unknown')}</div>
                         )}
                     </CardContent>
                 </Card>
@@ -493,18 +475,18 @@ export default function DocumentVerification() {
                     {[
                         {
                             icon: <Upload className="h-8 w-8 text-primary mb-2" />,
-                            title: "Upload Documents",
-                            description: "Submit your government ID and a selfie photo",
+                            title: t('userverification.step_upload_title'),
+                            description: t('userverification.step_upload_desc'),
                         },
                         {
                             icon: <Clock className="h-8 w-8 text-amber-500 mb-2" />,
-                            title: "Verification Review",
-                            description: "Our team will review your documents within 24-48 hours",
+                            title: t('userverification.step_review_title'),
+                            description: t('userverification.step_review_desc'),
                         },
                         {
                             icon: <CheckCircle className="h-8 w-8 text-green-500 mb-2" />,
-                            title: "Get Verified",
-                            description: "Once approved, your account will be fully verified",
+                            title: t('userverification.step_verified_title'),
+                            description: t('userverification.step_verified_desc'),
                         },
                     ].map((step, index) => (
                         <Card key={index} className="bg-muted/30">

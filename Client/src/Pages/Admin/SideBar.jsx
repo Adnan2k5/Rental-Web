@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import {
   Home,
   Users,
@@ -24,6 +25,7 @@ import {
 } from '../../Components/ui/sidebar';
 
 export function SidebarNav() {
+  const { t } = useTranslation();
   const location = useLocation();
   const pathname = location.pathname;
   const [isMounted, setIsMounted] = useState(false);
@@ -52,37 +54,37 @@ export function SidebarNav() {
   const navItems = [
     {
       icon: <Home className="h-4 w-4" />,
-      label: 'Dashboard',
+      label: t('adminSidebar.dashboard'),
       path: '/admin/dashboard',
     },
     {
       icon: <Users className="h-4 w-4" />,
-      label: 'Manage Users',
+      label: t('adminSidebar.userManagement'),
       path: '/admin/users',
     },
     {
       icon: <Package className="h-4 w-4" />,
-      label: 'Manage Items',
+      label: t('adminSidebar.itemsManagement'),
       path: '/admin/items',
     },
     {
       icon: <Compass className="h-4 w-4" />,
-      label: 'Adventures',
+      label: t('adminSidebar.adventures'),
       path: '/admin/adventures',
     },
     {
       icon: <BarChart3 className="h-4 w-4" />,
-      label: 'Analytics',
+      label: t('adminSidebar.analytics'),
       path: '/admin/analytics',
     },
     {
       icon: <FileText className="h-4 w-4" />,
-      label: 'Reports',
+      label: t('adminSidebar.reports'),
       path: '/admin/reports',
     },
     {
       icon: <Settings className="h-4 w-4" />,
-      label: 'Settings',
+      label: t('adminSidebar.settings'),
       path: '/admin/settings',
     },
   ];
@@ -108,8 +110,8 @@ export function SidebarNav() {
                   }}
                   {...shimmerAnimation}
                 >
-                  <span className="font-semibold">Rental Admin</span>
-                  <span>v1.0.0</span>
+                  <span className="font-semibold">{t('adminSidebar.rentalAdmin')}</span>
+                  <span>{t('adminSidebar.version')}</span>
                 </motion.div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -132,9 +134,9 @@ export function SidebarNav() {
                     </motion.button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    <DropdownMenuItem>{t('adminSidebar.profile')}</DropdownMenuItem>
+                    <DropdownMenuItem>{t('adminSidebar.settings')}</DropdownMenuItem>
+                    <DropdownMenuItem>{t('adminSidebar.logout')}</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </SidebarMenuButton>
@@ -146,7 +148,7 @@ export function SidebarNav() {
       <SidebarContent>
         <div className="px-3 mb-6">
           <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">
-            MANAGEMENT
+            {t('adminSidebar.management')}
           </div>
           <SidebarMenu>
             {navItems.map((item) => (
@@ -176,7 +178,7 @@ export function SidebarNav() {
             <SidebarMenuButton asChild>
               <Link to="/auth/signin">
                 <LogOut className="h-4 w-4 mr-3" />
-                <span>Logout</span>
+                <span>{t('adminSidebar.logout')}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -196,11 +198,10 @@ export function SidebarNav() {
           >
             <div className="flex items-center mb-3">
               <BarChart3 className="h-4 w-4 text-primary mr-2" />
-              <span className="text-sm font-medium">Admin Tips</span>
+              <span className="text-sm font-medium">{t('adminSidebar.tipsTitle')}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Check the analytics section for detailed insights on user behavior
-              and revenue trends.
+              {t('adminSidebar.tipsText')}
             </p>
           </motion.div>
         </div>

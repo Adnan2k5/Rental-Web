@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { ArrowLeft, Clock, CheckCircle, AlertCircle, HelpCircle, RefreshCw, Paperclip, Send, Calendar, User, Tag, Flag } from 'lucide-react'
 import { getTicketById, addTicketResponse, updateTicketStatus } from "../../api/tickets.api"
 import { Button } from "../../Components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../Components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../Components/ui/card"
 import { Badge } from "../../Components/ui/badge"
 import { Separator } from "../../Components/ui/separator"
 import { Textarea } from "../../Components/ui/textarea"
@@ -14,11 +14,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar"
 import { pageTransition, itemFadeIn } from "../../assets/Animations"
 import { Loader } from "../../Components/loader"
 import { useAuth } from "../../Middleware/AuthProvider"
+import { useTranslation } from "react-i18next"
 
 export const TicketDetails = () => {
     const { ticketId } = useParams()
     const { user } = useAuth()
     const navigate = useNavigate()
+    const { t } = useTranslation()
     const [ticket, setTicket] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -36,7 +38,7 @@ export const TicketDetails = () => {
                 setLoading(false)
             } catch (err) {
                 console.error("Error fetching ticket details:", err)
-                setError("Failed to load ticket details. Please try again later.")
+                setError(t('ticketDetails.errorLoad', 'Failed to load ticket details. Please try again later.'))
                 setLoading(false)
             }
         }
@@ -61,7 +63,7 @@ export const TicketDetails = () => {
             setSubmitting(false)
         } catch (err) {
             console.error("Error submitting response:", err)
-            setError("Failed to submit your response. Please try again.")
+            setError(t('ticketDetails.submitError', 'Failed to submit your response. Please try again.'))
             setSubmitting(false)
         }
     }
@@ -138,7 +140,7 @@ export const TicketDetails = () => {
                         className="mt-4"
                         onClick={() => navigate("/dashboard/tickets")}
                     >
-                        Back to Tickets
+                        {t('ticketDetails.backToTickets', 'Back to Tickets')}
                     </Button>
                 </CardContent>
             </Card>
@@ -151,12 +153,12 @@ export const TicketDetails = () => {
                 <CardContent>
                     <div className="flex flex-col items-center justify-center">
                         <HelpCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-medium mb-2">Ticket not found</h3>
+                        <h3 className="text-lg font-medium mb-2">{t('ticketDetails.notFoundTitle', "Ticket not found")}</h3>
                         <p className="text-muted-foreground mb-4">
-                            The ticket you're looking for doesn't exist or you don't have permission to view it.
+                            {t('ticketDetails.notFoundDesc', "The ticket you're looking for doesn't exist or you don't have permission to view it.")}
                         </p>
                         <Button onClick={() => navigate("/dashboard/tickets")}>
-                            Back to Tickets
+                            {t('ticketDetails.backToTickets', 'Back to Tickets')}
                         </Button>
                     </div>
                 </CardContent>
@@ -178,9 +180,9 @@ export const TicketDetails = () => {
                     className="mr-2"
                     onClick={() => navigate("/dashboard/tickets")}
                 >
-                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
+                    <ArrowLeft className="h-4 w-4 mr-1" /> {t('ticketDetails.back', 'Back')}
                 </Button>
-                <h1 className="text-2xl font-bold">Ticket Details</h1>
+                <h1 className="text-2xl font-bold">{t('ticketDetails.title', 'Ticket Details')}</h1>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -192,13 +194,13 @@ export const TicketDetails = () => {
                                 <div>
                                     <CardTitle className="text-xl">{ticket.subject}</CardTitle>
                                     <CardDescription>
-                                        Ticket #{ticket._id.substring(ticket._id.length - 8)}
+                                        {t('ticketDetails.ticketId', { id: ticket._id.substring(ticket._id.length - 8) }, 'Ticket #{{id}}')}
                                     </CardDescription>
                                 </div>
                                 <Badge className={getStatusColor(ticket.status)}>
                                     <div className="flex items-center">
                                         {getStatusIcon(ticket.status)}
-                                        <span className="ml-1">{ticket.status}</span>
+                                        <span className="ml-1">{t(`userTickets.status.${ticket.status?.replace(/\s/g, '')?.toLowerCase()}`) || ticket.status}</span>
                                     </div>
                                 </Badge>
                             </div>
@@ -212,7 +214,7 @@ export const TicketDetails = () => {
                                 <div className="flex-1">
                                     <div className="flex justify-between">
                                         <div>
-                                            <p className="font-medium">{ticket.user?.name || user?.name || "You"}</p>
+                                            <p className="font-medium">{ticket.user?.name || user?.name || t('ticketDetails.you', 'You')}</p>
                                             <p className="text-xs text-muted-foreground">
                                                 {formatDate(ticket.createdAt)}
                                             </p>
@@ -223,7 +225,7 @@ export const TicketDetails = () => {
                                     </div>
                                     {ticket.attachments && ticket.attachments.length > 0 && (
                                         <div className="mt-4">
-                                            <p className="text-sm font-medium mb-2">Attachments:</p>
+                                            <p className="text-sm font-medium mb-2">{t('ticketDetails.attachments', 'Attachments')}:</p>
                                             <div className="flex flex-wrap gap-2">
                                                 {ticket.attachments.map((attachment, index) => (
                                                     <a
@@ -234,7 +236,7 @@ export const TicketDetails = () => {
                                                         className="flex items-center p-2 bg-gray-50 rounded border text-sm hover:bg-gray-100"
                                                     >
                                                         <Paperclip className="h-4 w-4 mr-2" />
-                                                        {attachment.filename || `Attachment ${index + 1}`}
+                                                        {attachment.filename || `${t('ticketDetails.attachment', 'Attachment')} ${index + 1}`}
                                                     </a>
                                                 ))}
                                             </div>
@@ -247,7 +249,7 @@ export const TicketDetails = () => {
 
                             {/* Responses */}
                             <div className="space-y-6">
-                                <h3 className="font-medium">Responses</h3>
+                                <h3 className="font-medium">{t('ticketDetails.responses', 'Responses')}</h3>
 
                                 {ticket.responses && ticket.responses.length > 0 ? (
                                     ticket.responses.map((response, index) => (
@@ -259,7 +261,7 @@ export const TicketDetails = () => {
                                             <Avatar className="h-8 w-8 mr-4">
                                                 <AvatarImage
                                                     src={response.user?.avatar || "/placeholder.svg"}
-                                                    alt={response.user?.name || "User"}
+                                                    alt={response.user?.name || t('ticketDetails.user', 'User')}
                                                 />
                                                 <AvatarFallback>
                                                     {response.user?.name?.charAt(0) || "U"}
@@ -269,11 +271,10 @@ export const TicketDetails = () => {
                                                 <div className="flex justify-between">
                                                     <div>
                                                         <p className="font-medium text-sm">
-                                                            {response.isAdmin && "Staff"}
-                                                            {!response.isAdmin && "User"}
+                                                            {response.isAdmin ? t('ticketDetails.staff', 'Staff') : t('ticketDetails.user', 'User')}
                                                             {response.isAdmin && (
                                                                 <Badge className="ml-2 bg-primary/10 text-primary border-primary/20">
-                                                                    Staff
+                                                                    {t('ticketDetails.staff', 'Staff')}
                                                                 </Badge>
                                                             )}
                                                         </p>
@@ -289,7 +290,7 @@ export const TicketDetails = () => {
                                         </motion.div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-muted-foreground">No responses yet. Add a response below.</p>
+                                    <p className="text-sm text-muted-foreground">{t('ticketDetails.noResponses', 'No responses yet. Add a response below.')}</p>
                                 )}
                             </div>
 
@@ -299,7 +300,7 @@ export const TicketDetails = () => {
                                     <form onSubmit={handleSubmitResponse}>
                                         <div className="mb-4">
                                             <Textarea
-                                                placeholder="Type your response here..."
+                                                placeholder={t('ticketDetails.responsePlaceholder', 'Type your response here...')}
                                                 value={newResponse}
                                                 onChange={(e) => setNewResponse(e.target.value)}
                                                 className="min-h-[100px]"
@@ -311,12 +312,12 @@ export const TicketDetails = () => {
                                                 {submitting ? (
                                                     <>
                                                         <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                                                        Sending...
+                                                        {t('ticketDetails.sending', 'Sending...')}
                                                     </>
                                                 ) : (
                                                     <>
                                                         <Send className="mr-2 h-4 w-4" />
-                                                        Send Response
+                                                        {t('ticketDetails.sendResponse', 'Send Response')}
                                                     </>
                                                 )}
                                             </Button>
@@ -332,33 +333,33 @@ export const TicketDetails = () => {
                 <div>
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">Ticket Information</CardTitle>
+                            <CardTitle className="text-lg">{t('ticketDetails.infoTitle', 'Ticket Information')}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                                    <Calendar className="h-4 w-4 mr-2" /> Created
+                                    <Calendar className="h-4 w-4 mr-2" /> {t('ticketDetails.created', 'Created')}
                                 </p>
                                 <p className="text-sm">{formatDate(ticket.createdAt)}</p>
                             </div>
 
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                                    <Calendar className="h-4 w-4 mr-2" /> Last Updated
+                                    <Calendar className="h-4 w-4 mr-2" /> {t('ticketDetails.lastUpdated', 'Last Updated')}
                                 </p>
                                 <p className="text-sm">{formatDate(ticket.updatedAt)}</p>
                             </div>
 
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                                    <User className="h-4 w-4 mr-2" /> Submitted By
+                                    <User className="h-4 w-4 mr-2" /> {t('ticketDetails.submittedBy', 'Submitted By')}
                                 </p>
                                 <p className="text-sm">{ticket.user?.name || user?.name || user?.email}</p>
                             </div>
 
                             <div>
                                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                                    <Tag className="h-4 w-4 mr-2" /> Category
+                                    <Tag className="h-4 w-4 mr-2" /> {t('ticketDetails.category', 'Category')}
                                 </p>
                                 <Badge variant="outline" className="bg-gray-50">
                                     {ticket.category}
@@ -368,10 +369,10 @@ export const TicketDetails = () => {
                             {ticket.priority && (
                                 <div>
                                     <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center">
-                                        <Flag className="h-4 w-4 mr-2" /> Priority
+                                        <Flag className="h-4 w-4 mr-2" /> {t('ticketDetails.priority', 'Priority')}
                                     </p>
                                     <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                        {ticket.priority}
+                                        {t(`userTickets.priority.${ticket.priority?.toLowerCase()}`) || ticket.priority}
                                     </Badge>
                                 </div>
                             )}
@@ -390,11 +391,11 @@ export const TicketDetails = () => {
                                                     setTicket({ ...ticket, status: "open" });
                                                 } catch (err) {
                                                     console.error("Error reopening ticket:", err);
-                                                    setError("Failed to reopen ticket. Please try again.");
+                                                    setError(t('ticketDetails.reopenError', 'Failed to reopen ticket. Please try again.'));
                                                 }
                                             }}
                                         >
-                                            Reopen Ticket
+                                            {t('ticketDetails.reopen', 'Reopen Ticket')}
                                         </Button>
                                     ) : (
                                         <Button
@@ -406,11 +407,11 @@ export const TicketDetails = () => {
                                                     setTicket({ ...ticket, status: "resolved" });
                                                 } catch (err) {
                                                     console.error("Error resolving ticket:", err);
-                                                    setError("Failed to resolve ticket. Please try again.");
+                                                    setError(t('ticketDetails.resolveError', 'Failed to resolve ticket. Please try again.'));
                                                 }
                                             }}
                                         >
-                                            Mark as Resolved
+                                            {t('ticketDetails.markResolved', 'Mark as Resolved')}
                                         </Button>
                                     )}
                                 </div>

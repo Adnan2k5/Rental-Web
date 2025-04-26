@@ -12,6 +12,7 @@ import { Separator } from "../../Components/ui/separator"
 import { Tabs, TabsList, TabsTrigger } from "../../Components/ui/tabs"
 import { itemFadeIn } from "../../assets/Animations"
 import { Loader } from "../../Components/loader"
+import { useTranslation } from "react-i18next"
 
 export const UserTickets = () => {
     const [tickets, setTickets] = useState([])
@@ -19,6 +20,7 @@ export const UserTickets = () => {
     const [error, setError] = useState(null)
     const [activeTab, setActiveTab] = useState("all")
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -31,7 +33,7 @@ export const UserTickets = () => {
                 setLoading(false)
             } catch (err) {
                 console.error("Error fetching tickets:", err)
-                setError("No tickets found.")
+                setError(t("userTickets.noTicketsFound"))
                 setLoading(false)
             }
         }
@@ -42,15 +44,15 @@ export const UserTickets = () => {
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
             case "open":
-                return <Clock className="h-4 w-4 text-yellow-500" />
+                return <Clock className="h-4 w-4 text-yellow-500" title={t("userTickets.status.open")}/>
             case "in progress":
-                return <RefreshCw className="h-4 w-4 text-blue-500" />
+                return <RefreshCw className="h-4 w-4 text-blue-500" title={t("userTickets.status.inProgress")}/>
             case "resolved":
-                return <CheckCircle className="h-4 w-4 text-green-500" />
+                return <CheckCircle className="h-4 w-4 text-green-500" title={t("userTickets.status.resolved")}/>
             case "closed":
-                return <CheckCircle className="h-4 w-4 text-gray-500" />
+                return <CheckCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.closed")}/>
             default:
-                return <HelpCircle className="h-4 w-4 text-gray-500" />
+                return <HelpCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.unknown")}/>
         }
     }
 
@@ -106,20 +108,20 @@ export const UserTickets = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Support Tickets</h1>
-                    <p className="text-muted-foreground">Manage and track your support requests</p>
+                    <h1 className="text-2xl font-bold">{t("userTickets.title")}</h1>
+                    <p className="text-muted-foreground">{t("userTickets.subtitle")}</p>
                 </div>
-                <Button onClick={() => navigate("/dashboard/tickets/create")}>
-                    <Plus className="mr-2 h-4 w-4" /> New Ticket
+                <Button onClick={() => navigate("/dashboard/tickets/create")}> 
+                    <Plus className="mr-2 h-4 w-4" /> {t("userTickets.newTicket")}
                 </Button>
             </div>
 
             <Tabs defaultValue="all" className="mb-6" onValueChange={setActiveTab}>
                 <TabsList className="grid grid-cols-4 md:w-[400px]">
-                    <TabsTrigger value="all">All</TabsTrigger>
-                    <TabsTrigger value="open">Open</TabsTrigger>
-                    <TabsTrigger value="in progress">In Progress</TabsTrigger>
-                    <TabsTrigger value="resolved">Resolved</TabsTrigger>
+                    <TabsTrigger value="all">{t("userTickets.tabs.all")}</TabsTrigger>
+                    <TabsTrigger value="open">{t("userTickets.tabs.open")}</TabsTrigger>
+                    <TabsTrigger value="in progress">{t("userTickets.tabs.inProgress")}</TabsTrigger>
+                    <TabsTrigger value="resolved">{t("userTickets.tabs.resolved")}</TabsTrigger>
                 </TabsList>
             </Tabs>
 
@@ -139,13 +141,13 @@ export const UserTickets = () => {
                     <CardContent>
                         <div className="flex flex-col items-center justify-center">
                             <HelpCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                            <h3 className="text-lg font-medium mb-2">No tickets found</h3>
+                            <h3 className="text-lg font-medium mb-2">{t("userTickets.noTicketsTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
                                 {activeTab === "all"
-                                    ? "You haven't created any support tickets yet."
-                                    : `You don't have any ${activeTab} tickets.`}
+                                    ? t("userTickets.noTicketsDesc")
+                                    : t("userTickets.noTicketsTabDesc", { tab: t(`userTickets.tabs.${activeTab.replace(/ /g, "")}`) })}
                             </p>
-                            <Button onClick={() => navigate("/dashboard/tickets/create")}>Create Your First Ticket</Button>
+                            <Button onClick={() => navigate("/dashboard/tickets/create")}>{t("userTickets.createFirstTicket")}</Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -158,12 +160,12 @@ export const UserTickets = () => {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <CardTitle className="text-lg">{ticket.subject}</CardTitle>
-                                            <CardDescription>Ticket #{ticket._id.substring(ticket._id.length - 8)}</CardDescription>
+                                            <CardDescription>{t("userTickets.ticketId", { id: ticket._id.substring(ticket._id.length - 8) })}</CardDescription>
                                         </div>
                                         <Badge className={getStatusColor(ticket.status)}>
                                             <div className="flex items-center">
                                                 {getStatusIcon(ticket.status)}
-                                                <span className="ml-1">{ticket.status}</span>
+                                                <span className="ml-1">{t(`userTickets.status.${ticket.status.replace(/ /g, "")}`) || ticket.status}</span>
                                             </div>
                                         </Badge>
                                     </div>
@@ -176,16 +178,16 @@ export const UserTickets = () => {
                                         </Badge>
                                         {ticket.priority && (
                                             <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
-                                                {ticket.priority} Priority
+                                                {t(`userTickets.priority.${ticket.priority.toLowerCase()}`)} {t("userTickets.priorityLabel")}
                                             </Badge>
                                         )}
                                     </div>
                                 </CardContent>
                                 <Separator />
                                 <CardFooter className="flex justify-between pt-3">
-                                    <div className="text-xs text-muted-foreground">Created: {formatDate(ticket.createdAt)}</div>
+                                    <div className="text-xs text-muted-foreground">{t("userTickets.created")}: {formatDate(ticket.createdAt)}</div>
                                     <Button variant="ghost" size="sm" asChild>
-                                        <Link to={`/dashboard/tickets/${ticket._id}`}>View Details</Link>
+                                        <Link to={`/dashboard/tickets/${ticket._id}`}>{t("userTickets.viewDetails")}</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>
