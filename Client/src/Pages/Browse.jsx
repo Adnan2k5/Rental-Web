@@ -42,10 +42,11 @@ export default function BrowsePage() {
     query: '',
     page: 1,
     limit: 10,
+    lat: undefined,
+    long: undefined,
   });
-
   const [countItems, setCountItems] = useState(0);
-
+  const [locationChecked, setLocationChecked] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
@@ -62,9 +63,12 @@ export default function BrowsePage() {
     }
   }, [user, navigate]);
 
-  // Get user location and update filters
+  // Get user location once on mount, then set filters accordingly
   useEffect(() => {
-    if (!('geolocation' in navigator)) return;
+    if (!('geolocation' in navigator)) {
+      setLocationChecked(true);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setFilters((prev) => ({
@@ -72,28 +76,27 @@ export default function BrowsePage() {
           lat: position.coords.latitude,
           long: position.coords.longitude,
         }));
+        setLocationChecked(true);
       },
       (err) => {
+        setFilters((prev) => ({
+          ...prev,
+          lat: undefined,
+          long: undefined,
+        }));
+        setLocationChecked(true);
       }
     );
   }, []);
 
-  const openQuickView = (product) => {
-    setQuickViewProduct(product);
-  };
-
-  const closeQuickView = () => {
-    setQuickViewProduct(null);
-  };
-
-
+  // Only fetch products after location is checked (so filters are correct)
   useEffect(() => {
+    if (!locationChecked) return;
     const FetchProducts = async () => {
       setLoading(true);
       try {
         const res = await fetchAllItems(filters);
-        console.log(res.data.message.items);
-        setitems(res.data.message.items); //removed filter
+        setitems(res.data.message.items);
         setCountItems(res.data.message.totalItems);
       } catch (err) {
         console.log(err);
@@ -103,8 +106,15 @@ export default function BrowsePage() {
     };
 
     FetchProducts();
-  }, [filters]);
+  }, [filters, locationChecked]);
 
+  const openQuickView = (product) => {
+    setQuickViewProduct(product);
+  };
+
+  const closeQuickView = () => {
+    setQuickViewProduct(null);
+  };
 
   // Filter handlers
   const handleCategoryChange = (category) => {
