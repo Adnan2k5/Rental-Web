@@ -39,7 +39,6 @@ export const discoverItems = asyncHandler(async (req, res) => {
         long
     } = req.query;
 
-
     const categories = category
         ? (Array.isArray(category) ? category : [category])
         : [];
@@ -61,41 +60,65 @@ export const discoverItems = asyncHandler(async (req, res) => {
         ...(categories.length > 0 && { category: { $in: categories } }),
         ...(availableFilter.length > 0 && { status: { $in: availableFilter } }),
         ...(location && { location }),
-        ...(rating && { avgRating: { $gte: rating } }),
+        ...(rating && { avgRating: { $gte: Number(rating) } }),
         ...(query && { name: { $regex: query, $options: "i" } }),
-        price: { $gte: minPrice, $lte: maxPrice },
+        price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
     };
 
-    let itemsQuery = Item.find(filter).populate("owner", "name");
+    // If lat/long provided, use geospatial query
+    if (lat && long && !isNaN(lat) && !isNaN(long)) {
+        // Ensure your "Item" collection has a 2dsphere index on the geo field!
+        const geoFilter = { ...filter };
 
-    // If lat/long provided, use geospatial query to sort by distance
-    if (lat && long) {
-        itemsQuery = Item.aggregate([
-            { $geoNear: {
-                near: { type: "Point", coordinates: [parseFloat(long), parseFloat(lat)] },
-                distanceField: "distance",
-                spherical: true,
-                query: filter
-            }},
+        let geoItems = await Item.aggregate([
+            {
+                $geoNear: {
+                    near: {
+                        type: "Point",
+                        coordinates: [parseFloat(long), parseFloat(lat)]
+                    },
+                    distanceField: "distance",
+                    query: geoFilter,
+                    spherical: true,
+                }
+            },
             { $sort: { distance: 1 } },
-            { $skip: (page - 1) * limit },
-            { $limit: parseInt(limit) },
+            { $skip: (Number(page) - 1) * Number(limit) },
+            { $limit: Number(limit) },
         ]);
-        // Populate owner after aggregation
-        itemsQuery = itemsQuery.exec();
-        // Need to manually populate owner field after aggregation
-        const items = await itemsQuery;
-        // Populate owner for each item
-        const populatedItems = await Item.populate(items, { path: "owner", select: "name" });
-        const totalItems = await Item.countDocuments(filter);
-        return res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items: populatedItems, totalItems }));
+
+        // Populate owner field after aggregation
+        geoItems = await Item.populate(geoItems, { path: "owner", select: "name" });
+
+        // Get COUNT ONLY (without $geoNear, but with same filter)
+        const countAggRes = await Item.aggregate([
+            { $match: geoFilter },
+            { $count: "total" }
+        ]);
+        const totalItems = countAggRes[0]?.total || 0;
+
+        return res.status(200).json(
+            new ApiResponse(200, "Items fetched successfully", {
+                items: geoItems,
+                totalItems
+            })
+        );
     }
 
-    const items = await itemsQuery.limit(limit * 1).skip((page - 1) * limit);
+    // Standard query (no geo)
+    const items = await Item.find(filter)
+        .populate("owner", "name")
+        .limit(Number(limit))
+        .skip((Number(page) - 1) * Number(limit));
     const totalItems = await Item.countDocuments(filter);
-    res.status(200).json(new ApiResponse(200, "Items fetched successfully", { items, totalItems }));
-});
 
+    res.status(200).json(
+        new ApiResponse(200, "Items fetched successfully", {
+            items,
+            totalItems
+        })
+    );
+});
 
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, availableQuantity, location } = req.body;
