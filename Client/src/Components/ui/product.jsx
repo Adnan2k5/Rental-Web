@@ -44,8 +44,8 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
     >
         <div className="relative">
             <img
-                src={product.images[0]}
-                alt={product.name}
+                src={product?.images[0]}
+                alt={product?.name}
                 width={300}
                 height={200}
                 className="w-full h-48 object-cover"
@@ -75,15 +75,15 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
         <div className="p-4">
             <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-muted-foreground">
-                    {product.category}
+                    {product?.category}
                 </span>
             </div>
             <h3 className="font-medium text-gray-900 mb-1 truncate">
-                {product.name}
+                {product?.name}
             </h3>
             <div className="div flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground mb-3">
-                    by {product.owner.name}
+                    by {product?.owner?.name}
                 </p>
                 <Button
                     size="sm"
@@ -97,7 +97,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
 
             <div className="flex items-center justify-between">
                 <p className="font-bold text-primary">
-                    ${product.price}/day
+                    ${product?.price}/day
                 </p>
 
                 <Button

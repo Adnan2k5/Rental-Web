@@ -50,10 +50,14 @@ export default function UserVerification() {
         fetchDocuments()
     }, [])
 
+
+
+
     const filteredUsers = users.filter((user) => {
+        console.log(user)
         const matchesSearch =
-            user.owner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.owner.email.toLowerCase().includes(searchQuery.toLowerCase())
+            user.owner.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.owner.email?.toLowerCase().includes(searchQuery.toLowerCase())
         const matchesStatus = selectedStatus === "all" || user.verified === selectedStatus
         return matchesSearch && matchesStatus
     })
@@ -64,10 +68,13 @@ export default function UserVerification() {
     }
 
     const getStatusBadge = (verified) => {
-        if (verified) {
+        if (verified === "verified") {
             return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t('userVerificationAdmin.statusApproved')}</Badge>
-        } else {
+        } else if (verified === "pending") {
             return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{t('userVerificationAdmin.statusPending')}</Badge>
+        }
+        else {
+            return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">{t('userVerificationAdmin.statusDeclined')}</Badge>
         }
     }
 
@@ -75,7 +82,7 @@ export default function UserVerification() {
     const handleApprove = async () => {
         const updatedUser = {
             ...selectedUser,
-            verified: true,
+            verified: 'verified',
             verifiedAt: new Date(),
         }
         console.log(updatedUser)
@@ -93,10 +100,10 @@ export default function UserVerification() {
         try {
             const updatedUser = {
                 ...selectedUser,
-                verified: false,
+                verified: 'declined',
                 verifiedAt: new Date(),
             }
-            const res = await updateDocument(updatedUser.owner._id, updatedUser)
+            const res = await updateDocument(selectedUser._id, updatedUser)
             if (res.status === 200) {
                 toast.success("User verification declined")
             } else {

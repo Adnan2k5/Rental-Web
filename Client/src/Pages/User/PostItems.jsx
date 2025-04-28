@@ -36,8 +36,8 @@ import { useTranslation } from "react-i18next"
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("grid")
-  const [isNewItemDialogOpen, setIsNewItemDialogOpen] = useState(false)
-  const [isEditItemDialogOpen, setIsEditItemDialogOpen] = useState(false)
+  const [isItemDialogOpen, setIsItemDialogOpen] = useState(false)
+  const [dialogMode, setDialogMode] = useState("post") // "post" or "edit"
   const [uploadedFiles, setUploadedFiles] = useState([])
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef(null)
@@ -67,7 +67,7 @@ export default function Dashboard() {
     },
   })
 
-  const handlePostItem = async (data) => {
+  const handleItemSubmit = async (data) => {
     setLoading(true)
     const formData = new FormData()
     formData.append("name", data.name)
@@ -77,47 +77,38 @@ export default function Dashboard() {
     formData.append("availableQuantity", data.availableQuantity || 1)
     formData.append("location", data.location)
     formData.append("available", data.available)
-    uploadedFiles.forEach((image) => {
-      formData.append("images", image.file)
-    })
-    await createItems(formData)
-    setIsNewItemDialogOpen(false)
-    setUploadedFiles([])
-    setLoading(false)
-    toast.success("Item posted successfully!")
-    reset()
-    fetchItems()
-  }
 
-  const handleEditItem = async (data) => {
-    const formData = new FormData()
-    formData.append("name", data.name)
-    formData.append("description", data.description)
-    formData.append("price", data.price)
-    formData.append("category", data.category)
-    formData.append("availableQuantity", data.availableQuantity || 1)
-    formData.append("location", data.location)
-    formData.append("available", data.available)
-
-    // Only append new images if there are any
-    if (uploadedFiles.length > 0) {
-      uploadedFiles.forEach((image) => {
-        if (image.file) {
-          formData.append("images", image.file)
-        }
-      })
+    // Add location coordinates if available
+    if (mapLocation) {
+      formData.append("latitude", mapLocation.lat)
+      formData.append("longitude", mapLocation.lng)
     }
 
+    // Handle images
+    uploadedFiles.forEach((image) => {
+      if (image.file) {
+        formData.append("images", image.file)
+      }
+    })
+
     try {
-      await updateItem(editingItem._id, formData)
-      setIsEditItemDialogOpen(false)
+      if (dialogMode === "post") {
+        await createItems(formData)
+        toast.success("Item posted successfully!")
+      } else {
+        await updateItem(editingItem._id, formData)
+        toast.success("Item updated successfully!")
+      }
+
+      setIsItemDialogOpen(false)
       setUploadedFiles([])
-      toast.success("Item updated successfully!")
       reset()
       fetchItems()
     } catch (error) {
-      toast.error("Failed to update item")
+      toast.error(`Failed to ${dialogMode === "post" ? "post" : "update"} item`)
       console.error(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -208,6 +199,7 @@ export default function Dashboard() {
   }
 
   const openEditDialog = (item) => {
+    setDialogMode("edit")
     setEditingItem(item)
 
     // Set form values
@@ -219,6 +211,14 @@ export default function Dashboard() {
     setValue("availableQuantity", item.availableQuantity || 1)
     setValue("available", item.available)
 
+    // Set map location if coordinates are available
+    if (item.latitude && item.longitude) {
+      setMapLocation({
+        lat: Number.parseFloat(item.latitude),
+        lng: Number.parseFloat(item.longitude),
+      })
+    }
+
     // Set uploaded files from item images
     const itemImages = item.images.map((url, index) => ({
       url,
@@ -226,8 +226,7 @@ export default function Dashboard() {
       id: `existing-${index}`,
     }))
     setUploadedFiles(itemImages)
-
-    setIsEditItemDialogOpen(true)
+    setIsItemDialogOpen(true)
   }
 
   // Get current items for pagination
@@ -269,9 +268,9 @@ export default function Dashboard() {
           <motion.div variants={buttonHover} initial="rest" whileHover="hover">
             <Button
               onClick={() => {
+                setDialogMode("post")
                 reset()
-                setUploadedFiles([])
-                setIsNewItemDialogOpen(true)
+                setIsItemDialogOpen(true)
               }}
               className="relative overflow-hidden"
               style={{
@@ -329,121 +328,62 @@ export default function Dashboard() {
       {/* Items Grid/List */}
       <motion.div variants={itemFadeIn}>
         <AnimatePresence mode="wait">
-          {viewMode === "grid" ? (
-            <motion.div
-              key="grid"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {currentItems.map((item) => (
-                <motion.div
-                  key={item._id}
-                  className="bg-white rounded-lg overflow-hidden border border-gray-100"
-                  whileHover={{
-                    y: -5,
-                    boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
-                  }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="relative h-48 bg-gray-100">
-                    <img
-                      src={item.images[0] || "/placeholder.svg"}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-3 right-3">
-                      <Badge variant={item.status === "active" ? "default" : "secondary"} className="capitalize">
-                        {item.status || "active"}
-                      </Badge>
+          <motion.div
+            key="grid"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {currentItems.map((item) => (
+              <motion.div
+                key={item._id}
+                className="bg-white rounded-lg overflow-hidden border border-gray-100"
+                whileHover={{
+                  y: -5,
+                  boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
+                }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="relative h-48 bg-gray-100">
+                  <img
+                    src={item.images[0] || "/placeholder.svg"}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <Badge variant={item.status === "active" ? "default" : "secondary"} className="capitalize">
+                      {item.status || "active"}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs text-muted-foreground">{item.category}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(item.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-xs text-muted-foreground">{item.category}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(item.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <h3 className="font-semibold mb-1 text-dark">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-primary font-semibold">${item.price}</div>
-                      <div className="flex space-x-2">
-                        <button className="p-1.5 rounded-md hover:bg-gray-100" onClick={() => openEditDialog(item)}>
-                          <Edit className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                        <button
-                          onClick={() => handleItemDelete(item._id)}
-                          className="p-1.5 rounded-md hover:bg-gray-100"
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                      </div>
+                  <h3 className="font-semibold mb-1 text-dark">{item.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="text-primary font-semibold">${item.price}</div>
+                    <div className="flex space-x-2">
+                      <button className="p-1.5 rounded-md hover:bg-gray-100" onClick={() => openEditDialog(item)}>
+                        <Edit className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      <button
+                        onClick={() => handleItemDelete(item._id)}
+                        className="p-1.5 rounded-md hover:bg-gray-100"
+                      >
+                        <Trash2 className="h-4 w-4 text-muted-foreground" />
+                      </button>
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="list"
-              className="space-y-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {currentItems.map((item) => (
-                <motion.div
-                  key={item._id}
-                  className="bg-white rounded-lg overflow-hidden border border-gray-100 flex"
-                  whileHover={{
-                    y: -3,
-                    boxShadow: "0 10px 30px -15px rgba(0,0,0,0.1)",
-                  }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="relative w-32 md:w-48 bg-gray-100">
-                    <img
-                      src={item.images[0] || "/placeholder.svg"}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 left-2">
-                      <Badge variant={item.status === "active" ? "default" : "secondary"} className="capitalize">
-                        {item.status || "active"}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="p-4 flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-xs text-muted-foreground">{item.category}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {new Date(item.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <h3 className="font-semibold mb-1 text-dark">{item.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-primary font-semibold">${item.price}</div>
-                      <div className="flex space-x-2">
-                        <button className="p-1.5 rounded-md hover:bg-gray-100" onClick={() => openEditDialog(item)}>
-                          <Edit className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                        <button
-                          onClick={() => handleItemDelete(item._id)}
-                          className="p-1.5 rounded-md hover:bg-gray-100"
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </AnimatePresence>
 
         {/* Pagination */}
@@ -502,20 +442,21 @@ export default function Dashboard() {
         )}
       </motion.div>
 
-      {/* New Item Dialog */}
-      <Dialog open={isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
+      <Dialog open={isItemDialogOpen} onOpenChange={setIsItemDialogOpen}>
         <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">{t('addItem.title')}</DialogTitle>
-            <DialogDescription>{t('addItem.desc')}</DialogDescription>
+            <DialogTitle className="text-xl">
+              {dialogMode === "post" ? t("addItem.title") : t("addItem.edit")}
+            </DialogTitle>
+            <DialogDescription>{dialogMode === "post" ? t("addItem.desc") : t("addItem.editdesc")}</DialogDescription>
           </DialogHeader>
 
           <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
-            <form id="post-item-form" onSubmit={handleSubmit(handlePostItem)} className="space-y-6">
+            <form id="item-form" onSubmit={handleSubmit(handleItemSubmit)} className="space-y-6">
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="Name">{t('addItem.name')}</Label>
+                  <Label htmlFor="Name">{t("addItem.name")}</Label>
                   <Input
                     id="name"
                     placeholder="e.g. Professional DSLR Camera"
@@ -526,7 +467,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">{t('addItem.description')}</Label>
+                  <Label htmlFor="description">{t("addItem.description")}</Label>
                   <Textarea
                     id="description"
                     placeholder="Describe your item in detail..."
@@ -538,57 +479,53 @@ export default function Dashboard() {
                   {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="location">{t('addItem.location')}</Label>
-                    <input placeholder="e.g. New York" className="mt-1.5 Input border" {...register("location")} />
-                  </div>
-                  <div>
-                    <Label htmlFor="category">{t('addItem.category')}</Label>
-                    <Select
-                      defaultValue="Electronics"
-                      onValueChange={(value) => {
-                        const event = { target: { name: "category", value } }
-                        register("category").onChange(event)
-                      }}
-                    >
-                      <SelectTrigger id="category" className="mt-1.5">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories && categories.length > 0 && categories.map((category) =>
-                          <SelectItem key={category.name} value={`${category.name}`}>{category.name}</SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <input type="hidden" {...register("category")} />
-                  </div>
+                <div>
+                  <Label htmlFor="category">{t("addItem.category")}</Label>
+                  <Select
+                    defaultValue={editingItem?.category || "Electronics"}
+                    onValueChange={(value) => {
+                      const event = { target: { name: "category", value } }
+                      register("category").onChange(event)
+                    }}
+                  >
+                    <SelectTrigger id="category" className="mt-1.5">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories &&
+                        categories.length > 0 &&
+                        categories.map((category) => (
+                          <SelectItem key={category.name} value={`${category.name}`}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <input type="hidden" {...register("category")} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="price">{t('addItem.price')} ($)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      placeholder="0.00"
-                      className="mt-1.5"
-                      {...register("price", {
-                        required: "Price is required",
-                        min: {
-                          value: 0.01,
-                          message: "Price must be greater than 0",
-                        },
-                      })}
-                    />
-                    {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
-                  </div>
+                <div>
+                  <Label htmlFor="price">{t("addItem.price")} ($)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    placeholder="0.00"
+                    className="mt-1.5"
+                    {...register("price", {
+                      required: "Price is required",
+                      min: {
+                        value: 0.01,
+                        message: "Price must be greater than 0",
+                      },
+                    })}
+                  />
+                  {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
                 </div>
               </div>
 
               {/* Media Upload */}
               <div>
-                <Label className="block mb-2">{t('addItem.upload')}</Label>
+                <Label className="block mb-2">{t("addItem.upload")}</Label>
                 <div
                   className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging ? "border-primary bg-primary/5" : "border-gray-200"
                     }`}
@@ -614,10 +551,10 @@ export default function Dashboard() {
                     <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
                       <Upload className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <p className="text-sm font-medium mb-1">{t('uploadContaier.desc')}</p>
-                    <p className="text-xs text-muted-foreground mb-3">{t('uploadContaier.support')}</p>
+                    <p className="text-sm font-medium mb-1">{t("uploadContaier.desc")}</p>
+                    <p className="text-xs text-muted-foreground mb-3">{t("uploadContaier.support")}</p>
                     <Button type="button" variant="outline" onClick={triggerFileInput} className="text-sm">
-                      {t('uploadContaier.browse')}
+                      {t("uploadContaier.browse")}
                     </Button>
                   </motion.div>
                 </div>
@@ -661,13 +598,13 @@ export default function Dashboard() {
           </div>
 
           <DialogFooter className="px-6 py-4 bg-gray-50">
-            <Button variant="outline" onClick={() => setIsNewItemDialogOpen(false)}>
-              {t('dialogbox.cancel')}
+            <Button variant="outline" onClick={() => setIsItemDialogOpen(false)}>
+              {t("dialogbox.cancel")}
             </Button>
             <motion.div variants={buttonHover} initial="rest" whileHover="hover">
               <Button
                 type="submit"
-                form="post-item-form"
+                form="item-form"
                 className="relative overflow-hidden"
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
@@ -679,191 +616,9 @@ export default function Dashboard() {
                   whileHover={{ x: "100%", opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
                 />
-                <span className="relative">{loading ? 'Posting...' : t('addItem.post')}</span>
-              </Button>
-            </motion.div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Item Dialog */}
-      <Dialog open={isEditItemDialogOpen} onOpenChange={setIsEditItemDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
-          <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="text-xl">{t('addItem.edit')}</DialogTitle>
-            <DialogDescription>{t('addItem.editdesc')}</DialogDescription>
-          </DialogHeader>
-
-          <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
-            <form id="edit-item-form" onSubmit={handleSubmit(handleEditItem)} className="space-y-6">
-              {/* Item Details */}
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="Name">{t('addItem.name')}</Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g. Professional DSLR Camera"
-                    className="mt-1.5"
-                    {...register("name", { required: "Name is required" })}
-                  />
-                  {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="description">{t('addItem.description')}</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Describe your item in detail..."
-                    className="mt-1.5 min-h-[100px]"
-                    {...register("description", {
-                      required: "Description is required",
-                    })}
-                  />
-                  {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="location">{t('addItem.location')}</Label>
-                    <input placeholder="e.g. New York" className="mt-1.5 Input border" {...register("location")} />
-                  </div>
-                  <div>
-                    <Label htmlFor="category">{t('addItem.category')}</Label>
-                    <Select
-                      defaultValue={editingItem?.category || "electronics"}
-                      onValueChange={(value) => {
-                        const event = { target: { name: "category", value } }
-                        register("category").onChange(event)
-                      }}
-                    >
-                      <SelectTrigger id="category" className="mt-1.5">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories && categories.length > 0 && categories.map((category) =>
-                          <SelectItem key={category.name} value={`${category.name}`}>{category.name}</SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <input type="hidden" {...register("category")} />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="price">{t('addItem.price')} ($)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      placeholder="0.00"
-                      className="mt-1.5"
-                      {...register("price", {
-                        required: "Price is required",
-                        min: {
-                          value: 0.01,
-                          message: "Price must be greater than 0",
-                        },
-                      })}
-                    />
-                    {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Media Upload */}
-              <div>
-                <Label className="block mb-2">{t('addItem.upload')}</Label>
-                <div
-                  className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging ? "border-primary bg-primary/5" : "border-gray-200"
-                    }`}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    multiple
-                    accept="image/*"
-                    className="hidden"
-                  />
-
-                  <motion.div
-                    className="flex flex-col items-center"
-                    variants={floatAnimation}
-                    initial="initial"
-                    animate="animate"
-                  >
-                    <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
-                      <Upload className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <p className="text-sm font-medium mb-1">{t('uploadContaier.title')}</p>
-                    <p className="text-xs text-muted-foreground mb-3">{t('uploadContaier.support')}</p>
-                    <Button type="button" variant="outline" onClick={triggerFileInput} className="text-sm">
-                      {t('uploadContaier.browse')}
-                    </Button>
-                  </motion.div>
-                </div>
-
-                {/* Preview uploaded files */}
-                {uploadedFiles.length > 0 && (
-                  <div className="mt-4 grid grid-cols-3 gap-3">
-                    <AnimatePresence>
-                      {uploadedFiles.map((file, index) => (
-                        <motion.div
-                          key={file.id || index}
-                          className="relative rounded-md overflow-hidden bg-gray-100 aspect-square"
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                        >
-                          <img
-                            src={file.url || "/placeholder.svg"}
-                            alt={`Preview ${index}`}
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            className="absolute top-1 right-1 bg-white/80 rounded-full p-1 hover:bg-white"
-                            onClick={() => removeFile(index)}
-                          >
-                            <X className="h-3 w-3 text-gray-700" />
-                          </button>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                )}
-              </div>
-            </form>
-          </div>
-
-          <DialogFooter className="px-6 py-4 bg-gray-50">
-            <Button variant="outline" onClick={() => setIsEditItemDialogOpen(false)}>
-              {t('dialogbox.cancel')}
-            </Button>
-            <motion.div variants={buttonHover} initial="rest" whileHover="hover">
-              <Button
-                type="submit"
-                form="edit-item-form"
-                className="relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                }}
-              >
-                <motion.span
-                  className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: "-100%", opacity: 0 }}
-                  whileHover={{ x: "100%", opacity: 0.3 }}
-                  transition={{ duration: 0.6 }}
-                />
-                <span className="relative">{t('addItem.update')}</span>
+                <span className="relative">
+                  {loading ? "Processing..." : dialogMode === "post" ? t("addItem.post") : t("addItem.update")}
+                </span>
               </Button>
             </motion.div>
           </DialogFooter>

@@ -118,10 +118,15 @@ export default function DocumentVerification() {
         formData.append("document", governmentId)
         formData.append("image", selfie)
         formData.append("country", country)
+        if (!country) {
+            toast.error(t('userverification.country_required'))
+            setIsSubmitting(false)
+        }
         try {
             const result = await submitDocument(formData)
             if (result.status === 201) {
                 toast.success(t('userverification.submit_success'))
+                window.location.reload()
             } else {
                 throw new Error(result.error || t('userverification.submit_failed'))
             }
@@ -134,7 +139,7 @@ export default function DocumentVerification() {
     }
 
     const handleResubmit = () => {
-        setVerificationStatus("not_submitted")
+        setVerificationStatus("")
         setGovernmentId(null)
         setSelfie(null)
         setGovernmentIdPreview(null)
@@ -143,23 +148,25 @@ export default function DocumentVerification() {
     }
 
     const { user } = useAuth()
+    console.log(document)
     const getStatusBadge = () => {
         try {
-            if (user.documentVerified) {
+            if (user.documentVerified === "verified") {
                 return <Badge variant="success">{t('userverification.verified')}</Badge>
             }
-            else if (document && document.verified === false) {
+            else if (document && document.verified === "verified") {
+                return <Badge variant="success">{t('userverification.verified')}</Badge>
+            }
+            else if (document && document.verified === "pending") {
                 return <Badge variant="">{t('userverification.pending')}</Badge>
             }
-            else if (document && document.verified === true) {
-                return <Badge variant="success">{t('userverification.verified')}</Badge>
-            }
-            else {
-                return <Badge variant="default">{t('userverification.unknown')}</Badge>
-            }
+            else if (document && document.verified === "declined") {
+                return <Badge variant="destructive">{t('userverification.statusDeclined')}</Badge>
 
+            }
         }
         catch (error) {
+            console.log(error)
             return <Badge variant="destructive">{t('userverification.unknown')}</Badge>
         }
         finally {
@@ -184,6 +191,7 @@ export default function DocumentVerification() {
         const res = await getDocumentByUserId(user._id);
         if (res.status === 200) {
             setDocument(res.data.message.documents[0])
+            console.log(document)
         }
     }
 
@@ -195,15 +203,21 @@ export default function DocumentVerification() {
 
     useEffect(() => {
         if (document) {
-            if (document.verified) {
+            if (document.verified === "verified") {
                 setVerificationStatus("verified")
             }
-            else {
+            else if (document.verified === "pending") {
                 setVerificationStatus("pending")
+            }
+            else if (document.verified === "declined") {
+                setVerificationStatus("declined")
+                setStatusDetails(document)
+            }
+            else {
+                setVerificationStatus("not_submitted")
             }
         }
     })
-
     return (
         <motion.div initial="hidden" animate="visible" variants={pageTransition}>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -219,7 +233,6 @@ export default function DocumentVerification() {
                 </div>
                 <div className="mt-4 md:mt-0">{getStatusBadge()}</div>
             </div>
-
             <motion.div variants={itemFadeIn}>
                 <Card className="mb-6">
                     <CardHeader>
@@ -227,7 +240,7 @@ export default function DocumentVerification() {
                         <CardDescription>{t('userverification.docdesc')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {user.documentVerified === false && document === null ? (
+                        {document == null ? (
                             <div className="space-y-6">
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-4">
@@ -247,7 +260,6 @@ export default function DocumentVerification() {
                                             <Label htmlFor="government-id" className="text-base font-medium">
                                                 {t('userverification.governmentid')}
                                             </Label>
-
                                             {!governmentIdPreview ? (
                                                 <div
                                                     className={`border-2 border-dashed rounded-lg p-6 mt-2 transition-colors ${errors.governmentId
@@ -447,23 +459,6 @@ export default function DocumentVerification() {
                                 <p className="text-muted-foreground mb-6">
                                     {t('userverification.declineddesc')}
                                 </p>
-
-                                <Alert variant="destructive" className="w-full max-w-md mb-6">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertDescription>
-                                        {statusDetails?.declinedReason || t('userverification.declined_reason_default')}
-                                    </AlertDescription>
-                                </Alert>
-
-                                <Button
-                                    onClick={handleResubmit}
-                                    className="mb-6"
-                                    style={{
-                                        background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                                    }}
-                                >
-                                    {t('userverification.resubmit')}
-                                </Button>
                             </div>
                         ) : (
                             <div>{t('userverification.unknown')}</div>

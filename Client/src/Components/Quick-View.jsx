@@ -1,10 +1,8 @@
 import { useState } from "react"
-import { Minus, Plus, Star, ShoppingCart, ExternalLink, X } from "lucide-react"
+import { Minus, Plus, Star, ShoppingCart, X } from "lucide-react"
 import { Button } from "./ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "./ui/dialog"
 import { Badge } from "./ui/badge"
-import { Separator } from "./ui/separator"
-import { Link } from "react-router-dom"
 import { addItemToCartApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Label } from "./ui/label"
@@ -138,9 +136,11 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                   </div>
 
                   <div className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1 block text-black">Rental Duration (Days)</Label>
+                    <Label className="text-sm font-medium  block text-black">Rental Duration (Days)</Label>
                     <div className="inputs flex flex-col gap-5">
+                      <Label className="text-sm font-medium  block text-black">Starting Date</Label>
                       <input placeholder="Start Date" type="date" min={today} onChange={(e) => { setStart(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md " />
+                      <Label className="text-sm font-medium  block text-black">Ending Date</Label>
                       <input placeholder="End Date" type="date" min={today} onChange={(e) => { setEnd(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md" />
                     </div>
                   </div>
@@ -157,7 +157,7 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                       {isLoading ? "Adding..." : "Add to Cart"}
                     </Button>
                   )}
-          
+
                 </div>
               </div>
             </div>

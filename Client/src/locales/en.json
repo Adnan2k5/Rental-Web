@@ -97,7 +97,7 @@
     "fully": "Your account is  verified",
     "verifiedon": "Verified on",
     "declined": "Verification Declined",
-    "declineddesc": "Unfortunately, your verification request was declined. Please check the documents you submitted and try again.",
+    "declineddesc": "Unfortunately, your verification request was declined. Please email us if you think this is a mistake.",
     "resubmit": "Resubmit Documents",
     "unknown": "Unknown Status",
     "governmentid_invalid": "Please upload a valid image (JPG, PNG, PDF).",
@@ -119,7 +119,9 @@
     "step_review_title": "2. Review",
     "step_review_desc": "Our team will review your documents.",
     "step_verified_title": "3. Verified",
-    "step_verified_desc": "Once approved, your account will be verified."
+    "step_verified_desc": "Once approved, your account will be verified.",
+    "country_required": "Country is required.",
+    "statusDeclined": "Declined"
   },
   "userVerificationAdmin": {
     "title": "User Verification Requests",
@@ -146,7 +148,8 @@
     "selfie": "Selfie",
     "selfieDesc": "Selfie uploaded for verification.",
     "decline": "Decline",
-    "approve": "Approve"
+    "approve": "Approve",
+    "statusDeclined": "Declined"
   },
   "settings": {
     "title": "Account Settings",
