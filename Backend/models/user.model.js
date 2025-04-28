@@ -27,8 +27,9 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     documentVerified: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["verified", "pending", "declined"],
+      default: "",
     },
     password: {
       type: String,

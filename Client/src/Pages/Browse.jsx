@@ -49,6 +49,7 @@ export default function BrowsePage() {
   const [locationChecked, setLocationChecked] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [openquickview, setOpenQuickView] = useState(false);
 
   const { categories } = useCategories() || [];
 
@@ -110,6 +111,7 @@ export default function BrowsePage() {
 
   const openQuickView = (product) => {
     setQuickViewProduct(product);
+    setOpenQuickView(true);
   };
 
   const closeQuickView = () => {
@@ -598,7 +600,7 @@ export default function BrowsePage() {
       <Footer />
       {quickViewProduct && (
         <ProductQuickView
-          isOpen={quickViewProduct}
+          isOpen={openquickview}
           onClose={closeQuickView}
           product={quickViewProduct}
         />

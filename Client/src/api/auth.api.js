@@ -10,8 +10,7 @@ export const loginUser = async (data, dispatch) => {
     if (res.status === 200) {
       dispatch(loginSuccess(res.data.data));
       return 200;
-    }
-    else {
+    } else {
       return 400;
     }
   } catch (err) {
@@ -164,4 +163,4 @@ export const logoutUser = async () => {
   } catch (err) {
     console.log(err);
   }
-}
+};

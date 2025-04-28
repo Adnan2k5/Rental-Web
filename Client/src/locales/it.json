@@ -119,7 +119,8 @@
     "step_review_title": "2. Revisione",
     "step_review_desc": "Il nostro team esaminerà i tuoi documenti.",
     "step_verified_title": "3. Verificato",
-    "step_verified_desc": "Una volta approvato, il tuo account sarà verificato."
+    "step_verified_desc": "Una volta approvato, il tuo account sarà verificato.",
+    "country_required": "Il paese è obbligatorio."
   },
   "userVerificationAdmin": {
     "title": "Richieste di verifica utente",
@@ -146,7 +147,8 @@
     "selfie": "Selfie",
     "selfieDesc": "Selfie caricato per la verifica.",
     "decline": "Rifiuta",
-    "approve": "Approva"
+    "approve": "Approva",
+    "statusDeclined": "Rifiutato"
   },
   "settings": {
     "title": "Impostazioni account",

@@ -23,7 +23,7 @@ export const fetchAllItems = async ({
       query,
       page,
       limit,
-      lat, 
+      lat,
       long,
     },
   });
@@ -40,7 +40,6 @@ export const createItems = async (data) => {
     withCredentials: true,
     headers: { 'Content-Type': 'multipart/form-data' },
   });
-  console.log(res);
 };
 
 export const deleteItem = async (id) => {

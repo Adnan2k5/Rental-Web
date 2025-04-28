@@ -23,8 +23,9 @@ const documentSchema = new mongoose.Schema(
             required: true,
         },
         verified: {
-            type: Boolean,
-            default: false,
+            type: String,
+            enum: ['verified', 'pending', 'declined'],
+            default: 'pending'
         },
     },
     { timestamps: true }
