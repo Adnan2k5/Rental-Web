@@ -43,6 +43,7 @@ export default function BrowsePage() {
     page: 1,
     limit: 10,
   });
+
   const [countItems, setCountItems] = useState(0);
 
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -91,6 +92,7 @@ export default function BrowsePage() {
       setLoading(true);
       try {
         const res = await fetchAllItems(filters);
+        console.log(res.data.message.items);
         setitems(res.data.message.items); //removed filter
         setCountItems(res.data.message.totalItems);
       } catch (err) {
