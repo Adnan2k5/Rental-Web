@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema(
     },
     documentVerified: {
       type: String,
-      enum: ["verified", "pending", "declined"],
-      default: "",
+      enum: ["verified", "pending", "declined", "not submitted"],
+      default: "not submitted",
     },
     password: {
       type: String,
