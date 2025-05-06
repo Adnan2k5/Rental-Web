@@ -7,6 +7,12 @@ import { Item } from "../models/item.model.js";
 import sendEmail from "../utils/sendOTP.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
+    const { name } = req.body;
+
+    if(name != req.user.name) {
+        throw new ApiError(403, "You are not authorized to create a booking for this user");
+    }
+
     const userId = req.user._id;
 
     const cart = await Cart.findOne({user: userId})
