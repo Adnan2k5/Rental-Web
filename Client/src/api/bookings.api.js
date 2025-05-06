@@ -1,15 +1,16 @@
 import axiosClient from "../Middleware/AxiosClient";
 
-export const createBookingApi = async (cartItems) => {
+export const createBookingApi = async (fullName) => {
   try {
-    const res = await axiosClient.post("/api/booking", cartItems, {
+    const res = await axiosClient.post("/api/booking", {name: fullName}, {
       withCredentials: true,
     });
-    return res;
+    return true;
   }
   catch (err) {
     if (err.response.status) {
-      return err.response.status;
+      return false;
     }
+    return false;
   }
 }
