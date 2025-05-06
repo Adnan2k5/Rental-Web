@@ -33,6 +33,9 @@ import {
 
 import { useCategories } from "../../hooks/useCategories"
 import { useTranslation } from "react-i18next"
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet"
+import "leaflet/dist/leaflet.css"
+import L from "leaflet"
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("grid")
@@ -45,9 +48,11 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [editingItem, setEditingItem] = useState(null)
   const ITEMS_PER_PAGE = 8
-  const { categories } = useCategories();
+  const { categories } = useCategories()
   const [loading, setLoading] = useState(false)
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  const [selectedPosition, setSelectedPosition] = useState(null)
+  const [locationInput, setLocationInput] = useState("")
 
   const {
     register,
@@ -67,6 +72,63 @@ export default function Dashboard() {
     },
   })
 
+  // Map marker icon fix for leaflet in React
+  const markerIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    shadowSize: [41, 41],
+  })
+
+  // Map click handler component
+  function LocationMarker() {
+    useMapEvents({
+      click(e) {
+        setSelectedPosition([e.latlng.lat, e.latlng.lng])
+        setLocationInput(`${e.latlng.lat},${e.latlng.lng}`)
+        setValue("location", `${e.latlng.lat},${e.latlng.lng}`)
+      },
+    })
+    return selectedPosition ? <Marker position={selectedPosition} icon={markerIcon} /> : null
+  }
+
+  // Helper component to recenter map
+  function RecenterMap({ position }) {
+    const map = useMap()
+    useEffect(() => {
+      if (position) {
+        map.setView(position)
+      }
+    }, [position, map])
+    return null
+  }
+
+  useEffect(() => {
+    const setDefaultLocation = (lat, lng) => {
+      setSelectedPosition([lat, lng])
+      setLocationInput(`${lat},${lng}`)
+      setValue("location", `${lat},${lng}`, { shouldValidate: true })
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          setDefaultLocation(latitude, longitude)
+        },
+        () => {
+          // Default to Lithuania if geolocation fails
+          setDefaultLocation(55.1694, 23.8813)
+        }
+      )
+    } else {
+      // Default to Lithuania if geolocation is not available
+      setDefaultLocation(55.1694, 23.8813)
+    }
+  }, [setValue])
+
   const handleItemSubmit = async (data) => {
     setLoading(true)
     const formData = new FormData()
@@ -75,14 +137,8 @@ export default function Dashboard() {
     formData.append("price", data.price)
     formData.append("category", data.category)
     formData.append("availableQuantity", data.availableQuantity || 1)
-    formData.append("location", data.location)
+    formData.append("location", data.location || locationInput)
     formData.append("available", data.available)
-
-    // Add location coordinates if available
-    if (mapLocation) {
-      formData.append("latitude", mapLocation.lat)
-      formData.append("longitude", mapLocation.lng)
-    }
 
     // Handle images
     uploadedFiles.forEach((image) => {
@@ -211,14 +267,6 @@ export default function Dashboard() {
     setValue("availableQuantity", item.availableQuantity || 1)
     setValue("available", item.available)
 
-    // Set map location if coordinates are available
-    if (item.latitude && item.longitude) {
-      setMapLocation({
-        lat: Number.parseFloat(item.latitude),
-        lng: Number.parseFloat(item.longitude),
-      })
-    }
-
     // Set uploaded files from item images
     const itemImages = item.images.map((url, index) => ({
       url,
@@ -270,6 +318,12 @@ export default function Dashboard() {
               onClick={() => {
                 setDialogMode("post")
                 reset()
+                // Set default location after reset
+                if (selectedPosition) {
+                  const [lat, lng] = selectedPosition
+                  setLocationInput(`${lat},${lng}`)
+                  setValue("location", `${lat},${lng}`, { shouldValidate: true })
+                }
                 setIsItemDialogOpen(true)
               }}
               className="relative overflow-hidden"
@@ -284,7 +338,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.6 }}
               />
               <Plus className="h-4 w-4 mr-2" />
-              <span className="relative">{t('dashboard.newItem')}</span>
+              <span className="relative">{t("dashboard.newItem")}</span>
             </Button>
           </motion.div>
         </motion.div>
@@ -593,6 +647,37 @@ export default function Dashboard() {
                     </AnimatePresence>
                   </div>
                 )}
+              </div>
+
+              {/* Location Selection */}
+              <div>
+                <Label htmlFor="location">{t("addItem.location") || "Location"}</Label>
+                <Input
+                  id="location"
+                  placeholder="Click on map or enter coordinates (lat,lng)"
+                  className="mt-1.5"
+                  value={locationInput}
+                  onChange={(e) => {
+                    setLocationInput(e.target.value)
+                    setValue("location", e.target.value)
+                  }}
+                  {...register("location", { required: "Location is required" })}
+                />
+                {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location.message}</p>}
+                <div className="mt-3 rounded overflow-hidden" style={{ height: 250 }}>
+                  <MapContainer
+                    center={selectedPosition || [55.1694, 23.8813]} // Lithuania as fallback
+                    zoom={13}
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution="&copy; OpenStreetMap contributors"
+                    />
+                    <RecenterMap position={selectedPosition} />
+                    <LocationMarker />
+                  </MapContainer>
+                </div>
               </div>
             </form>
           </div>
