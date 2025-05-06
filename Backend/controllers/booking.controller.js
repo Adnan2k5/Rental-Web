@@ -4,10 +4,17 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Cart } from "../models/cart.model.js";
 import { Booking } from "../models/booking.model.js";
 import { Item } from "../models/item.model.js";
+import sendEmail from "../utils/sendOTP.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const cart = await Cart.findOne({user: userId}).populate("items.item", "price name images");
+
+    const cart = await Cart.findOne({user: userId})
+    .populate({
+      path: "items.item",
+      select: "price name images owner",
+      populate: { path: "owner", select: "name email" }
+    });
 
     if (!cart) {
         throw new ApiError(404, "Cart not found");
@@ -43,8 +50,26 @@ export const createBooking = asyncHandler(async (req, res) => {
     await req.user.save();
 
     // Clear the cart after booking
+
+    const mails = cart.items;
     cart.items = [];
     await cart.save();
+
+    sendEmail({
+        from: process.env.SMTP_EMAIL,
+        to: req.user.email,
+        subject: "Booking Confirmation",
+        text: `Your booking has been confirmed. Booking details: ${JSON.stringify(bookings)}`,
+    });
+
+    mails.forEach(async (cartItem) => {
+        sendEmail({
+            from: process.env.SMTP_EMAIL,
+            to: cartItem.item.owner.email,
+            subject: "New Booking",
+            text: `You have a new booking for your item ${cartItem.item.name}. Booking details: ${JSON.stringify(bookings)}`,
+        });
+    });
 
     res.status(201).json(new ApiResponse(true, "Booking created successfully", bookings));
 });
