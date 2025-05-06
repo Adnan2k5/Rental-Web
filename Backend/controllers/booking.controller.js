@@ -9,7 +9,7 @@ import sendEmail from "../utils/sendOTP.js";
 export const createBooking = asyncHandler(async (req, res) => {
     const { name } = req.body;
 
-    if(name != req.user.name) {
+    if(name.toLowerCase() !== req.user.name.toLowerCase()) {
         throw new ApiError(403, "You are not authorized to create a booking for this user");
     }
 

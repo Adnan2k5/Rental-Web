@@ -14,12 +14,22 @@ import { createBookingApi } from "../api/bookings.api"
 import { fadeIn, staggerChildren } from "../assets/Animations"
 import { useTranslation } from "react-i18next"
 import { Footer } from "../Components/Footer"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogOverlay,
+  DialogClose,
+} from "../Components/ui/dialog"
 
 export default function CartPage() {
   const { t } = useTranslation()
   const [cartItems, setCartItems] = useState([])
   const [promoCode, setPromoCode] = useState("")
   const [refreshCart, setRefreshCart] = useState(false)
+  const [showNameModal, setShowNameModal] = useState(false)
+  const [fullName, setFullName] = useState("")
+  const [isBooking, setIsBooking] = useState(false)
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -30,6 +40,11 @@ export default function CartPage() {
 
     fetchCartItems()
   }, [refreshCart])
+
+  const handleCheckoutClick = () => {
+    setShowNameModal(true)
+  }
+
 
   // Cart actions
   const removeItem = async (id) => {
@@ -122,12 +137,28 @@ export default function CartPage() {
   }
 
   const createBookings = async () => {
+    if (!fullName.trim()) {
+      toast.error(t("cartPage.enterFullName"))
+      return
+    }
+    setIsBooking(true)
     try {
-      await createBookingApi(cartItems)
-      setCartItems([]) // Clear cart after booking
-      toast.success(t("cartPage.bookingsCreated"), { description: t("cartPage.bookingsCreatedDesc") })
+      const res = await createBookingApi(fullName)
+      if(res) {
+        setCartItems([]) // Clear cart after booking
+        toast.success(t("cartPage.bookingsCreated"), { description: t("cartPage.bookingsCreatedDesc") })
+      }
+      else {
+        toast.error(t("cartPage.errorCreatingBookings"), { description: t("cartPage.errorCreatingBookingsDesc") })
+        return
+      }
+      setShowNameModal(false)
+      setFullName("")
     } catch (e) {
       toast.error(t("cartPage.errorCreatingBookings"), { description: e.message })
+    }
+    finally {
+      setIsBooking(false)
     }
   }
 
@@ -342,7 +373,7 @@ export default function CartPage() {
                   <div className="text-sm text-muted-foreground">
                     <span className="font-bold">{t("cartPage.depositNote")}</span>
                   </div>
-                  <Button type="button" className="w-full" size="lg" onClick={createBookings}>
+                  <Button type="button" className="w-full" size="lg" onClick={handleCheckoutClick}>
                     {t("cartPage.proceedCheckout")}
                   </Button>
 
@@ -355,7 +386,28 @@ export default function CartPage() {
             </motion.div>
           </div>
         )}
+
       </main>
+      {/* Full Name Modal */}
+      <Dialog open={showNameModal} onOpenChange={setShowNameModal}>
+        <DialogOverlay />
+        <DialogContent>
+          <DialogTitle>{t("cartPage.enterFullNameTitle")}</DialogTitle>
+          <Input
+            type="text"
+            placeholder={t("cartPage.enterFullNamePlaceholder")}
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            className="mb-4"
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setShowNameModal(false)}>{t("cartPage.cancel")}</Button>
+            <Button onClick={createBookings} disabled={isBooking || !fullName.trim()}>
+              {isBooking ? t("cartPage.bookingInProgress") : t("cartPage.confirmBooking")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
