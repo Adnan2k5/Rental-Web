@@ -387,7 +387,7 @@
       "learnMore": "Learn More"
     },
     "footer": {
-      "logo": "Rental",
+      "logo": "Noleggiarmi",
       "description": "The next-gen rental marketplace for your everyday needs.",
       "twitter": "Twitter",
       "facebook": "Facebook",
@@ -696,5 +696,9 @@
     "restoreBtn": "Restore This Version",
     "previewDialogTitle": "Preview Terms & Conditions",
     "previewDialogDesc": "This is how your terms will appear to users"
+  },
+  "buttons": {
+    "add": "Add to Cart",
+    "chat": "Chat"
   }
 }
