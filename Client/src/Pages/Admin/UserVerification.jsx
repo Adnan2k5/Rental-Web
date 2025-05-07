@@ -54,7 +54,6 @@ export default function UserVerification() {
 
 
     const filteredUsers = users.filter((user) => {
-        console.log(user)
         const matchesSearch =
             user.owner.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.owner.email?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -85,7 +84,6 @@ export default function UserVerification() {
             verified: 'verified',
             verifiedAt: new Date(),
         }
-        console.log(updatedUser)
         try {
             const res = await updateDocument(selectedUser._id, updatedUser)
             if (res.status === 200) {

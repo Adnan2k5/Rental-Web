@@ -53,6 +53,9 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const [selectedPosition, setSelectedPosition] = useState(null)
   const [locationInput, setLocationInput] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [subCategoryInput, setSubCategoryInput] = useState("");
+  const [subCategoryOptions, setSubCategoryOptions] = useState([]);
 
   const {
     register,
@@ -65,12 +68,21 @@ export default function Dashboard() {
       name: "",
       description: "",
       category: "Electronics",
+      subCategory: "",
       location: "",
       price: "",
       available: true,
       availableQuantity: 1,
     },
   })
+
+  useEffect(() => {
+    const selectedCat = categories?.find(
+      (cat) => cat.name === selectedCategory
+    );
+    setSubCategoryOptions(selectedCat?.subCategories || []);
+    setSubCategoryInput("");
+  }, [selectedCategory, categories, isItemDialogOpen]);
 
   // Map marker icon fix for leaflet in React
   const markerIcon = new L.Icon({
@@ -136,6 +148,7 @@ export default function Dashboard() {
     formData.append("description", data.description)
     formData.append("price", data.price)
     formData.append("category", data.category)
+    formData.append("subCategory", data.subCategory)
     formData.append("availableQuantity", data.availableQuantity || 1)
     formData.append("location", data.location || locationInput)
     formData.append("available", data.available)
@@ -263,6 +276,7 @@ export default function Dashboard() {
     setValue("description", item.description)
     setValue("price", item.price)
     setValue("category", item.category)
+    setValue("subCategory", item.subCategory)
     setValue("location", item.location)
     setValue("availableQuantity", item.availableQuantity || 1)
     setValue("available", item.available)
@@ -536,10 +550,10 @@ export default function Dashboard() {
                 <div>
                   <Label htmlFor="category">{t("addItem.category")}</Label>
                   <Select
-                    defaultValue={editingItem?.category || "Electronics"}
+                    value={selectedCategory}
                     onValueChange={(value) => {
-                      const event = { target: { name: "category", value } }
-                      register("category").onChange(event)
+                      setSelectedCategory(value);
+                      setValue("category", value);
                     }}
                   >
                     <SelectTrigger id="category" className="mt-1.5">
@@ -556,6 +570,33 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                   <input type="hidden" {...register("category")} />
+                </div>
+
+                <div>
+                  <Label htmlFor="subCategory">Subcategory</Label>
+                  <Select
+                    value={subCategoryInput}
+                    onValueChange={setSubCategoryInput}
+                    name="subCategory"
+                  >
+                    <SelectTrigger id="subCategory" className="mt-1.5">
+                      <SelectValue placeholder="Select or type subcategory" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subCategoryOptions.map((sub) => (
+                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                      ))}
+                      <div className="p-2">
+                        <Input
+                          placeholder="Add new subcategory"
+                          value={subCategoryInput}
+                          onChange={e => setSubCategoryInput(e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                    </SelectContent>
+                  </Select>
+                  <input type="hidden" name="subCategory" value={subCategoryInput} {...register("subCategory")} />
                 </div>
 
                 <div>
