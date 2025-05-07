@@ -28,6 +28,19 @@ const itemSchema = new mongoose.Schema(
                 message: props => `${props.value} is not a valid category`
             }
         },
+        subCategory: {
+            type: String,
+            required: false,
+            validate: {
+                validator: async function (value) {
+                    if (!value) return true; // Allow empty subCategory
+                    const category = await Category.findOne({ name: this.category });
+                    if (!category) return false;
+                    return category.subCategories.includes(value);
+                },
+                message: props => `${props.value} is not a valid subcategory for the selected category`
+            }
+        },
         images: [
             {
                 type: String,

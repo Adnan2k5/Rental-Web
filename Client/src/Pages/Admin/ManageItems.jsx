@@ -55,6 +55,7 @@ import { toast } from 'sonner';
 import { createCategoryApi } from '../../api/category.api';
 import { useCategories } from '../../hooks/useCategories';
 import { useTranslation } from 'react-i18next';
+import axiosClient from '../../Middleware/AxiosClient';
 
 export default function ManageItems() {
   const { t } = useTranslation();
@@ -73,6 +74,11 @@ export default function ManageItems() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 12;
+  const [subCategoryInputs, setSubCategoryInputs] = useState({});
+  const [subCategoryLoading, setSubCategoryLoading] = useState({});
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
+  const [subCategoryInput, setSubCategoryInput] = useState('');
+  const [subCategoryOptions, setSubCategoryOptions] = useState([]);
 
   const { categories, setCategories } = useCategories();
 
@@ -98,6 +104,14 @@ export default function ManageItems() {
     fetchData();
     // eslint-disable-next-line
   }, [currentPage]);
+
+  useEffect(() => {
+    const selectedCat = categories?.find(
+      (cat) => cat.name.toLowerCase() === selectedCategoryName.toLowerCase()
+    );
+    setSubCategoryOptions(selectedCat?.subCategories || []);
+    setSubCategoryInput('');
+  }, [selectedCategoryName, categories, isNewItemDialogOpen]);
 
   // Animation variants
   const pageTransition = {
@@ -251,6 +265,44 @@ export default function ManageItems() {
     }
     // Close dialog
     setIsNewCategoryDialogOpen(false);
+  };
+
+  // Add subcategory API
+  const addSubCategory = async (categoryId, subCategoryName) => {
+    if (!subCategoryName.trim()) return;
+    setSubCategoryLoading((prev) => ({ ...prev, [categoryId]: true }));
+    try {
+      await axiosClient.post(`/api/category/${categoryId}/subcategories`, { subCategory: subCategoryName });
+      setCategories((prev) => prev.map((cat) =>
+        cat._id === categoryId
+          ? { ...cat, subCategories: [...(cat.subCategories || []), subCategoryName] }
+          : cat
+      ));
+      setSubCategoryInputs((prev) => ({ ...prev, [categoryId]: '' }));
+      toast.success('Subcategory added');
+    } catch (e) {
+      toast.error('Error adding subcategory');
+    } finally {
+      setSubCategoryLoading((prev) => ({ ...prev, [categoryId]: false }));
+    }
+  };
+
+  // Delete subcategory API
+  const deleteSubCategory = async (categoryId, subCategoryName) => {
+    setSubCategoryLoading((prev) => ({ ...prev, [categoryId]: true }));
+    try {
+      await axiosClient.delete(`/api/category/${categoryId}/subcategories/${encodeURIComponent(subCategoryName)}`);
+      setCategories((prev) => prev.map((cat) =>
+        cat._id === categoryId
+          ? { ...cat, subCategories: (cat.subCategories || []).filter((s) => s !== subCategoryName) }
+          : cat
+      ));
+      toast.success('Subcategory deleted');
+    } catch (e) {
+      toast.error('Error deleting subcategory');
+    } finally {
+      setSubCategoryLoading((prev) => ({ ...prev, [categoryId]: false }));
+    }
   };
 
   // Pagination logic
@@ -463,38 +515,78 @@ export default function ManageItems() {
               {loading ? (
                 <CategorySkeleton />
               ) : (
-                <div className="flex space-x-3 pb-2">
-                  <motion.button
-                    className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${selectedCategory === 'all'
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-muted-foreground hover:bg-gray-50'
-                      }`}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => setSelectedCategory('all')}
-                  >
-                    {t('manageItems.allCategories', 'All Categories')}
-                  </motion.button>
-
-                  {categories && categories.length > 0 && categories.map((category) => (
+                <div className="flex flex-col gap-4 pb-2">
+                  <div className="flex space-x-3">
                     <motion.button
-                      key={category._id}
-                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
+                      className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${selectedCategory === 'all'
                         ? 'bg-primary text-white'
                         : 'bg-white text-muted-foreground hover:bg-gray-50'
                         }`}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() =>
-                        setSelectedCategory(category.name.toLowerCase())
-                      }
+                      onClick={() => setSelectedCategory('all')}
                     >
-                      <span
-                        className="h-2 w-2 rounded-full mr-2"
-                        style={{ backgroundColor: category.color }}
-                      />
-                      {category.name}
+                      {t('manageItems.allCategories', 'All Categories')}
                     </motion.button>
+                    {categories && categories.length > 0 && categories.map((category) => (
+                      <motion.button
+                        key={category._id}
+                        className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
+                          ? 'bg-primary text-white'
+                          : 'bg-white text-muted-foreground hover:bg-gray-50'
+                          }`}
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSelectedCategory(category.name.toLowerCase())}
+                      >
+                        <span
+                          className="h-2 w-2 rounded-full mr-2"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        {category.name}
+                      </motion.button>
+                    ))}
+                  </div>
+                  {/* Subcategory management UI */}
+                  {categories && categories.length > 0 && categories.map((category) => (
+                    <div key={category._id} className="bg-white rounded-lg p-4 border border-gray-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="font-semibold text-dark">{category.name}</div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            size="sm"
+                            placeholder="Add subcategory"
+                            value={subCategoryInputs[category._id] || ''}
+                            onChange={e => setSubCategoryInputs((prev) => ({ ...prev, [category._id]: e.target.value }))}
+                            className="w-40"
+                          />
+                          <Button
+                            size="sm"
+                            disabled={subCategoryLoading[category._id]}
+                            onClick={() => addSubCategory(category._id, subCategoryInputs[category._id] || '')}
+                          >
+                            {subCategoryLoading[category._id] ? 'Adding...' : 'Add'}
+                          </Button>
+                        </div>
+                      </div>
+                      {category.subCategories && category.subCategories.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {category.subCategories.map((sub, idx) => (
+                            <Badge key={sub + idx} variant="secondary" className="flex items-center gap-1">
+                              {sub}
+                              <button
+                                type="button"
+                                className="ml-1 text-xs text-red-600 hover:text-red-800"
+                                disabled={subCategoryLoading[category._id]}
+                                onClick={() => deleteSubCategory(category._id, sub)}
+                              >
+                                ×
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -935,7 +1027,11 @@ export default function ManageItems() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="category">{t('addItem.category')}</Label>
-                    <Select defaultValue="electronics" name="category">
+                    <Select
+                      value={selectedCategoryName}
+                      onValueChange={(val) => setSelectedCategoryName(val)}
+                      name="category"
+                    >
                       <SelectTrigger id="category" className="mt-1.5">
                         <SelectValue placeholder={t('addItem.categoryPlaceholder', 'Select category')} />
                       </SelectTrigger>
@@ -943,7 +1039,7 @@ export default function ManageItems() {
                         {categories && categories.length > 0 && categories.map((category) => (
                           <SelectItem
                             key={category._id}
-                            value={category.name.toLowerCase()}
+                            value={category.name}
                           >
                             {category.name}
                           </SelectItem>
@@ -953,17 +1049,27 @@ export default function ManageItems() {
                   </div>
 
                   <div>
-                    <Label htmlFor="condition">{t('manageItems.condition', 'Condition')}</Label>
-                    <Select defaultValue="excellent" name="condition">
-                      <SelectTrigger id="condition" className="mt-1.5">
-                        <SelectValue placeholder={t('manageItems.conditionPlaceholder', 'Select condition')} />
+                    <Label htmlFor="subCategory">Subcategory</Label>
+                    <Select
+                      value={subCategoryInput}
+                      onValueChange={setSubCategoryInput}
+                      name="subCategory"
+                    >
+                      <SelectTrigger id="subCategory" className="mt-1.5">
+                        <SelectValue placeholder="Select or type subcategory" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="new">{t('manageItems.new', 'New')}</SelectItem>
-                        <SelectItem value="excellent">{t('manageItems.excellent', 'Excellent')}</SelectItem>
-                        <SelectItem value="good">{t('manageItems.good', 'Good')}</SelectItem>
-                        <SelectItem value="fair">{t('manageItems.fair', 'Fair')}</SelectItem>
-                        <SelectItem value="poor">{t('manageItems.poor', 'Poor')}</SelectItem>
+                        {subCategoryOptions.map((sub) => (
+                          <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                        ))}
+                        <div className="p-2">
+                          <Input
+                            placeholder="Add new subcategory"
+                            value={subCategoryInput}
+                            onChange={e => setSubCategoryInput(e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </SelectContent>
                     </Select>
                   </div>
