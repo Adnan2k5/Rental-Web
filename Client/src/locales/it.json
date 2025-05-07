@@ -386,7 +386,7 @@
       "learnMore": "Scopri di più"
     },
     "footer": {
-      "logo": "Rental",
+      "logo": "Noleggiarmi",
       "description": "Il marketplace di nuova generazione per ogni tua esigenza.",
       "twitter": "Twitter",
       "facebook": "Facebook",
@@ -695,5 +695,9 @@
     "statusLabel": "Stato: {{status}} | Priorità: {{priority}} | Categoria: {{category}}",
     "statusUpdated": "Stato del ticket aggiornato a {{status}}.",
     "statusUpdateFailed": "Impossibile aggiornare lo stato del ticket."
+  },
+  "buttons": {
+    "add": "Aggiungi al Carrello",
+    "chat": "Chatta"
   }
 }

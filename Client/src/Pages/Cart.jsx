@@ -144,7 +144,7 @@ export default function CartPage() {
     setIsBooking(true)
     try {
       const res = await createBookingApi(fullName)
-      if(res) {
+      if (res) {
         setCartItems([]) // Clear cart after booking
         toast.success(t("cartPage.bookingsCreated"), { description: t("cartPage.bookingsCreatedDesc") })
       }
@@ -245,7 +245,7 @@ export default function CartPage() {
                           <h3 className="font-medium text-lg">{item.item.name}</h3>
                           <div className="flex items-center">
                             <span className="font-bold text-lg text-primary">
-                              ${item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
+                              €{item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
                             </span>
                           </div>
                         </div>
@@ -354,12 +354,12 @@ export default function CartPage() {
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">{t("cartPage.subtotal")}</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>€{subtotal.toFixed(2)}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>{t("cartPage.discount")}</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>-€{discount.toFixed(2)}</span>
                     </div>
                   )}
 
@@ -367,7 +367,7 @@ export default function CartPage() {
 
                   <div className="flex justify-between font-bold text-lg">
                     <span>{t("cartPage.total")}</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>€{total.toFixed(2)}</span>
                   </div>
 
                   <div className="text-sm text-muted-foreground">

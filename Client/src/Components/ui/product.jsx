@@ -4,10 +4,11 @@ import { Button } from './button';
 import { toast } from 'sonner';
 import { addItemToCartApi } from '../../api/carts.api';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
     const navigate = useNavigate();
-
+    const { t } = useTranslation();
     const addItemToCart = async (e) => {
         try {
             e.preventDefault();
@@ -91,13 +92,13 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                     className="h-8 px-3"
                     onClick={goToChat}
                 >
-                    Chat
+                    {t("buttons.chat")}
                 </Button>
             </div>
 
             <div className="flex items-center justify-between">
                 <p className="font-bold text-primary">
-                    ${product?.price}/day
+                    €{product?.price}/day
                 </p>
 
                 <Button
@@ -106,7 +107,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                     className="h-8 px-3"
                     onClick={addItemToCart}
                 >
-                    Add to Cart
+                    {t("buttons.add")}
                 </Button>
             </div>
         </div>
