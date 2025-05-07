@@ -340,7 +340,7 @@ export default function SignIn() {
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
-                  {t('signIn.signIn')}
+                  {loading ? `Signing Up...` : t('signIn.signIn')}
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}

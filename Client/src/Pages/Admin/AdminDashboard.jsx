@@ -167,29 +167,6 @@ export default function AdminDashboard() {
                 {t('adminDashboard.welcome', { name: admin.user.name })}
               </motion.p>
             </div>
-
-            <motion.div
-              className="flex items-center space-x-3 mt-4 md:mt-0"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Button
-                className="relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                }}
-              >
-                <motion.span
-                  className="absolute inset-0 bg-white/20 rounded-md"
-                  initial={{ x: '-100%', opacity: 0 }}
-                  whileHover={{ x: '100%', opacity: 0.3 }}
-                  transition={{ duration: 0.6 }}
-                />
-                <Calendar className="h-4 w-4 mr-2" />
-                <span className="relative">{t('adminDashboard.exportReport')}</span>
-              </Button>
-            </motion.div>
           </div>
 
           {/* Stats Cards */}

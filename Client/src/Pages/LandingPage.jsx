@@ -477,22 +477,6 @@ export default function LandingPage() {
                   {t('landingPage.cta.description')}
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="h-12 px-8 font-medium"
-                >
-                  {t('landingPage.cta.signup')}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="h-12 px-8 font-medium"
-                >
-                  {t('landingPage.cta.learnMore')}
-                </Button>
-              </div>
             </div>
           </motion.div>
         </div>

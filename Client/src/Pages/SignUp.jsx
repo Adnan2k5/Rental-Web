@@ -54,6 +54,7 @@ export default function SignUp() {
   };
 
   const registerUser = async (data) => {
+    setIsLoading(true);
     try {
       const res = await userRegister(data);
       if (res === true) {
@@ -66,6 +67,9 @@ export default function SignUp() {
       if (err === 409) {
         alert(t('signUp.emailExists'));
       }
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -432,7 +436,7 @@ export default function SignUp() {
                   transition={{ duration: 0.6 }}
                 />
                 <span className="relative flex items-center justify-center">
-                  {t('signUp.createAccountBtn')}
+                  {isLoading ? `Registering...` : t('signUp.createAccountBtn')}
                   <motion.span
                     className="ml-2"
                     animate={{ x: [0, 4, 0] }}
