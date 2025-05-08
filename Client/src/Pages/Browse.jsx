@@ -22,6 +22,7 @@ import { Loader } from "../Components/loader"
 import { useCategories } from "../hooks/useCategories"
 import { useTranslation } from "react-i18next"
 
+
 export default function BrowsePage() {
   const [products, setitems] = useState([])
   const [loading, setLoading] = useState(false)
@@ -48,6 +49,8 @@ export default function BrowsePage() {
   const [selectedCategory, setSelectedCategory] = useState(null)
 
   const { categories } = useCategories() || []
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language; 
 
   useEffect(() => {
     if (!user) {
@@ -87,7 +90,7 @@ export default function BrowsePage() {
     const FetchProducts = async () => {
       setLoading(true)
       try {
-        const res = await fetchAllItems(filters)
+        const res = await fetchAllItems(filters, currentLanguage)
         setitems(res.data.message.items)
         setCountItems(res.data.message.totalItems)
       } catch (err) {
@@ -98,7 +101,7 @@ export default function BrowsePage() {
     }
 
     FetchProducts()
-  }, [filters, locationChecked])
+  }, [filters, locationChecked, currentLanguage])
 
   const openQuickView = (product) => {
     setQuickViewProduct(product)

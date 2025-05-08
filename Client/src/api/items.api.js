@@ -10,8 +10,8 @@ export const fetchAllItems = async ({
   limit,
   lat,
   long,
-} = {}) => {
-  const res = await axiosClient.get('/api/item/discover', {
+} = {}, currentLanguage) => {
+  const res = await axiosClient.get(`/api/item/discover?lang=${currentLanguage}`, {
     withCredentials: true,
     params: {
       minPrice: priceRange?.[0] ?? 0,
