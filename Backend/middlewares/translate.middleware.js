@@ -14,7 +14,7 @@ const translate = new Translate({ key });
  * @param {string} targetLang - Target language code (default: 'lt')
  * @returns {Promise<string>} Translated text
  */
-const translateText = async (text, targetLang = 'lt') => {
+const translateText = async (text, targetLang = 'it') => {
   if (!text) return text;
   const [translated] = await translate.translate(text, targetLang);
   return translated;

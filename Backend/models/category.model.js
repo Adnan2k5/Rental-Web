@@ -4,13 +4,13 @@ import translateText from "../middlewares/translate.middleware.js";
 
 const categorySchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
-    name_li: { type: String },
+    name_it: { type: String },
     subCategories: [
         {
             type: String,
         }
     ],
-    subCategories_li: [
+    subCategories_it: [
         {
             type: String,
         }
@@ -18,12 +18,12 @@ const categorySchema = new mongoose.Schema({
 });
 
 categorySchema.pre("save", async function (next) {
-    if (!this.name_li) {
-        this.name_li = await translateText(this.name);
+    if (!this.name_it) {
+        this.name_it = await translateText(this.name);
     }
 
-    if (!this.subCategories_li || this.subCategories_li.length !== this.subCategories.length) {
-        this.subCategories_li = await Promise.all(this.subCategories.map(translateText));
+    if (!this.subCategories_it || this.subCategories_it.length !== this.subCategories.length) {
+        this.subCategories_it = await Promise.all(this.subCategories.map(translateText));
     }
 
     next();

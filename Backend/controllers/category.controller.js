@@ -13,8 +13,8 @@ export const getCategories = asyncHandler(async (req, res) => {
     }
 
     const transformed = categories.map(cat => ({
-        name: lang === 'lt' ? cat.name_li : cat.name,
-        subCategories: lang === 'lt' ? cat.subCategories_li : cat.subCategories
+        name: lang === 'it' ? cat.name_it : cat.name,
+        subCategories: lang === 'it' ? cat.subCategories_it : cat.subCategories
       }));
 
     res.status(200).json(new ApiResponse(200, "Categories fetched successfully", transformed));

@@ -1,7 +1,7 @@
 import axiosClient from "../Middleware/AxiosClient";
 
-export const fetchCategoriesApi = async () => {
-  const res = await axiosClient.get(`/api/category`, {
+export const fetchCategoriesApi = async (langauge) => {
+  const res = await axiosClient.get(`/api/category?lang=${langauge}`, {
     withCredentials: true,
   });
   return res.data.message;
