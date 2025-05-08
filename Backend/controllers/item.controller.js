@@ -28,7 +28,6 @@ export const discoverItems = asyncHandler(async (req, res) => {
     const {
         category,
         location,
-        availability,
         rating,
         query,
         minPrice = 0,
@@ -36,29 +35,17 @@ export const discoverItems = asyncHandler(async (req, res) => {
         limit = 10,
         page = 1,
         lat,
-        long
+        long,
+        lang
     } = req.query;
 
     const categories = category
         ? (Array.isArray(category) ? category : [category])
         : [];
 
-    const availableList = availability
-        ? (Array.isArray(availability) ? availability : [availability])
-        : [];
-
-    const availableListMap = {
-        "Available Now": "available",
-        "Available Within 1 Week": "rented",
-        "Coming Soon": "reserved",
-    };
-
-    const availableFilter = availableList.map((a) => availableListMap[a] || a);
-
     // Build the main filter
     const filter = {
         ...(categories.length > 0 && { category: { $in: categories } }),
-        ...(availableFilter.length > 0 && { status: { $in: availableFilter } }),
         ...(location && { location }),
         ...(rating && { avgRating: { $gte: Number(rating) } }),
         ...(query && { name: { $regex: query, $options: "i" } }),
@@ -89,6 +76,13 @@ export const discoverItems = asyncHandler(async (req, res) => {
 
         // Populate owner field after aggregation
         geoItems = await Item.populate(geoItems, { path: "owner", select: "name" });
+
+        // const items = geoItems.map(item => ({
+        //     ...item.toObject(),
+        //     name: lang === 'it' ? item.name_it || item.name : item.name,
+        //     description: lang === 'it' ? item.description_it || item.description : item.description
+        // }));
+
 
         // Get COUNT ONLY (without $geoNear, but with same filter)
         const countAggRes = await Item.aggregate([

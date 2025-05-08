@@ -165,6 +165,7 @@ export default function Dashboard() {
         await createItems(formData)
         toast.success("Item posted successfully!")
       } else {
+      
         await updateItem(editingItem._id, formData)
         toast.success("Item updated successfully!")
       }
@@ -563,7 +564,7 @@ export default function Dashboard() {
                       {categories &&
                         categories.length > 0 &&
                         categories.map((category) => (
-                          <SelectItem key={category.name} value={`${category.name}`}>
+                          <SelectItem key={category._id} value={`${category.name_en}`}>
                             {category.name}
                           </SelectItem>
                         ))}

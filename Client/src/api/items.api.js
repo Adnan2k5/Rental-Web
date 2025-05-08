@@ -11,7 +11,7 @@ export const fetchAllItems = async ({
   lat,
   long,
 } = {}, currentLanguage) => {
-  const res = await axiosClient.get(`/api/item/discover?lang=${currentLanguage}`, {
+  const res = await axiosClient.get(`/api/item/discover?lang=${currentLanguage || 'en'}`, {
     withCredentials: true,
     params: {
       minPrice: priceRange?.[0] ?? 0,
@@ -50,7 +50,12 @@ export const deleteItem = async (id) => {
 };
 
 export const updateItem = async (data) => {
-  console.log(data);
+  const id = data.id;
+  const res = await axiosClient.put(`/api/item/${id}`, data, {
+    withCredentials: true,
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res;
 };
 
 export const fetchUserBookings = async () => {
