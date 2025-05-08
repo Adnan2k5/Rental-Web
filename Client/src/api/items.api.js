@@ -49,8 +49,7 @@ export const deleteItem = async (id) => {
   return res;
 };
 
-export const updateItem = async (data) => {
-  const id = data.id;
+export const updateItem = async (id, data) => {
   const res = await axiosClient.put(`/api/item/${id}`, data, {
     withCredentials: true,
     headers: { 'Content-Type': 'multipart/form-data' },

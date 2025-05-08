@@ -191,7 +191,27 @@ export const updateItem = asyncHandler(async (req, res) => {
         updatedFields.images = mediasUrl;
     }
     if (availableQuantity !== undefined) updatedFields.availableQuantity = availableQuantity;
-    if (location !== undefined) updatedFields.location = location;
+    if (location !== undefined) {
+        let geoLocation = location;
+        // Accept GeoJSON object as-is
+        if (
+            typeof location === "object" &&
+            location.type === "Point" &&
+            Array.isArray(location.coordinates) &&
+            location.coordinates.length === 2
+        ) {
+            geoLocation = location;
+        }
+        // Parse string "lat,lng"
+        else if (typeof location === "string" && location.includes(",")) {
+            const [lat, lng] = location.split(",").map(Number);
+            geoLocation = {
+                type: "Point",
+                coordinates: [lng, lat]
+            };
+        }
+        updatedFields.location = geoLocation;
+    }
 
     const item = await Item.findByIdAndUpdate(id, updatedFields, { new: true });
 
