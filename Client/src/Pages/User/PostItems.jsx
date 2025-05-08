@@ -165,6 +165,7 @@ export default function Dashboard() {
         await createItems(formData)
         toast.success("Item posted successfully!")
       } else {
+
         await updateItem(editingItem._id, formData)
         toast.success("Item updated successfully!")
       }
@@ -277,7 +278,16 @@ export default function Dashboard() {
     setValue("price", item.price)
     setValue("category", item.category)
     setValue("subCategory", item.subCategory)
-    setValue("location", item.location)
+    // Convert GeoJSON location to "lat,lng" string for the input
+    let locationString = ""
+    if (item.location && item.location.type === "Point" && Array.isArray(item.location.coordinates)) {
+      // GeoJSON is [lng, lat]
+      locationString = `${item.location.coordinates[1]},${item.location.coordinates[0]}`
+    } else if (typeof item.location === "string") {
+      locationString = item.location
+    }
+    setValue("location", locationString)
+    setLocationInput(locationString)
     setValue("availableQuantity", item.availableQuantity || 1)
     setValue("available", item.available)
 
@@ -563,7 +573,7 @@ export default function Dashboard() {
                       {categories &&
                         categories.length > 0 &&
                         categories.map((category) => (
-                          <SelectItem key={category.name} value={`${category.name}`}>
+                          <SelectItem key={category._id} value={`${category.name_en}`}>
                             {category.name}
                           </SelectItem>
                         ))}

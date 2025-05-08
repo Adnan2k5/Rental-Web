@@ -11,7 +11,7 @@ import { getLatLongFromAddress } from "../utils/geoencoding.js";
 export const getItemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    if(!id) {
+    if (!id) {
         throw new ApiError(400, "Item ID is required");
     }
 
@@ -28,7 +28,6 @@ export const discoverItems = asyncHandler(async (req, res) => {
     const {
         category,
         location,
-        availability,
         rating,
         query,
         minPrice = 0,
@@ -36,29 +35,17 @@ export const discoverItems = asyncHandler(async (req, res) => {
         limit = 10,
         page = 1,
         lat,
-        long
+        long,
+        lang
     } = req.query;
 
     const categories = category
         ? (Array.isArray(category) ? category : [category])
         : [];
 
-    const availableList = availability
-        ? (Array.isArray(availability) ? availability : [availability])
-        : [];
-
-    const availableListMap = {
-        "Available Now": "available",
-        "Available Within 1 Week": "rented",
-        "Coming Soon": "reserved",
-    };
-
-    const availableFilter = availableList.map((a) => availableListMap[a] || a);
-
     // Build the main filter
     const filter = {
         ...(categories.length > 0 && { category: { $in: categories } }),
-        ...(availableFilter.length > 0 && { status: { $in: availableFilter } }),
         ...(location && { location }),
         ...(rating && { avgRating: { $gte: Number(rating) } }),
         ...(query && { name: { $regex: query, $options: "i" } }),
@@ -90,6 +77,13 @@ export const discoverItems = asyncHandler(async (req, res) => {
         // Populate owner field after aggregation
         geoItems = await Item.populate(geoItems, { path: "owner", select: "name" });
 
+        geoItems = geoItems.map(item => ({
+            ...item,
+            name: lang === 'it' ? item.name_it || item.name : item.name,
+            description: lang === 'it' ? item.description_it || item.description : item.description,
+        }));
+
+
         // Get COUNT ONLY (without $geoNear, but with same filter)
         const countAggRes = await Item.aggregate([
             { $match: geoFilter },
@@ -106,10 +100,20 @@ export const discoverItems = asyncHandler(async (req, res) => {
     }
 
     // Standard query (no geo)
-    const items = await Item.find(filter)
+    const rawItems = await Item.find(filter)
         .populate("owner", "name")
         .limit(Number(limit))
         .skip((Number(page) - 1) * Number(limit));
+
+    const items = rawItems.map(item => {
+        const doc = item.toObject(); // item is a Mongoose document here
+        return {
+            ...doc,
+            name: lang === 'it' ? doc.name_it || doc.name : doc.name,
+            description: lang === 'it' ? doc.description_it || doc.description : doc.description,
+        };
+    });
+    
     const totalItems = await Item.countDocuments(filter);
 
     res.status(200).json(
@@ -197,7 +201,27 @@ export const updateItem = asyncHandler(async (req, res) => {
         updatedFields.images = mediasUrl;
     }
     if (availableQuantity !== undefined) updatedFields.availableQuantity = availableQuantity;
-    if (location !== undefined) updatedFields.location = location;
+    if (location !== undefined) {
+        let geoLocation = location;
+        // Accept GeoJSON object as-is
+        if (
+            typeof location === "object" &&
+            location.type === "Point" &&
+            Array.isArray(location.coordinates) &&
+            location.coordinates.length === 2
+        ) {
+            geoLocation = location;
+        }
+        // Parse string "lat,lng"
+        else if (typeof location === "string" && location.includes(",")) {
+            const [lat, lng] = location.split(",").map(Number);
+            geoLocation = {
+                type: "Point",
+                coordinates: [lng, lat]
+            };
+        }
+        updatedFields.location = geoLocation;
+    }
 
     const item = await Item.findByIdAndUpdate(id, updatedFields, { new: true });
 
@@ -233,7 +257,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
 export const reviewItem = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { rating, comment } = req.body;
- 
+
 
     if (!rating) {
         throw new ApiError(400, "Rating is required");
@@ -254,7 +278,7 @@ export const reviewItem = asyncHandler(async (req, res) => {
 
     item.totalReviews += 1;
 
-    item.avgRating =  (item.avgRating * (item.totalReviews - 1) + rating) / item.totalReviews;
+    item.avgRating = (item.avgRating * (item.totalReviews - 1) + rating) / item.totalReviews;
 
     const review = await Review.create({
         user: req.user._id,
@@ -274,11 +298,11 @@ export const getItemByUserId = asyncHandler(async (req, res) => {
 
     const user = await User.findById(userId);
 
-    if(!user) {
+    if (!user) {
         throw new ApiError(404, "User not found");
     }
 
-    const items = await Item.find({owner: userId});
+    const items = await Item.find({ owner: userId });
     res.status(201).json(new ApiResponse(200, "Items fetched successfully", items));
 });
 
