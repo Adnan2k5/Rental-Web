@@ -2,18 +2,22 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import Category from "../models/category.model.js";
-import translateText from "../middlewares/translate.middleware.js";
 
 export const getCategories = asyncHandler(async (req, res) => {
     const categories = await Category.find({});
 
-    const lt = req.query.lang === "lt" ? true : false;
+    const lang = req.query.lang || "en";
 
     if (!categories) {
         throw new ApiError(404, "Categories not found");
     }
 
-    res.status(200).json(new ApiResponse(200, "Categories fetched successfully", categories));
+    const transformed = categories.map(cat => ({
+        name: lang === 'lt' ? cat.name_li : cat.name,
+        subCategories: lang === 'lt' ? cat.subCategories_li : cat.subCategories
+      }));
+
+    res.status(200).json(new ApiResponse(200, "Categories fetched successfully", transformed));
 });
 
 export const createCategory = asyncHandler(async (req, res) => {
