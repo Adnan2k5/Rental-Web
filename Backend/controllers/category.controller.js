@@ -2,9 +2,12 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import Category from "../models/category.model.js";
+import translateText from "../middlewares/translate.middleware.js";
 
 export const getCategories = asyncHandler(async (req, res) => {
     const categories = await Category.find({});
+
+    const lt = req.query.lang === "lt" ? true : false;
 
     if (!categories) {
         throw new ApiError(404, "Categories not found");
