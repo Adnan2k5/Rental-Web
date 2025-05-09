@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { useLocation } from "react-router-dom"
 import { useSelector } from "react-redux"
 import io from "socket.io-client"
+import { useTranslation } from "react-i18next"
 import Header from "./Header"
 import ChatInterface from "./ChatInterface"
 import MessageInput from "./MessageInput"
@@ -9,6 +10,7 @@ import { getChatHistoryApi, getAllChats } from "../../api/messages.api"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar } from "../../Components/ui/avatar"
 import { X, Search, PlusCircle } from "lucide-react"
+import LanguageSelector from "../../Components/LanguageSelector"
 
 // Create socket instance
 const socket = io(import.meta.env.VITE_API_URL || "http://localhost:8080")
@@ -25,6 +27,7 @@ export default function Chat() {
     const messagesEndRef = useRef(null);
     const location = useLocation();
     const { user } = useSelector((state) => state.user);
+    const { t } = useTranslation();
 
     // Get recipient from location state or params
     const product = location.state?.product || {
@@ -49,8 +52,6 @@ export default function Chat() {
 
         // Listen for connect/disconnect events
         socket.on("connect", () => {
-            console.log("Connected to socket server");
-            // Re-join room if socket reconnects
             if (user?._id) {
                 socket.emit("joinRoom", { userId: user._id });
             }
@@ -145,7 +146,7 @@ export default function Chat() {
                 let allContacts = response.data;
                 setContacts(allContacts);
             } catch (error) {
-                console.error("Error fetching contacts:", error);
+                return error;
             } finally {
                 setLoading(false);
             }
@@ -163,7 +164,7 @@ export default function Chat() {
                     const chatHistory = await getChatHistoryApi(selectedContact._id);
                     setMessages(chatHistory);
                 } catch (error) {
-                    console.error("Error fetching chat history:", error);
+                    return error
                 }
             }
         };
@@ -218,8 +219,9 @@ export default function Chat() {
 
     return (
         <div className="flex flex-col h-[100dvh] bg-[#0E0F15]">
-            <div className="border-b border-[#2A2D3A] py-3 px-4">
-                <h1 className="text-2xl font-bold text-white">Messages</h1>
+            <div className="border-b border-[#2A2D3A] py-3 px-4 flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-white">{t('chat.messages')}</h1>
+                <LanguageSelector className="ml-auto" />
             </div>
             <div className="flex-1 overflow-hidden flex">
                 {/* Left sidebar - Contacts */}
@@ -227,13 +229,13 @@ export default function Chat() {
                     <div className="p-3 flex items-center justify-between border-b border-[#2A2D3A]">
                         <input
                             type="text"
-                            placeholder="Search messages..."
+                            placeholder={t('chat.searchMessages')}
                             className="flex-1 bg-[#13141D] border border-[#2A2D3A] rounded-full py-2 px-4 text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4D39EE]"
                         />
                         <button
                             onClick={() => setShowNewMessageModal(true)}
                             className="ml-2 text-[#4D39EE] hover:text-[#6A58FF]"
-                            title="New Message"
+                            title={t('chat.newMessage')}
                         >
                             <PlusCircle size={24} />
                         </button>
@@ -242,11 +244,11 @@ export default function Chat() {
                     <div className="flex-1 overflow-y-auto">
                         {loading ? (
                             <div className="flex justify-center items-center h-32">
-                                <div className="text-white">Loading contacts...</div>
+                                <div className="text-white">{t('chat.loadingContacts')}</div>
                             </div>
                         ) : contacts.length === 0 ? (
                             <div className="p-4 text-center text-gray-400">
-                                No conversations yet
+                                {t('chat.noConversations')}
                             </div>
                         ) : (
                             contacts.map((contact) => (
@@ -322,9 +324,9 @@ export default function Chat() {
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                             </div>
-                            <h2 className="text-xl font-bold text-white mb-2">Your Messages</h2>
+                            <h2 className="text-xl font-bold text-white mb-2">{t('chat.yourMessages')}</h2>
                             <p className="text-gray-400 max-w-sm">
-                                Send private messages to other users about rentals or items you're interested in.
+                                {t('chat.yourMessagesDesc')}
                             </p>
                         </div>
                     )}
@@ -336,7 +338,7 @@ export default function Chat() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20">
                     <div className="w-[400px] bg-[#0E0F15] rounded-lg shadow-lg overflow-hidden">
                         <div className="p-4 border-b border-[#2A2D3A] flex justify-between items-center">
-                            <h3 className="text-lg font-medium text-white">New Message</h3>
+                            <h3 className="text-lg font-medium text-white">{t('chat.newMessage')}</h3>
                             <button
                                 onClick={() => {
                                     setShowNewMessageModal(false);
@@ -354,7 +356,7 @@ export default function Chat() {
                                 <Search size={18} className="text-gray-400" />
                                 <input
                                     type="text"
-                                    placeholder="Search for users..."
+                                    placeholder={t('chat.searchUsers')}
                                     className="flex-1 bg-[#13141D] border border-[#2A2D3A] rounded py-2 px-3 text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-[#4D39EE]"
                                     value={searchQuery}
                                     onChange={(e) => {
@@ -367,7 +369,7 @@ export default function Chat() {
                             <div className="max-h-[300px] overflow-y-auto">
                                 {searchLoading ? (
                                     <div className="flex justify-center items-center h-20">
-                                        <div className="text-white">Searching...</div>
+                                        <div className="text-white">{t('chat.searching')}</div>
                                     </div>
                                 ) : searchResults.length > 0 ? (
                                     searchResults.map(user => (
@@ -391,11 +393,11 @@ export default function Chat() {
                                     ))
                                 ) : searchQuery.length >= 2 ? (
                                     <div className="p-4 text-center text-gray-400">
-                                        No users found
+                                        {t('chat.noUsersFound')}
                                     </div>
                                 ) : (
                                     <div className="p-4 text-center text-gray-400">
-                                        Type at least 2 characters to search
+                                        {t('chat.typeToSearch')}
                                     </div>
                                 )}
                             </div>

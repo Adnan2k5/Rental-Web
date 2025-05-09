@@ -23,6 +23,7 @@ import TermsConditions from './Pages/Admin/Terms';
 import { TicketDetails } from './Pages/User/TikcetDetails';
 import UserVerification from './Pages/Admin/UserVerification';
 import DocumentVerification from './Pages/User/DocumentVerification';
+import { ProtectedRoute } from './Middleware/ProtectedRoute';
 
 function App() {
   return (
@@ -47,7 +48,8 @@ function App() {
               {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
             <Route path='/chat' element={<Chat />} />
-            <Route path="/admin" element={<AdminLayout />}>
+
+            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />
               <Route path="/admin/users" element={<ManageUsers />} />
@@ -55,7 +57,9 @@ function App() {
               <Route path='/admin/tickets' element={<TicketsSupport />} />
               <Route path='/admin/terms' element={<TermsConditions />} />
             </Route>
+
           </Routes>
+
         </AuthProvider>
       </BrowserRouter>
     </>

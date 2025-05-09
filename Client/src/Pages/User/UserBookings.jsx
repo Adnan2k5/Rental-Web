@@ -40,7 +40,6 @@ export default function UserItems() {
             setFetchItems(res.data)
             setTotalPages(Math.ceil(res.data.length / ITEMS_PER_PAGE))
         } catch (error) {
-            console.error("Error fetching items:", error)
             toast.error("Failed to fetch items")
         }
     }

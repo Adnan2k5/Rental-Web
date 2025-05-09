@@ -76,7 +76,7 @@ export default function ManageUsers() {
         setUsers(response.users);
         if (response.pagination) setPagination(response.pagination);
       } else {
-        console.error('Failed to fetch users');
+        toast.error(t('Error fetching users'));
       }
     }
     fetchUsers();
@@ -175,7 +175,6 @@ export default function ManageUsers() {
   };
 
   const updateUserStatus = async () => {
-    console.log(selectedUser._id, selectedUser.status);
     const res = await changeUserStatus(selectedUser._id, selectedUser.status);
     if (res) {
       toast.success(t('manageUsers.statusUpdateSuccess'));

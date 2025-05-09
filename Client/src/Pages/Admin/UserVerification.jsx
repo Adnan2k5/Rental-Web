@@ -89,6 +89,7 @@ export default function UserVerification() {
             if (res.status === 200) {
                 toast.success("User verification approved")
             }
+            window.location.reload()
         } catch (error) {
             toast.error("Failed to approve verification")
         }
@@ -107,6 +108,7 @@ export default function UserVerification() {
             } else {
                 toast.error("Failed to decline verification")
             }
+            window.location.reload()
         } catch (error) {
             toast.error("Failed to decline verification")
         }
@@ -274,7 +276,7 @@ export default function UserVerification() {
                                     <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
                                         {t('userVerificationAdmin.idCard')}
                                     </Badge>
-                                    {t('userVerificationAdmin.idCardDesc')}
+
                                 </h3>
                                 <Link to={selectedUser.documentUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
                                     <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow flex items-center justify-center">
@@ -297,7 +299,7 @@ export default function UserVerification() {
                                     <Badge variant="outline" className="mr-2 bg-gray-100 text-gray-800 border-gray-300">
                                         {t('userVerificationAdmin.selfie')}
                                     </Badge>
-                                    {t('userVerificationAdmin.selfieDesc')}
+
                                 </h3>
                                 <Link to={selectedUser.imageUrl} target="_blank" className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow">
                                     <div className="border rounded-lg overflow-hidden bg-muted shadow-sm hover:shadow-md transition-shadow  flex items-center justify-center">

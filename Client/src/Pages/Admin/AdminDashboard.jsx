@@ -109,7 +109,7 @@ export default function AdminDashboard() {
           response.recentUsers
         );
       } catch (error) {
-        console.error('Error fetching data:', error);
+        toast.error("Error")
       }
     }
 
@@ -134,7 +134,6 @@ export default function AdminDashboard() {
     return new Intl.NumberFormat('en-US').format(value);
   };
 
-  console.log(admin.user)
 
   return (
     <motion.div

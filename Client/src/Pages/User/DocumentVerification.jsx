@@ -148,7 +148,6 @@ export default function DocumentVerification() {
     }
 
     const { user } = useAuth()
-    console.log(document)
     const getStatusBadge = () => {
         try {
             if (user.documentVerified === "verified") {
@@ -166,7 +165,6 @@ export default function DocumentVerification() {
             }
         }
         catch (error) {
-            console.log(error)
             return <Badge variant="destructive">{t('userverification.unknown')}</Badge>
         }
         finally {
@@ -191,7 +189,6 @@ export default function DocumentVerification() {
         const res = await getDocumentByUserId(user._id);
         if (res.status === 200) {
             setDocument(res.data.message.documents[0])
-            console.log(document)
         }
     }
 

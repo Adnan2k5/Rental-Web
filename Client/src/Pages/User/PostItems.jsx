@@ -56,6 +56,7 @@ export default function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [subCategoryInput, setSubCategoryInput] = useState("");
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
+  const [subCategoryOptionEn, setSubCategoryOptionEn] = useState([]);
 
   const {
     register,
@@ -81,8 +82,12 @@ export default function Dashboard() {
       (cat) => cat.name === selectedCategory
     );
     setSubCategoryOptions(selectedCat?.subCategories || []);
+    setSubCategoryOptionEn(selectedCat?.subCategories_en || []);
     setSubCategoryInput("");
+    setValue("category", selectedCat?.name_en)
   }, [selectedCategory, categories, isItemDialogOpen]);
+
+
 
   // Map marker icon fix for leaflet in React
   const markerIcon = new L.Icon({
@@ -159,7 +164,6 @@ export default function Dashboard() {
         formData.append("images", image.file)
       }
     })
-
     try {
       if (dialogMode === "post") {
         await createItems(formData)
@@ -169,14 +173,12 @@ export default function Dashboard() {
         await updateItem(editingItem._id, formData)
         toast.success("Item updated successfully!")
       }
-
       setIsItemDialogOpen(false)
       setUploadedFiles([])
       reset()
       fetchItems()
     } catch (error) {
       toast.error(`Failed to ${dialogMode === "post" ? "post" : "update"} item`)
-      console.error(error)
     } finally {
       setLoading(false)
     }
@@ -191,7 +193,6 @@ export default function Dashboard() {
       setFetchItems(res.data.message)
       setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))
     } catch (error) {
-      console.error("Error fetching items:", error)
       toast.error("Failed to fetch items")
     }
   }
@@ -264,7 +265,6 @@ export default function Dashboard() {
       }
     } catch (error) {
       toast.error("Failed to delete item.")
-      console.error(error)
     }
   }
 
@@ -537,7 +537,7 @@ export default function Dashboard() {
                   <Label htmlFor="Name">{t("addItem.name")}</Label>
                   <Input
                     id="name"
-                    placeholder="e.g. Professional DSLR Camera"
+                    placeholder={t("addItem.descriptionPlaceholder")}
                     className="mt-1.5"
                     {...register("name", { required: "Name is required" })}
                   />
@@ -548,7 +548,7 @@ export default function Dashboard() {
                   <Label htmlFor="description">{t("addItem.description")}</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe your item in detail..."
+                    placeholder={t("addItem.descriptionPlaceholder")}
                     className="mt-1.5 min-h-[100px]"
                     {...register("description", {
                       required: "Description is required",
@@ -563,7 +563,6 @@ export default function Dashboard() {
                     value={selectedCategory}
                     onValueChange={(value) => {
                       setSelectedCategory(value);
-                      setValue("category", value);
                     }}
                   >
                     <SelectTrigger id="category" className="mt-1.5">
@@ -573,7 +572,7 @@ export default function Dashboard() {
                       {categories &&
                         categories.length > 0 &&
                         categories.map((category) => (
-                          <SelectItem key={category._id} value={`${category.name_en}`}>
+                          <SelectItem key={category._id} value={`${category.name}`}>
                             {category.name}
                           </SelectItem>
                         ))}
@@ -581,29 +580,23 @@ export default function Dashboard() {
                   </Select>
                   <input type="hidden" {...register("category")} />
                 </div>
-
                 <div>
                   <Label htmlFor="subCategory">Subcategory</Label>
                   <Select
                     value={subCategoryInput}
-                    onValueChange={setSubCategoryInput}
+                    onValueChange={(value) => {
+                      setSubCategoryInput(value)
+                      setValue("subCategory", value)
+                    }}
                     name="subCategory"
                   >
                     <SelectTrigger id="subCategory" className="mt-1.5">
-                      <SelectValue placeholder="Select or type subcategory" />
+                      <SelectValue placeholder={t("addItem.subCategoryPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {subCategoryOptions.map((sub) => (
-                        <SelectItem key={sub} value={sub}>{sub}</SelectItem>
+                      {subCategoryOptions?.map((sub, index) => (
+                        <SelectItem key={sub} value={subCategoryOptionEn[index]}>{sub}</SelectItem>
                       ))}
-                      <div className="p-2">
-                        <Input
-                          placeholder="Add new subcategory"
-                          value={subCategoryInput}
-                          onChange={e => setSubCategoryInput(e.target.value)}
-                          className="mt-1"
-                        />
-                      </div>
                     </SelectContent>
                   </Select>
                   <input type="hidden" name="subCategory" value={subCategoryInput} {...register("subCategory")} />
@@ -705,7 +698,7 @@ export default function Dashboard() {
                 <Label htmlFor="location">{t("addItem.location") || "Location"}</Label>
                 <Input
                   id="location"
-                  placeholder="Click on map or enter coordinates (lat,lng)"
+                  placeholder={t("addItem.locationPlaceholder")}
                   className="mt-1.5"
                   value={locationInput}
                   onChange={(e) => {

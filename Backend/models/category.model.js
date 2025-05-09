@@ -23,7 +23,7 @@ categorySchema.pre("save", async function (next) {
     }
 
     if (!this.subCategories_it || this.subCategories_it.length !== this.subCategories.length) {
-        this.subCategories_it = await Promise.all(this.subCategories.map(translateText));
+        this.subCategories_it = await Promise.all(this.subCategories.map((subCategory) => translateText(subCategory)));
     }
 
     next();

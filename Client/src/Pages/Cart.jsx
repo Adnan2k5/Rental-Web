@@ -90,10 +90,6 @@ export default function CartPage() {
             : item
         )
       )
-
-      // Send API request
-      // await addItemToCartApi(id, null, newDuration, startDate, endDate)
-      console.log("API call to update duration", id, null, newDuration, startDate, endDate)
     } catch (err) {
       toast.error(t("cartPage.failedUpdateDuration"), { description: err.message })
       setRefreshCart(!refreshCart)

@@ -37,7 +37,6 @@ export const TicketDetails = () => {
                 }
                 setLoading(false)
             } catch (err) {
-                console.error("Error fetching ticket details:", err)
                 setError(t('ticketDetails.errorLoad', 'Failed to load ticket details. Please try again later.'))
                 setLoading(false)
             }
@@ -62,7 +61,6 @@ export const TicketDetails = () => {
             }
             setSubmitting(false)
         } catch (err) {
-            console.error("Error submitting response:", err)
             setError(t('ticketDetails.submitError', 'Failed to submit your response. Please try again.'))
             setSubmitting(false)
         }
@@ -390,7 +388,6 @@ export const TicketDetails = () => {
                                                     await updateTicketStatus(ticketId, "open");
                                                     setTicket({ ...ticket, status: "open" });
                                                 } catch (err) {
-                                                    console.error("Error reopening ticket:", err);
                                                     setError(t('ticketDetails.reopenError', 'Failed to reopen ticket. Please try again.'));
                                                 }
                                             }}
@@ -406,7 +403,6 @@ export const TicketDetails = () => {
                                                     await updateTicketStatus(ticketId, "resolved");
                                                     setTicket({ ...ticket, status: "resolved" });
                                                 } catch (err) {
-                                                    console.error("Error resolving ticket:", err);
                                                     setError(t('ticketDetails.resolveError', 'Failed to resolve ticket. Please try again.'));
                                                 }
                                             }}

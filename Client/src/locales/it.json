@@ -57,7 +57,13 @@
     "post": "Pubblica oggetto",
     "edit": "Modifica oggetto",
     "editdesc": "Modifica i dettagli e le immagini del tuo oggetto",
-    "update": "Aggiorna oggetto"
+    "update": "Aggiorna oggetto",
+    "namePlaceholder": "es. Fotocamera DSLR professionale",
+    "descriptionPlaceholder": "Descrivi il tuo oggetto in dettaglio...",
+    "categoryPlaceholder": "Seleziona categoria",
+    "subCategoryPlaceholder": "Seleziona o digita sottocategoria",
+    "pricePlaceholder": "0.00",
+    "locationPlaceholder": "Clicca sulla mappa o inserisci coordinate (lat,lng)"
   },
   "uploadContaier": {
     "title": "Carica immagini",
@@ -319,7 +325,11 @@
     "secureCheckout": "Pagamento sicuro",
     "bookingsCreated": "Prenotazione creata!",
     "bookingsCreatedDesc": "La tua prenotazione è andata a buon fine.",
-    "errorCreatingBookings": "Impossibile creare la prenotazione."
+    "errorCreatingBookings": "Impossibile creare la prenotazione.",
+    "enterFullNameTitle": "Nome completo",
+    "enterFullNamePlaceholder": "Inserisci il tuo nome completo",
+    "cancel": "Annulla",
+    "confirmBooking": "Conferma prenotazione"
   },
   "landingPage": {
     "hero": {
@@ -699,5 +709,23 @@
   "buttons": {
     "add": "Aggiungi al Carrello",
     "chat": "Chatta"
+  },
+  "chat": {
+    "messages": "Messaggi",
+    "searchMessages": "Cerca nei messaggi...",
+    "newMessage": "Nuovo messaggio",
+    "loadingContacts": "Caricamento contatti...",
+    "noConversations": "Nessuna conversazione",
+    "noUsersFound": "Nessun utente trovato",
+    "typeToSearch": "Digita almeno 2 caratteri per cercare",
+    "searchUsers": "Cerca utenti...",
+    "searching": "Ricerca in corso...",
+    "yourMessages": "I tuoi messaggi",
+    "yourMessagesDesc": "Invia messaggi privati ad altri utenti riguardo noleggi o oggetti di tuo interesse."
+  },
+  "product": {
+    "by": "di",
+    "added": "Aggiunto al carrello",
+    "failedtoadd": "Impossibile aggiungere al carrello"
   }
 }

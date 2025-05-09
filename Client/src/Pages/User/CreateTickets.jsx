@@ -119,10 +119,6 @@ export const CreateTicket = () => {
             newErrors.description = t("createTicket.errors.description")
         }
 
-        if (!formData.category) {
-            newErrors.category = t("createTicket.errors.category")
-        }
-
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
@@ -147,7 +143,6 @@ export const CreateTicket = () => {
                 navigate(`/dashboard/tickets/${response.data._id}`)
             }
         } catch (err) {
-            console.error("Error creating ticket:", err)
             setError("Failed to create ticket. Please try again later.")
             setSubmitting(false)
         }
@@ -199,26 +194,6 @@ export const CreateTicket = () => {
                             />
                             {errors.subject && <p className="text-red-500 text-xs">{errors.subject}</p>}
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="category" className={errors.category ? "text-red-500" : ""}>
-                                {t("createTicket.category")} {errors.category && <span className="text-red-500">*</span>}
-                            </Label>
-                            <Select value={formData.category} onValueChange={(value) => handleSelectChange("category", value)}>
-                                <SelectTrigger className={errors.category ? "border-red-500" : ""}>
-                                    <SelectValue placeholder={t("createTicket.categoryPlaceholder")} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.map((category) => (
-                                        <SelectItem key={category} value={category}>
-                                            {category}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.category && <p className="text-red-500 text-xs">{errors.category}</p>}
-                        </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="description" className={errors.description ? "text-red-500" : ""}>
                                 {t("createTicket.description")} {errors.description && <span className="text-red-500">*</span>}

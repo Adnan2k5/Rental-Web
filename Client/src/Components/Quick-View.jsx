@@ -6,6 +6,7 @@ import { Badge } from "./ui/badge"
 import { addItemToCartApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Label } from "./ui/label"
+import { Link } from "react-router-dom"
 
 export default function ProductQuickView({ isOpen, onClose, product }) {
   const [quantity, setQuantity] = useState(1);
@@ -63,11 +64,12 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Product Image */}
             <div className="relative rounded-lg overflow-hidden bg-gray-100 aspect-square group shadow-md">
-              <img
-                src={product.images[0] || "/placeholder.svg"}
-                alt={product.name}
-                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-              />
+              <Link to={product.images[0]} target="_blank" className="">
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                /></Link>
               <div className="absolute top-3 left-3 flex flex-wrap gap-1">
                 {product.tags?.map((tag, index) => (
                   <Badge

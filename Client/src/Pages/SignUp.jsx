@@ -100,7 +100,7 @@ export default function SignUp() {
         toast.error(t('signUp.invalidOtp'));
       }
     } catch (err) {
-      console.log(err);
+      return err
     } finally {
       setIsLoading(false);
     }

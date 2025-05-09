@@ -1,32 +1,40 @@
 import axiosClient from '../Middleware/AxiosClient';
-export const fetchAllItems = async ({
-  priceRange,
-  categories,
-  brands,
-  availability,
-  rating,
-  query,
-  page,
-  limit,
-  lat,
-  long,
-} = {}, currentLanguage) => {
-  const res = await axiosClient.get(`/api/item/discover?lang=${currentLanguage || 'en'}`, {
-    withCredentials: true,
-    params: {
-      minPrice: priceRange?.[0] ?? 0,
-      maxPrice: priceRange?.[1] ?? 9999999,
-      category: categories,
-      brands,
-      availability,
-      rating,
-      query,
-      page,
-      limit,
-      lat,
-      long,
-    },
-  });
+export const fetchAllItems = async (
+  {
+    priceRange,
+    categories,
+    brands,
+    availability,
+    rating,
+    query,
+    page,
+    limit,
+    lat,
+    long,
+    subCategory,
+  } = {},
+  currentLanguage
+) => {
+  const res = await axiosClient.get(
+    `/api/item/discover?lang=${currentLanguage || 'en'}`,
+    {
+      withCredentials: true,
+      params: {
+        minPrice: priceRange?.[0] ?? 0,
+        maxPrice: priceRange?.[1] ?? 9999999,
+        category: categories,
+        brands,
+        availability,
+        rating,
+        query,
+        page,
+        limit,
+        lat,
+        long,
+        subCategory,
+      },
+    }
+  );
   return res;
 };
 
