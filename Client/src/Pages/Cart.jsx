@@ -21,6 +21,7 @@ import {
   DialogOverlay,
   DialogClose,
 } from "../Components/ui/dialog"
+import i18n from "../i18"
 
 export default function CartPage() {
   const { t } = useTranslation()
@@ -44,8 +45,6 @@ export default function CartPage() {
   const handleCheckoutClick = () => {
     setShowNameModal(true)
   }
-
-
   // Cart actions
   const removeItem = async (id) => {
     try {
@@ -238,7 +237,7 @@ export default function CartPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <h3 className="font-medium text-lg">{item.item.name}</h3>
+                          <h3 className="font-medium text-lg">{i18n.language === 'it' ? item.item.name_it : item.item.name}</h3>
                           <div className="flex items-center">
                             <span className="font-bold text-lg text-primary">
                               €{item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
