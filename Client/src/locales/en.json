@@ -57,7 +57,13 @@
     "post": "Post Item",
     "edit": "Edit Item",
     "editdesc": "Edit the details and images of your item",
-    "update": "Update Item"
+    "update": "Update Item",
+    "namePlaceholder": "e.g. Professional DSLR Camera",
+    "descriptionPlaceholder": "Describe your item in detail...",
+    "categoryPlaceholder": "Select category",
+    "subCategoryPlaceholder": "Select or type subcategory",
+    "pricePlaceholder": "0.00",
+    "locationPlaceholder": "Click on map or enter coordinates (lat,lng)"
   },
   "uploadContaier": {
     "title": "Upload Images",
@@ -320,7 +326,11 @@
     "secureCheckout": "Secure checkout",
     "bookingsCreated": "Booking created!",
     "bookingsCreatedDesc": "Your booking was successful.",
-    "errorCreatingBookings": "Failed to create booking."
+    "errorCreatingBookings": "Failed to create booking.",
+    "enterFullNameTitle": "Enter your full name",
+    "enterFullNamePlaceholder": "Please enter your full name for the booking.",
+    "cancel": "Cancel",
+    "confirmBooking": "Confirm"
   },
   "landingPage": {
     "hero": {
@@ -700,5 +710,23 @@
   "buttons": {
     "add": "Add to Cart",
     "chat": "Chat"
+  },
+  "chat": {
+    "messages": "Messages",
+    "searchMessages": "Search messages...",
+    "newMessage": "New Message",
+    "loadingContacts": "Loading contacts...",
+    "noConversations": "No conversations yet",
+    "noUsersFound": "No users found",
+    "typeToSearch": "Type at least 2 characters to search",
+    "searchUsers": "Search for users...",
+    "searching": "Searching...",
+    "yourMessages": "Your Messages",
+    "yourMessagesDesc": "Send private messages to other users about rentals or items you're interested in."
+  },
+  "product": {
+    "by": "By",
+    "added": "Item added to cart",
+    "failedtoadd": "Failed to add item to cart"
   }
 }

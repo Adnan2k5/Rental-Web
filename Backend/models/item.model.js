@@ -33,6 +33,7 @@ const itemSchema = new mongoose.Schema(
                 message: props => `${props.value} is not a valid category`
             }
         },
+        category_it: { type: String }, // Italian translation
         subCategory: {
             type: String,
             required: false,
@@ -46,6 +47,7 @@ const itemSchema = new mongoose.Schema(
                 message: props => `${props.value} is not a valid subcategory for the selected category`
             }
         },
+        subCategory_it: { type: String }, // Italian translation
         images: [
             {
                 type: String,
@@ -99,6 +101,12 @@ itemSchema.pre('save', async function (next) {
     }
     if (!this.description_it) {
         this.description_it = await translateText(this.description, 'it');
+    }
+    if(!this.category_it) {
+        this.category_it = await translateText(this.category, 'it');
+    }
+    if (!this.subCategory_it) {
+        this.subCategory_it = await translateText(this.subCategory, 'it');
     }
     next();
 });

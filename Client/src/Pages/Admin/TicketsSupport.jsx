@@ -124,7 +124,6 @@ export default function TicketsSupport() {
             }));
             toast.success(t("adminTickets.statusUpdated", { status: t(`adminTickets.status.${status}`) }));
         } catch (err) {
-            console.error("Error reopening ticket:", err);
             toast.error(t("adminTickets.statusUpdateFailed"));
         }
     }
@@ -401,9 +400,6 @@ export default function TicketsSupport() {
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {getStatusBadge(selectedTicket.status)}
                                 {getPriorityBadge(selectedTicket.priority)}
-                                <Badge variant="outline" className="bg-gray-50">
-                                    {selectedTicket.category}
-                                </Badge>
                             </div>
                         </DialogHeader>
                         <div className="flex-1 overflow-y-auto py-4">

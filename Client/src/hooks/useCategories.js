@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { fetchCategoriesApi } from '../api/category.api.js';
 import { useTranslation } from 'react-i18next';
 
-
 let cachedCategories = null;
 
 export const useCategories = () => {
@@ -20,13 +19,12 @@ export const useCategories = () => {
         setCategories(data);
       })
       .catch((error) => {
-        console.error('Error fetching categories:', error);
+        setCategories(null);
       })
       .finally(() => {
         setLoading(false);
       });
-
-  }, [categories, currentLanguage]);
+  }, []);
 
   return { categories, loading, setCategories };
 };

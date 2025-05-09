@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { addItemToCartApi } from '../../api/carts.api';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../i18';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
     const navigate = useNavigate();
@@ -14,10 +15,10 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
             e.preventDefault();
             e.stopPropagation();
             await addItemToCartApi(product._id, 1, 1);
-            toast.success("Item added to cart successfully");
+            toast.success(t("product.added"));
         }
         catch (e) {
-            toast.error("Failed to add item to cart");
+            toast.error(t("product.failedtoadd"));
         }
     }
 
@@ -35,8 +36,6 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
             toast.error("Failed to go to chat");
         }
     }
-
-
     return <motion.div
         key={index}
         variants={fadeIn}
@@ -76,7 +75,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
         <div className="p-4">
             <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-muted-foreground">
-                    {product?.category}
+                    {i18n.language === "en" ? product?.category : product?.category_it}
                 </span>
             </div>
             <h3 className="font-medium text-gray-900 mb-1 truncate">
@@ -84,7 +83,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
             </h3>
             <div className="div flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground mb-3">
-                    by {product?.owner?.name}
+                    {t("product.by")} {product?.owner?.name}
                 </p>
                 <Button
                     size="sm"

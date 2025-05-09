@@ -32,7 +32,6 @@ export const UserTickets = () => {
                 }
                 setLoading(false)
             } catch (err) {
-                console.error("Error fetching tickets:", err)
                 setError(t("userTickets.noTicketsFound"))
                 setLoading(false)
             }
@@ -44,15 +43,15 @@ export const UserTickets = () => {
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
             case "open":
-                return <Clock className="h-4 w-4 text-yellow-500" title={t("userTickets.status.open")}/>
+                return <Clock className="h-4 w-4 text-yellow-500" title={t("userTickets.status.open")} />
             case "in progress":
-                return <RefreshCw className="h-4 w-4 text-blue-500" title={t("userTickets.status.inProgress")}/>
+                return <RefreshCw className="h-4 w-4 text-blue-500" title={t("userTickets.status.inProgress")} />
             case "resolved":
-                return <CheckCircle className="h-4 w-4 text-green-500" title={t("userTickets.status.resolved")}/>
+                return <CheckCircle className="h-4 w-4 text-green-500" title={t("userTickets.status.resolved")} />
             case "closed":
-                return <CheckCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.closed")}/>
+                return <CheckCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.closed")} />
             default:
-                return <HelpCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.unknown")}/>
+                return <HelpCircle className="h-4 w-4 text-gray-500" title={t("userTickets.status.unknown")} />
         }
     }
 
@@ -111,7 +110,7 @@ export const UserTickets = () => {
                     <h1 className="text-2xl font-bold">{t("userTickets.title")}</h1>
                     <p className="text-muted-foreground">{t("userTickets.subtitle")}</p>
                 </div>
-                <Button onClick={() => navigate("/dashboard/tickets/create")}> 
+                <Button onClick={() => navigate("/dashboard/tickets/create")}>
                     <Plus className="mr-2 h-4 w-4" /> {t("userTickets.newTicket")}
                 </Button>
             </div>
@@ -173,9 +172,7 @@ export const UserTickets = () => {
                                 <CardContent>
                                     <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{ticket.description}</p>
                                     <div className="flex flex-wrap gap-2">
-                                        <Badge variant="outline" className="bg-gray-50">
-                                            {ticket.category}
-                                        </Badge>
+
                                         {ticket.priority && (
                                             <Badge variant="outline" className={getPriorityColor(ticket.priority)}>
                                                 {t(`userTickets.priority.${ticket.priority.toLowerCase()}`)} {t("userTickets.priorityLabel")}

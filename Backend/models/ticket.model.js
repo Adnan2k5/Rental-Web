@@ -27,19 +27,19 @@ const ticketSchema = new mongoose.Schema(
             enum: ["low", "medium", "high", "critical"],
             default: "medium",
         },
-        category: {
-            type: String,
-            enum: [
-                "Account Issues",
-                "Billing & Payments",
-                "Technical Support",
-                "Product Inquiry",
-                "Feature Request",
-                "Bug Report",
-                "Other"
-            ],
-            required: true,
-        },
+        // category: {
+        //     type: String,
+        //     enum: [
+        //         "Account Issues",
+        //         "Billing & Payments",
+        //         "Technical Support",
+        //         "Product Inquiry",
+        //         "Feature Request",
+        //         "Bug Report",
+        //         "Other"
+        //     ],
+        //     required: true,
+        // },
         attachments: [
             {
                 type: String, // URL to cloudinary or other storage

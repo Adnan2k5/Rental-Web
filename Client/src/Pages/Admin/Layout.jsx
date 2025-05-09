@@ -56,11 +56,11 @@ export default function AdminLayout() {
         dispatch(logout())
         navigate("/login")
       } else {
-        console.error("Logout failed")
+        toast.error("Logout failed")
       }
     }
     catch (error) {
-      console.error("Logout error:", error)
+      toast.error("Logout failed");
     }
   }
 

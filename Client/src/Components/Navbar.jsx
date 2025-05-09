@@ -21,7 +21,7 @@ export const Navbar = () => {
                         setCartCount(response.data.data.count);
                     }
                 } catch (error) {
-                    console.error("Error fetching cart count:", error);
+                    return error;
                 }
             }
         };
@@ -51,12 +51,6 @@ export const Navbar = () => {
                         className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
                     >
                         {t('navbar.browse')}
-                    </Link>
-                    <Link
-                        to="#"
-                        className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary"
-                    >
-                        {t('navbar.about')}
                     </Link>
                 </div>
 

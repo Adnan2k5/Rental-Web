@@ -59,7 +59,6 @@ export default function SignIn() {
       }
     }
     catch (err) {
-      console.log(err);
       toast.error(t('signIn.userNotFound'));
     }
     finally {
@@ -69,7 +68,6 @@ export default function SignIn() {
 
   const resendOtp = async () => {
     try {
-      console.log(email)
       const res = await Otpresend({ email });
       if (res === true) {
         toast.success(t('signIn.otpResent'));
@@ -132,7 +130,7 @@ export default function SignIn() {
         toast.error(t('signIn.invalidOtp'));
       }
     } catch (err) {
-      console.log(err);
+      return err
     }
   }
 
@@ -148,7 +146,7 @@ export default function SignIn() {
         toast.error(t('signIn.passwordUpdateError'));
       }
     } catch (err) {
-      console.log(err);
+      return err
     }
   }
 

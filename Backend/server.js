@@ -23,6 +23,7 @@ import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 import { initTwilio } from "./utils/twilio.js";
 import { ensureDefaultTerms } from "./controllers/terms.controller.js";
+import translateText from "./middlewares/translate.middleware.js";
 
 const app = express();
 

@@ -6,9 +6,9 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // Create a new support ticket
 const createTicket = asyncHandler(async (req, res) => {
-    const { subject, description, category, priority } = req.body;
+    const { subject, description,  priority } = req.body;
     
-    if (!subject || !description || !category) {
+    if (!subject || !description ) {
         throw new ApiError(400, "All required fields must be provided");
     }
     
@@ -27,7 +27,7 @@ const createTicket = asyncHandler(async (req, res) => {
         user: req.user._id,
         subject,
         description,
-        category,
+        // category,
         priority: priority || "medium",
         attachments: attachmentURLs
     });

@@ -36,20 +36,42 @@ export const discoverItems = asyncHandler(async (req, res) => {
         page = 1,
         lat,
         long,
-        lang
+        lang,
+        subCategory
     } = req.query;
 
     const categories = category
         ? (Array.isArray(category) ? category : [category])
         : [];
 
+
     // Build the main filter
     const filter = {
-        ...(categories.length > 0 && { category: { $in: categories } }),
+
+        ...(categories.length > 0 && {
+            $or: [
+              { category: { $in: categories } },
+              { category_it: { $in: categories } }
+            ]
+          }),
+          ...(subCategory?.length > 0 && {
+            $or: [
+              { subCategory: { $in: subCategory } },
+              { subCategory_it: { $in: subCategory } }
+            ]
+          }),
         ...(location && { location }),
         ...(rating && { avgRating: { $gte: Number(rating) } }),
-        ...(query && { name: { $regex: query, $options: "i" } }),
+        ...(query && {
+            $or: [
+              { name: { $regex: query, $options: "i" } },
+              { name_it: { $regex: query, $options: "i" } }
+            ]
+          }),
+     
         price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
+
+        
     };
 
     // If lat/long provided, use geospatial query
@@ -111,6 +133,7 @@ export const discoverItems = asyncHandler(async (req, res) => {
             ...doc,
             name: lang === 'it' ? doc.name_it || doc.name : doc.name,
             description: lang === 'it' ? doc.description_it || doc.description : doc.description,
+            category: lang === 'it' ? doc.category_it || doc.category : doc.category,
         };
     });
     

@@ -51,7 +51,9 @@ export const verifyOtp = async (data, dispatch) => {
       return false;
     }
   } catch (err) {
-    console.log(err);
+    if (err.response.status) {
+      return err.response.status;
+    }
   }
 };
 
@@ -70,7 +72,6 @@ export const Otpresend = async (data) => {
 
 export const Otpsend = async (data) => {
   try {
-    console.log('data', data);
     const res = await axiosClient.post('/api/auth/sendOtp', data);
     if (res.status === 200) {
       return true;
@@ -78,13 +79,11 @@ export const Otpsend = async (data) => {
       return false;
     }
   } catch (err) {
-    console.log(err);
     return false;
   }
 };
 
 export const resetPassword = async (data) => {
-  console.log('data', data);
   try {
     const res = await axiosClient.post('/api/auth/forgotPassword', data);
     if (res.status === 200) {
@@ -93,7 +92,6 @@ export const resetPassword = async (data) => {
       return false;
     }
   } catch (err) {
-    console.log(err);
     return err.response.status;
   }
 };
@@ -122,14 +120,12 @@ export const VerifyEmail = async (data, dispatch) => {
       withCredentials: true,
     });
     if (res.status === 200) {
-      console.log('res', res);
       dispatch(loginSuccess(res.data.data));
       return true;
     } else {
       return false;
     }
   } catch (err) {
-    console.log(err);
     return false;
   }
 };
@@ -146,7 +142,7 @@ export const UserUpdate = async (data, dispatch) => {
       return false;
     }
   } catch (err) {
-    console.log(err);
+    return false;
   }
 };
 
@@ -161,6 +157,6 @@ export const logoutUser = async () => {
       return false;
     }
   } catch (err) {
-    console.log(err);
+    return false;
   }
 };

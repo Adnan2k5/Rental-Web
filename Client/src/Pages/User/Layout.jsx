@@ -82,11 +82,11 @@ const UserDashboardLayout = () => {
                 dispatch(logout())
                 navigate("/login")
             } else {
-                console.error("Logout failed")
+                toast.error("Logout failed")
             }
         }
         catch (error) {
-            console.error("Logout error:", error)
+            return error
         }
     }
 
@@ -267,6 +267,13 @@ const UserDashboardLayout = () => {
                                             Settings
                                         </Link>
                                     </DropdownMenuItem>
+                                    {user?.role === "admin" && (
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/admin" className="w-full">
+                                                Admin Panel
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

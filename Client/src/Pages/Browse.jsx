@@ -32,6 +32,7 @@ export default function BrowsePage() {
   const [filters, setFilters] = useState({
     priceRange: [0, 200],
     categories: [],
+    subCategory: [],
     brands: [],
     availability: [],
     rating: null,
@@ -47,10 +48,11 @@ export default function BrowsePage() {
   const [quickViewProduct, setQuickViewProduct] = useState(null)
   const [openquickview, setOpenQuickView] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(null)
+  const [subCategories, setSubCategories] = useState([])
 
   const { categories } = useCategories() || []
   const { i18n } = useTranslation();
-  const currentLanguage = i18n.language; 
+  const currentLanguage = i18n.language;
 
   useEffect(() => {
     if (!user) {
@@ -90,18 +92,18 @@ export default function BrowsePage() {
     const FetchProducts = async () => {
       setLoading(true)
       try {
-        const res = await fetchAllItems(filters, currentLanguage)
+        const res = await fetchAllItems({ ...filters }, currentLanguage)
         setitems(res.data.message.items)
         setCountItems(res.data.message.totalItems)
       } catch (err) {
-        console.log(err)
+        setitems([])
       } finally {
         setLoading(false)
       }
     }
 
     FetchProducts()
-  }, [filters, locationChecked, currentLanguage])
+  }, [filters, locationChecked, currentLanguage, subCategories])
 
   const openQuickView = (product) => {
     setQuickViewProduct(product)
@@ -114,24 +116,35 @@ export default function BrowsePage() {
 
   // Filter handlers
   const handleCategoryChange = (category, isSubCategory = false) => {
-    // If it's a subcategory, don't change the selectedCategory state
-    if (!isSubCategory) {
-      setSelectedCategory((prev) => (prev === category ? null : category))
-
-      // If deselecting a main category, also remove all its subcategories from filters
-      if (filters.categories.includes(category)) {
-        const categoryObj = categories.find((cat) => cat.name === category)
-        if (categoryObj && categoryObj.subCategories && categoryObj.subCategories.length > 0) {
-          setFilters((prev) => ({
-            ...prev,
-            categories: prev.categories.filter((c) => c !== category && !categoryObj.subCategories.includes(c)),
-            page: 1,
-          }))
-          return
-        }
+    if (isSubCategory) {
+      setSubCategories((prev) => {
+        const updated = prev.includes(category)
+          ? prev.filter((c) => c !== category)
+          : [...prev, category];
+        setFilters((f) => ({
+          ...f,
+          subCategory: updated,
+          page: 1,
+        }));
+        return updated;
+      });
+      return;
+    }
+    setSelectedCategory((prev) => (prev === category ? null : category))
+    // If deselecting a main category, also remove all its subcategories from subCategories
+    if (filters.categories.includes(category)) {
+      const categoryObj = categories.find((cat) => cat.name === category)
+      if (categoryObj && categoryObj.subCategories && categoryObj.subCategories.length > 0) {
+        setSubCategories((prev) => prev.filter((c) => !categoryObj.subCategories.includes(c)))
+        setFilters((prev) => ({
+          ...prev,
+          categories: prev.categories.filter((c) => c !== category),
+          subCategories: prev.subCategories ? prev.subCategories.filter((c) => !categoryObj.subCategories.includes(c)) : [],
+          page: 1,
+        }))
+        return
       }
     }
-
     setFilters((prev) => ({
       ...prev,
       categories: prev.categories.includes(category)
@@ -170,10 +183,12 @@ export default function BrowsePage() {
     setFilters({
       priceRange: [0, 200],
       categories: [],
+      subCategories: [],
       brands: [],
       availability: [],
       rating: null,
     })
+    setSubCategories([])
   }
 
   const handlePageChange = (newPage) => {
@@ -239,7 +254,7 @@ export default function BrowsePage() {
                           <div key={`${category._id}-${subCategory}`} className="flex items-center">
                             <Checkbox
                               id={`subcategory-${category._id}-${subCategory}`}
-                              checked={filters.categories.includes(subCategory)}
+                              checked={subCategories.includes(subCategory)}
                               onCheckedChange={() => handleCategoryChange(subCategory, true)}
                             />
                             <label
@@ -351,6 +366,7 @@ export default function BrowsePage() {
 
             {/* Active filters */}
             {(filters.categories.length > 0 ||
+              subCategories.length > 0 ||
               filters.brands.length > 0 ||
               filters.availability.length > 0 ||
               filters.rating !== null ||
@@ -395,6 +411,20 @@ export default function BrowsePage() {
                         size="icon"
                         className="h-4 w-4 ml-1 p-0"
                         onClick={() => handleCategoryChange(category)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+
+                  {subCategories.map((subCategory) => (
+                    <Badge key={subCategory} variant="outline" className="font-normal">
+                      {subCategory}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1 p-0"
+                        onClick={() => handleCategoryChange(subCategory, true)}
                       >
                         <X className="h-3 w-3" />
                       </Button>

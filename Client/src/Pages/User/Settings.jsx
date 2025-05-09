@@ -70,7 +70,6 @@ export default function Settings() {
                 toast.success(t('settings.profileUpdateSuccess'))
             }
         } catch (error) {
-            console.error(t('settings.profileUpdateError'), error)
             toast.error(t('settings.profileUpdateFail'))
         } finally {
             setIsLoading(false)
@@ -111,7 +110,6 @@ export default function Settings() {
                 toast.error(t('settings.passwordUpdateFail'))
             }
         } catch (error) {
-            console.error(t('settings.passwordUpdateError'), error)
             toast.error(t('settings.passwordUpdateFail'))
         } finally {
             setIsLoading(false)
@@ -130,7 +128,6 @@ export default function Settings() {
             }
         }
         catch (error) {
-            console.error(t('settings.emailUpdateError'), error)
             toast.error(t('settings.emailUpdateFail'))
         }
     }
