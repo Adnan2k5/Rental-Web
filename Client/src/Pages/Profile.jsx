@@ -7,19 +7,20 @@ import { Badge } from "../Components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../Components/ui/tabs";
 import { Separator } from "../Components/ui/separator";
 import { Button } from "../Components/ui/button";
+import { fetchByUserId } from "../api/items.api";
 
 export function ProfilePage() {
     const { id } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [items, setItems] = useState([]);
 
     useEffect(() => {
         setLoading(true);
         const fetchUserProfile = async () => {
             try {
                 const res = await getUserById(id);
-                console.log(res);
                 setUser(res);
             }
             catch (error) {
@@ -31,8 +32,26 @@ export function ProfilePage() {
             }
         }
 
+        const fetchUserItems = async () => {
+            try {
+                const res = await fetchByUserId(id);
+
+                if (res.status === 200) {
+                    setItems(res.data.message);
+                } else {
+                    setError("Failed to load items.");
+                }
+            }
+            catch (error) {
+                console.error("Error fetching user items:", error);
+                setError("Failed to load items. Please try again later.");
+            }
+        }
+
         fetchUserProfile();
+        fetchUserItems();
     }, [id]);
+
 
     if (loading) {
         return (
@@ -105,8 +124,9 @@ export function ProfilePage() {
 
                 {/* Profile Content */}
                 <Tabs defaultValue="info" className="p-6">
-                    <TabsList className="grid grid-cols-3 mb-8">
+                    <TabsList className="grid grid-cols-2 mb-8">
                         <TabsTrigger value="info">Personal Info</TabsTrigger>
+                        <TabsTrigger value="items">Items</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="info">
@@ -158,6 +178,60 @@ export function ProfilePage() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="items">
+                        <div>
+                            <h3 className="text-lg font-medium mb-2">User Items</h3>
+                            <Separator className="mb-4" />
+                            
+                            {items && items.length === 0 ? (
+                                <div className="text-center p-8">
+                                    <p className="text-muted-foreground">This user has no items yet.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {items && items.map((item) => (
+                                        <Card key={item._id} className="overflow-hidden flex flex-col">
+                                            <div className="h-48 overflow-hidden">
+                                                {item.images && item.images.length > 0 ? (
+                                                    <img 
+                                                        src={item.images[0]} 
+                                                        alt={item.name} 
+                                                        className="w-full h-full object-cover transition-transform hover:scale-105"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                        No Image
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="p-4 flex flex-col flex-grow">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h4 className="font-semibold text-lg line-clamp-1">{item.name}</h4>
+                                                    <Badge variant={
+                                                        item.status === "available" ? "success" : 
+                                                        item.status === "rented" ? "destructive" : "warning"
+                                                    }>
+                                                        {item.status}
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                                    {item.description}
+                                                </p>
+                                                <div className="mt-auto flex justify-between items-center">
+                                                    <p className="font-bold">${item.price.toFixed(2)}</p>
+                                                    <div className="flex items-center">
+                                                        <span className="text-yellow-500 mr-1">★</span>
+                                                        <span>{item.avgRating.toFixed(1)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </TabsContent>
                 </Tabs>

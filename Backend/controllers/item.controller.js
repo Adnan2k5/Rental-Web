@@ -326,7 +326,7 @@ export const getItemByUserId = asyncHandler(async (req, res) => {
     }
 
     const items = await Item.find({ owner: userId });
-    res.status(201).json(new ApiResponse(200, "Items fetched successfully", items));
+    res.status(200).json(new ApiResponse(200, "Items fetched successfully", items));
 });
 
 export const getTopReviewedItems = asyncHandler(async (req, res) => {
