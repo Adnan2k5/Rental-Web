@@ -24,6 +24,7 @@ import { TicketDetails } from './Pages/User/TikcetDetails';
 import UserVerification from './Pages/Admin/UserVerification';
 import DocumentVerification from './Pages/User/DocumentVerification';
 import { ProtectedRoute } from './Middleware/ProtectedRoute';
+import { ProfilePage } from './Pages/Profile';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/login" element={<SignIn />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
+            <Route path ="/profile/:id" element={<ProfilePage />} />
             <Route path="/dashboard" element={<UserDashboardLayout />}>
               <Route index element={<ItemDashboard />} />
               <Route path="myitems" element={<UserItems />} />

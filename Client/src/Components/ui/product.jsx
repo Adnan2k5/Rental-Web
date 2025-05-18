@@ -82,7 +82,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                 {product?.name}
             </h3>
             <div className="div flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-muted-foreground mb-3 cursor-pointer hover:underline" onClick= {() => {navigate(`/profile/${product?.owner?._id}`)}}>
                     {t("product.by")} {product?.owner?.name}
                 </p>
                 <Button
