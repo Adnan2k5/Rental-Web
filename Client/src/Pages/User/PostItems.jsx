@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { Plus, Upload, X, Edit, Trash2, Sparkles } from "lucide-react"
+import { Plus, Upload, X, Edit, Trash2, Sparkles, AlertCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "../../Components/ui/button"
 import {
@@ -30,6 +30,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../Components/ui/pagination"
+import { Alert, AlertDescription } from "../../Components/ui/alert"
+import { Link } from "react-router-dom"
 
 import { useCategories } from "../../hooks/useCategories"
 import { useTranslation } from "react-i18next"
@@ -57,6 +59,8 @@ export default function Dashboard() {
   const [subCategoryInput, setSubCategoryInput] = useState("");
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [subCategoryOptionEn, setSubCategoryOptionEn] = useState([]);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isDocVerificationAlertOpen, setIsDocVerificationAlertOpen] = useState(false);
 
   const {
     register,
@@ -87,7 +91,13 @@ export default function Dashboard() {
     setValue("category", selectedCat?.name_en)
   }, [selectedCategory, categories, isItemDialogOpen]);
 
-
+  useEffect(() => {
+    if (user?.user?.isVerified) {
+      setIsVerified(true);
+    } else {
+      setIsVerified(false);
+    }
+  }, [user]);
 
   // Map marker icon fix for leaflet in React
   const markerIcon = new L.Icon({
@@ -145,8 +155,12 @@ export default function Dashboard() {
       setDefaultLocation(55.1694, 23.8813)
     }
   }, [setValue])
-
   const handleItemSubmit = async (data) => {
+    if (!isVerified) {
+      toast.error(t("userverification.pleaseVerify"));
+      return;
+    }
+
     setLoading(true)
     const formData = new FormData()
     formData.append("name", data.name)
@@ -164,21 +178,19 @@ export default function Dashboard() {
         formData.append("images", image.file)
       }
     })
-    try {
-      if (dialogMode === "post") {
+    try {      if (dialogMode === "post") {
         await createItems(formData)
-        toast.success("Item posted successfully!")
+        toast.success(t("product.itemPostedSuccess"))
       } else {
 
         await updateItem(editingItem._id, formData)
-        toast.success("Item updated successfully!")
+        toast.success(t("product.itemUpdatedSuccess"))
       }
       setIsItemDialogOpen(false)
       setUploadedFiles([])
       reset()
-      fetchItems()
-    } catch (error) {
-      toast.error(`Failed to ${dialogMode === "post" ? "post" : "update"} item`)
+      fetchItems()    } catch (error) {
+      toast.error(dialogMode === "post" ? t("product.failedToPost") : t("product.failedToUpdate"))
     } finally {
       setLoading(false)
     }
@@ -191,9 +203,8 @@ export default function Dashboard() {
     try {
       const res = await fetchByUserId(user.user._id)
       setFetchItems(res.data.message)
-      setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))
-    } catch (error) {
-      toast.error("Failed to fetch items")
+      setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))    } catch (error) {
+      toast.error(t("product.failedToFetch"))
     }
   }
 
@@ -202,11 +213,10 @@ export default function Dashboard() {
       fetchItems()
     }
   }, [user])
-
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files)
     if (files.length + uploadedFiles.length > 5) {
-      alert("You can upload up to 5 images only.")
+      toast.error(t("uploadContaier.maxImagesError"))
       return
     }
     const newImages = files.map((file) => ({
@@ -226,14 +236,13 @@ export default function Dashboard() {
     e.preventDefault()
     setIsDragging(false)
   }
-
   const handleDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
     if (e.dataTransfer.files) {
       const newFiles = Array.from(e.dataTransfer.files)
       if (newFiles.length + uploadedFiles.length > 5) {
-        alert("You can upload up to 5 images only.")
+        toast.error(t("uploadContaier.maxImagesError"))
         return
       }
       const newImages = newFiles.map((file) => ({
@@ -253,18 +262,17 @@ export default function Dashboard() {
   const triggerFileInput = () => {
     fileInputRef.current?.click()
   }
-
   const handleItemDelete = async (id) => {
     try {
       const res = await deleteItem(id)
       if (res.status === 200) {
-        toast.success("Item deleted successfully!")
+        toast.success(t("product.itemDeletedSuccess"))
         fetchItems()
       } else {
-        toast.error("Failed to delete item.")
+        toast.error(t("product.failedToDelete"))
       }
     } catch (error) {
-      toast.error("Failed to delete item.")
+      toast.error(t("product.failedToDelete"))
     }
   }
 
@@ -337,23 +345,26 @@ export default function Dashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <motion.div variants={buttonHover} initial="rest" whileHover="hover">
-            <Button
-              onClick={() => {
-                setDialogMode("post")
-                reset()
-                // Set default location after reset
-                if (selectedPosition) {
-                  const [lat, lng] = selectedPosition
-                  setLocationInput(`${lat},${lng}`)
-                  setValue("location", `${lat},${lng}`, { shouldValidate: true })
-                }
-                setIsItemDialogOpen(true)
-              }}
-              className="relative overflow-hidden"
-              style={{
-                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-              }}
+          <motion.div variants={buttonHover} initial="rest" whileHover="hover">              <Button
+                onClick={() => {
+                  if (!isVerified) {
+                    toast.error(t("userverification.pleaseVerify"));
+                    return;
+                  }
+                  setDialogMode("post")
+                  reset()
+                  // Set default location after reset
+                  if (selectedPosition) {
+                    const [lat, lng] = selectedPosition
+                    setLocationInput(`${lat},${lng}`)
+                    setValue("location", `${lat},${lng}`, { shouldValidate: true })
+                  }
+                  setIsItemDialogOpen(true)
+                }}
+                className="relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                }}
             >
               <motion.span
                 className="absolute inset-0 bg-white/20 rounded-md"
@@ -366,7 +377,17 @@ export default function Dashboard() {
             </Button>
           </motion.div>
         </motion.div>
-      </div>
+      </div>      {!isVerified && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {t("userverification.needVerificationToPost")}{" "}
+            <Link to="/dashboard/verification" className="underline text-primary">
+              {t("userverification.clickToVerify")}
+            </Link>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Stats */}
       <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" variants={itemFadeIn}>
@@ -534,12 +555,11 @@ export default function Dashboard() {
               {/* Item Details */}
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="Name">{t("addItem.name")}</Label>
-                  <Input
+                  <Label htmlFor="Name">{t("addItem.name")}</Label>                <Input
                     id="name"
-                    placeholder={t("addItem.descriptionPlaceholder")}
+                    placeholder={t("addItem.namePlaceholder")}
                     className="mt-1.5"
-                    {...register("name", { required: "Name is required" })}
+                    {...register("name", { required: t("product.nameRequired") })}
                   />
                   {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                 </div>
@@ -549,9 +569,8 @@ export default function Dashboard() {
                   <Textarea
                     id="description"
                     placeholder={t("addItem.descriptionPlaceholder")}
-                    className="mt-1.5 min-h-[100px]"
-                    {...register("description", {
-                      required: "Description is required",
+                    className="mt-1.5 min-h-[100px]"                    {...register("description", {
+                      required: t("product.descriptionRequired"),
                     })}
                   />
                   {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
@@ -580,8 +599,7 @@ export default function Dashboard() {
                   </Select>
                   <input type="hidden" {...register("category")} />
                 </div>
-                <div>
-                  <Label htmlFor="subCategory">Subcategory</Label>
+                <div>                  <Label htmlFor="subCategory">{t("product.subCategory")}</Label>
                   <Select
                     value={subCategoryInput}
                     onValueChange={(value) => {
@@ -606,14 +624,13 @@ export default function Dashboard() {
                   <Label htmlFor="price">{t("addItem.price")} ($)</Label>
                   <Input
                     id="price"
-                    type="number"
-                    placeholder="0.00"
+                    type="number"                    placeholder={t("addItem.pricePlaceholder")}
                     className="mt-1.5"
                     {...register("price", {
-                      required: "Price is required",
+                      required: t("product.priceRequired"),
                       min: {
                         value: 0.01,
-                        message: "Price must be greater than 0",
+                        message: t("product.priceGreaterThanZero"),
                       },
                     })}
                   />
@@ -744,9 +761,8 @@ export default function Dashboard() {
                   initial={{ x: "-100%", opacity: 0 }}
                   whileHover={{ x: "100%", opacity: 0.3 }}
                   transition={{ duration: 0.6 }}
-                />
-                <span className="relative">
-                  {loading ? "Processing..." : dialogMode === "post" ? t("addItem.post") : t("addItem.update")}
+                />                <span className="relative">
+                  {loading ? t("settings.processing") : dialogMode === "post" ? t("addItem.post") : t("addItem.update")}
                 </span>
               </Button>
             </motion.div>

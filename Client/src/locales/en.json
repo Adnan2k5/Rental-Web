@@ -69,7 +69,8 @@
     "title": "Upload Images",
     "desc": "Drag and drop your images here or click to select files",
     "support": "Support for JPG, PNG, WEBP (max 5MB each)",
-    "browse": "Browse Files"
+    "browse": "Browse Files",
+    "maxImagesError": "You can upload up to 5 images only."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -127,7 +128,10 @@
     "step_verified_title": "3. Verified",
     "step_verified_desc": "Once approved, your account will be verified.",
     "country_required": "Country is required.",
-    "statusDeclined": "Declined"
+    "statusDeclined": "Declined",
+    "pleaseVerify": "You need to verify your documents before posting items.",
+    "needVerificationToPost": "You need to verify your documents to post items.",
+    "clickToVerify": "Click here to verify."
   },
   "userVerificationAdmin": {
     "title": "User Verification Requests",
@@ -181,6 +185,11 @@
     "profileUpdateSuccess": "Profile updated successfully!",
     "profileUpdateError": "Error updating profile:",
     "profileUpdateFail": "Failed to update profile",
+    "changeProfilePicture": "Change profile picture",
+    "profilePictureSuccess": "Profile picture updated successfully!",
+    "profilePictureFail": "Failed to update profile picture",
+    "imageTypeError": "Only JPG, PNG, GIF and WebP images are allowed",
+    "imageSizeError": "Image must be smaller than 5MB",
     "otpSentSuccess": "Otp sent successfully!",
     "otpSentFail": "Failed to send Otp",
     "passwordUpdateSuccess": "Password updated successfully!",
@@ -189,14 +198,7 @@
     "emailUpdateSuccess": "Email updated successfully!",
     "emailUpdateFail": "Failed to update email",
     "emailUpdateError": "Error updating email:",
-    "security": "Security",
-    "securityDesc": "Manage your password and security settings",
-    "changePassword": "Change Password",
-    "changePasswordTitle": "Change Password",
-    "updateEmailTitle": "Update Your Email",
-    "newPasswordPlaceholder": "New Password",
-    "otpPlaceholder": "Enter Otp",
-    "updateEmail": "Update Email"
+    "processing": "Processing..."
   },
   "createTicket": {
     "title": "Create Support Ticket",
@@ -327,6 +329,7 @@
     "bookingsCreated": "Booking created!",
     "bookingsCreatedDesc": "Your booking was successful.",
     "errorCreatingBookings": "Failed to create booking.",
+    "pleaseVerify": "Please verify your document before booking.",
     "enterFullNameTitle": "Enter your full name",
     "enterFullNamePlaceholder": "Please enter your full name for the booking.",
     "cancel": "Cancel",
@@ -727,6 +730,18 @@
   "product": {
     "by": "By",
     "added": "Item added to cart",
-    "failedtoadd": "Failed to add item to cart"
+    "failedtoadd": "Failed to add item to cart",
+    "itemPostedSuccess": "Item posted successfully!",
+    "itemUpdatedSuccess": "Item updated successfully!",
+    "itemDeletedSuccess": "Item deleted successfully!",
+    "failedToPost": "Failed to post item",
+    "failedToUpdate": "Failed to update item",
+    "failedToDelete": "Failed to delete item",
+    "failedToFetch": "Failed to fetch items",
+    "nameRequired": "Name is required",
+    "descriptionRequired": "Description is required",
+    "priceRequired": "Price is required",
+    "priceGreaterThanZero": "Price must be greater than 0",
+    "subCategory": "Subcategory"
   }
 }

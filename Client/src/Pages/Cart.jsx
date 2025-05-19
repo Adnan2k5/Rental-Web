@@ -150,7 +150,12 @@ export default function CartPage() {
       setShowNameModal(false)
       setFullName("")
     } catch (e) {
-      toast.error(t("cartPage.errorCreatingBookings"), { description: e.message })
+      if(e.status === 403) {
+        toast.error(t("cartPage.errorCreatingBookings"), { description: t("cartPage.pleaseVerify") })
+      }
+      else {
+        toast.error(t("cartPage.errorCreatingBookings"), { description: e.message })
+      }
     }
     finally {
       setIsBooking(false)

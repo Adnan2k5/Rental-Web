@@ -80,6 +80,7 @@ export default function UserItems() {
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
+
     return (
         <div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -138,29 +139,29 @@ export default function UserItems() {
                         >
                             <div className="relative h-48 bg-gray-100">
                                 <img
-                                    src={item.item.images[0] || "/placeholder.svg"}
-                                    alt={item.item.name}
+                                    src={item.item?.images[0] || "/placeholder.svg"}
+                                    alt={item.item?.name}
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute top-3 right-3">
-                                    <Badge variant={item.item.status === "active" ? "default" : "secondary"} className="capitalize">
-                                        {item.item.status || "active"}
+                                    <Badge variant={item.item?.status === "active" ? "default" : "secondary"} className="capitalize">
+                                        {item.item?.status || "active"}
                                     </Badge>
                                 </div>
                             </div>
                             <div className="p-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <div className="text-xs text-muted-foreground">{item.item.category}</div>
+                                    <div className="text-xs text-muted-foreground">{item.item?.category}</div>
                                     <div className="text-xs text-muted-foreground">
                                         {new Date(item.endDate).toLocaleDateString()}
                                     </div>
                                 </div>
-                                <h3 className="font-semibold mb-1 text-dark">{item.item.name}</h3>
-                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.item.description}</p>
+                                <h3 className="font-semibold mb-1 text-dark">{item.item?.name}</h3>
+                                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.item?.description}</p>
                                 <div className="flex items-center justify-between">
-                                    <div className="text-primary font-semibold">${item.item.price}</div>
+                                    <div className="text-primary font-semibold">${item.item?.price}</div>
                                     <div className="flex space-x-2">
-                                        <Button onClick={() => handleSetReview(item.item._id)} className="p-1.5 rounded-md">
+                                        <Button onClick={() => handleSetReview(item.item?._id)} className="p-1.5 rounded-md">
                                             Add Review
                                         </Button>
                                     </div>

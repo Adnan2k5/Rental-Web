@@ -5,12 +5,9 @@ export const createBookingApi = async (fullName) => {
     const res = await axiosClient.post("/api/booking", {name: fullName}, {
       withCredentials: true,
     });
-    return true;
+    return res;
   }
   catch (err) {
-    if (err.response.status) {
-      return false;
-    }
-    return false;
+    throw err;
   }
 }
