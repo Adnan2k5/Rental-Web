@@ -9,9 +9,11 @@ import {
     getReviewDetailsById,
     updateReviewById,
     deleteReviewById,
-    updateUser
+    updateUser,
+    updateProfilePicture
 } from '../controllers/user.controller.js';
 import { reviewItem } from '../controllers/item.controller.js';
+import { upload } from '../middlewares/multer.middleware.js';
 
 const router = express.Router();
 
@@ -24,6 +26,7 @@ router.get('/bookings/:id', verifyJWT, getBookingDetailsById);
 router.get('/reviews', verifyJWT, getUserReviews);
 
 router.put('/update/:id', verifyJWT, updateUser);
+router.put('/update-profile-picture', verifyJWT, upload.single('profilePicture'), updateProfilePicture);
 
 router.route('/reviews/:id')
     .get(verifyJWT, getReviewDetailsById)

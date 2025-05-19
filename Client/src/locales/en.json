@@ -185,6 +185,11 @@
     "profileUpdateSuccess": "Profile updated successfully!",
     "profileUpdateError": "Error updating profile:",
     "profileUpdateFail": "Failed to update profile",
+    "changeProfilePicture": "Change profile picture",
+    "profilePictureSuccess": "Profile picture updated successfully!",
+    "profilePictureFail": "Failed to update profile picture",
+    "imageTypeError": "Only JPG, PNG, GIF and WebP images are allowed",
+    "imageSizeError": "Image must be smaller than 5MB",
     "otpSentSuccess": "Otp sent successfully!",
     "otpSentFail": "Failed to send Otp",
     "passwordUpdateSuccess": "Password updated successfully!",
@@ -193,15 +198,7 @@
     "emailUpdateSuccess": "Email updated successfully!",
     "emailUpdateFail": "Failed to update email",
     "emailUpdateError": "Error updating email:",
-    "processing": "Processing...",
-    "security": "Security",
-    "securityDesc": "Manage your password and security settings",
-    "changePassword": "Change Password",
-    "changePasswordTitle": "Change Password",
-    "updateEmailTitle": "Update Your Email",
-    "newPasswordPlaceholder": "New Password",
-    "otpPlaceholder": "Enter Otp",
-    "updateEmail": "Update Email"
+    "processing": "Processing..."
   },
   "createTicket": {
     "title": "Create Support Ticket",

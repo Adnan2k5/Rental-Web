@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { useForm } from "react-hook-form"
-import { User, Mail, Phone, MapPin, Camera, Save } from "lucide-react"
+import { User, Mail, Phone, MapPin, Camera, Save, Upload } from "lucide-react"
 import { Button } from "../../Components/ui/button"
 import { Input } from "../../Components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "../../Components/ui/avatar"
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogFooter } from "../../Components/ui/dialog"
-import { Otpresend, Otpsend, updatePassword, UserUpdate, VerifyEmail } from "../../api/auth.api"
+import { Otpresend, Otpsend, updatePassword, updateProfilePicture, UserUpdate, VerifyEmail } from "../../api/auth.api"
 import { useDispatch } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -20,6 +20,7 @@ export default function Settings() {
     const { user } = useAuth()
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false)
+    const [uploadingPicture, setUploadingPicture] = useState(false)
     const [avatarPreview, setAvatarPreview] = useState(null)
     const [changePass, setChangePass] = useState(false)
     const [otp, setOtp] = useState("")
@@ -27,6 +28,7 @@ export default function Settings() {
     const [newEmail, setNewEmail] = useState(user?.email)
     const [verifyButton, setVerifyButton] = useState(false)
     const [emailsent, setemailsent] = useState(false)
+    const fileInputRef = useRef(null)
 
     const {
         register,
@@ -132,6 +134,62 @@ export default function Settings() {
         }
     }
 
+    const handleProfilePictureClick = () => {
+        fileInputRef.current.click();
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Check file type
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!validImageTypes.includes(file.type)) {
+            toast.error(t('settings.imageTypeError'));
+            return;
+        }
+
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error(t('settings.imageSizeError'));
+            return;
+        }
+
+        // Preview the image
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload the image
+        handleUploadProfilePicture(file);
+    }
+
+    const handleUploadProfilePicture = async (file) => {
+        setUploadingPicture(true);
+        
+        try {
+            const formData = new FormData();
+            formData.append('profilePicture', file);
+
+            const result = await updateProfilePicture(formData, dispatch);
+            
+            if (result) {
+                toast.success(t('settings.profilePictureSuccess'));
+            } else {
+                toast.error(t('settings.profilePictureFail'));
+                // Reset preview if upload failed
+                setAvatarPreview(null);
+            }
+        } catch (error) {
+            toast.error(t('settings.profilePictureFail'));
+            setAvatarPreview(null);
+        } finally {
+            setUploadingPicture(false);
+        }
+    }
+
     return (
         <div>
             <motion.div
@@ -159,10 +217,29 @@ export default function Settings() {
                         <CardContent className="flex flex-col items-center">
                             <div className="relative mb-4">
                                 <Avatar className="h-24 w-24">
+                                    <AvatarImage src={avatarPreview || user?.profilePicture} />
                                     <AvatarFallback className="text-2xl">
                                         {user?.name?.charAt(0)}
                                     </AvatarFallback>
-                                </Avatar>
+                                </Avatar>                                <Button
+                                    variant="outline"
+                                    className="absolute bottom-0 right-0 rounded-full p-1"
+                                    onClick={handleProfilePictureClick}
+                                    disabled={uploadingPicture}
+                                >
+                                    {uploadingPicture ? (
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                                    ) : (
+                                        <Camera className="h-4 w-4" />
+                                    )}
+                                </Button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/jpeg,image/png,image/gif,image/webp"
+                                    onChange={handleFileChange}
+                                />
                             </div>
                             <div className="text-center">
                                 <h3 className="font-medium">{user?.name || t('settings.user')}</h3>
@@ -226,7 +303,7 @@ export default function Settings() {
                                         <Label htmlFor="phone">{t('settings.phone')}</Label>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input id="phone" value={user.phoneNumber} placeholder={t('settings.phonePlaceholder')} className="pl-10" {...register("phoneNumber")} />
+                                            <Input id="phone" value={user?.phoneNumber} placeholder={t('settings.phonePlaceholder')} className="pl-10" {...register("phoneNumber")} />
                                         </div>
                                     </div>
                                     <div className="space-y-2">

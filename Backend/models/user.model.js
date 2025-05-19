@@ -16,6 +16,12 @@ const userSchema = new mongoose.Schema(
       index: true,
       Number: true,
     },
+    profilePicture: {
+      type: String,
+    },
+    profilePictureId: {
+      type: String,
+    },
     name: {
       type: String,
     },
