@@ -150,6 +150,10 @@ export const discoverItems = asyncHandler(async (req, res) => {
 export const createItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, subCategory, availableQuantity, location } = req.body;
 
+    if(req.user.documentVerified !== "verified") {
+        throw new ApiError(403, "You are not authorized to create an item");
+    }
+
     if (!name || !description || !price || !category || !availableQuantity || !location) {
         throw new ApiError(400, "All fields are required");
     }

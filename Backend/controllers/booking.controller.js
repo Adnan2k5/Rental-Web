@@ -9,18 +9,22 @@ import sendEmail from "../utils/sendOTP.js";
 export const createBooking = asyncHandler(async (req, res) => {
     const { name } = req.body;
 
-    if(name.toLowerCase() !== req.user.name.toLowerCase()) {
+    if (req.user.documentVerified !== "verified") {
+        throw new ApiError(403, "You are not authorized to create an item");
+    }
+
+    if (name.toLowerCase() !== req.user.name.toLowerCase()) {
         throw new ApiError(403, "You are not authorized to create a booking for this user");
     }
 
     const userId = req.user._id;
 
-    const cart = await Cart.findOne({user: userId})
-    .populate({
-      path: "items.item",
-      select: "price name images owner",
-      populate: { path: "owner", select: "name email" }
-    });
+    const cart = await Cart.findOne({ user: userId })
+        .populate({
+            path: "items.item",
+            select: "price name images owner",
+            populate: { path: "owner", select: "name email" }
+        });
 
     if (!cart) {
         throw new ApiError(404, "Cart not found");
@@ -51,7 +55,7 @@ export const createBooking = asyncHandler(async (req, res) => {
             req.user.bookings.push(booking._id);
             return booking;
         }
-    ));
+        ));
 
     await req.user.save();
 
