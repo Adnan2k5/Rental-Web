@@ -11,6 +11,7 @@ import { Separator } from "../Components/ui/separator"
 import { Button } from "../Components/ui/button"
 import { fetchByUserId } from "../api/items.api"
 import { ArrowLeft } from "lucide-react"
+import { Footer } from "../Components/Footer"
 
 export function ProfilePage() {
     const { id } = useParams()
@@ -250,6 +251,7 @@ export function ProfilePage() {
                     </TabsContent>
                 </Tabs>
             </Card>
+            <Footer />
         </div>
     )
 }

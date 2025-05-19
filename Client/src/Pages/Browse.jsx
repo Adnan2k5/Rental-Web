@@ -221,8 +221,8 @@ export default function BrowsePage() {
               className="my-6"
             />
             <div className="flex items-center justify-between">
-              <span className="text-sm">${filters.priceRange[0]}</span>
-              <span className="text-sm">${filters.priceRange[1]}</span>
+              <span className="text-sm">€{filters.priceRange[0]}</span>
+              <span className="text-sm">€{filters.priceRange[1]}</span>
             </div>
           </div>
         </div>

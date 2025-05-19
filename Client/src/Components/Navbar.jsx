@@ -34,7 +34,7 @@ export const Navbar = () => {
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <Link
                     to="/"
-                    className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
+                    className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-green-700"
                 >
                     Noleggiarmi
                 </Link>
