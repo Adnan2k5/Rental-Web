@@ -69,7 +69,8 @@
     "title": "Carica immagini",
     "desc": "Trascina qui le tue immagini o clicca per selezionare i file",
     "support": "Supporto per JPG, PNG, WEBP (max 5MB ciascuno)",
-    "browse": "Sfoglia file"
+    "browse": "Sfoglia file",
+    "maxImagesError": "Puoi caricare fino a 5 immagini."
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -126,7 +127,11 @@
     "step_review_desc": "Il nostro team esaminerà i tuoi documenti.",
     "step_verified_title": "3. Verificato",
     "step_verified_desc": "Una volta approvato, il tuo account sarà verificato.",
-    "country_required": "Il paese è obbligatorio."
+    "country_required": "Il paese è obbligatorio.",
+    "statusDeclined": "Rifiutato",
+    "pleaseVerify": "Devi verificare i tuoi documenti prima di pubblicare oggetti.",
+    "needVerificationToPost": "Devi verificare i tuoi documenti per pubblicare oggetti.",
+    "clickToVerify": "Clicca qui per verificare."
   },
   "userVerificationAdmin": {
     "title": "Richieste di verifica utente",
@@ -188,6 +193,7 @@
     "emailUpdateSuccess": "Email aggiornata con successo!",
     "emailUpdateFail": "Impossibile aggiornare l'email",
     "emailUpdateError": "Errore durante l'aggiornamento dell'email:",
+    "processing": "Elaborazione in corso...",
     "security": "Sicurezza",
     "securityDesc": "Gestisci la tua password e le impostazioni di sicurezza",
     "changePassword": "Cambia password",
@@ -326,6 +332,7 @@
     "bookingsCreated": "Prenotazione creata!",
     "bookingsCreatedDesc": "La tua prenotazione è andata a buon fine.",
     "errorCreatingBookings": "Impossibile creare la prenotazione.",
+    "pleaseVerify": "Verifica il tuo documento prima di prenotare.",
     "enterFullNameTitle": "Nome completo",
     "enterFullNamePlaceholder": "Inserisci il tuo nome completo",
     "cancel": "Annulla",
@@ -724,8 +731,20 @@
     "yourMessagesDesc": "Invia messaggi privati ad altri utenti riguardo noleggi o oggetti di tuo interesse."
   },
   "product": {
-    "by": "di",
-    "added": "Aggiunto al carrello",
-    "failedtoadd": "Impossibile aggiungere al carrello"
+    "by": "Da",
+    "added": "Oggetto aggiunto al carrello",
+    "failedtoadd": "Impossibile aggiungere l'oggetto al carrello",
+    "itemPostedSuccess": "Oggetto pubblicato con successo!",
+    "itemUpdatedSuccess": "Oggetto aggiornato con successo!",
+    "itemDeletedSuccess": "Oggetto eliminato con successo!",
+    "failedToPost": "Impossibile pubblicare l'oggetto",
+    "failedToUpdate": "Impossibile aggiornare l'oggetto",
+    "failedToDelete": "Impossibile eliminare l'oggetto",
+    "failedToFetch": "Impossibile recuperare gli oggetti",
+    "nameRequired": "Il nome è obbligatorio",
+    "descriptionRequired": "La descrizione è obbligatoria",
+    "priceRequired": "Il prezzo è obbligatorio",
+    "priceGreaterThanZero": "Il prezzo deve essere maggiore di 0",
+    "subCategory": "Sottocategoria"
   }
 }

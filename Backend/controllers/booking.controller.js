@@ -10,7 +10,7 @@ export const createBooking = asyncHandler(async (req, res) => {
     const { name } = req.body;
 
     if (req.user.documentVerified !== "verified") {
-        throw new ApiError(403, "You are not authorized to create an item");
+        throw new ApiError(403, "Please verify your document before creating a booking");
     }
 
     if (name.toLowerCase() !== req.user.name.toLowerCase()) {
