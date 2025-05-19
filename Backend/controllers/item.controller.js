@@ -50,28 +50,28 @@ export const discoverItems = asyncHandler(async (req, res) => {
 
         ...(categories.length > 0 && {
             $or: [
-              { category: { $in: categories } },
-              { category_it: { $in: categories } }
+                { category: { $in: categories } },
+                { category_it: { $in: categories } }
             ]
-          }),
-          ...(subCategory?.length > 0 && {
+        }),
+        ...(subCategory?.length > 0 && {
             $or: [
-              { subCategory: { $in: subCategory } },
-              { subCategory_it: { $in: subCategory } }
+                { subCategory: { $in: subCategory } },
+                { subCategory_it: { $in: subCategory } }
             ]
-          }),
+        }),
         ...(location && { location }),
         ...(rating && { avgRating: { $gte: Number(rating) } }),
         ...(query && {
             $or: [
-              { name: { $regex: query, $options: "i" } },
-              { name_it: { $regex: query, $options: "i" } }
+                { name: { $regex: query, $options: "i" } },
+                { name_it: { $regex: query, $options: "i" } }
             ]
-          }),
-     
+        }),
+
         price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
 
-        
+
     };
 
     // If lat/long provided, use geospatial query
@@ -136,7 +136,7 @@ export const discoverItems = asyncHandler(async (req, res) => {
             category: lang === 'it' ? doc.category_it || doc.category : doc.category,
         };
     });
-    
+
     const totalItems = await Item.countDocuments(filter);
 
     res.status(200).json(
@@ -242,6 +242,14 @@ export const updateItem = asyncHandler(async (req, res) => {
                 type: "Point",
                 coordinates: [lng, lat]
             };
+
+            const isInItaly =
+                lat >= 35.0 && lat <= 47.1 &&  // Latitude range
+                lng >= 6.6 && lng <= 18.5;
+
+            if (!isInItaly) {
+                throw new ApiError(400, "Location must be within Italy");
+            }
         }
         updatedFields.location = geoLocation;
     }
