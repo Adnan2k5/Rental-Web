@@ -75,3 +75,9 @@ export const deleteVersion = asyncHandler(async (req, res) => {
     if (!deleted) throw new ApiError(404, "Version not found");
     res.status(200).json(new ApiResponse(200, deleted, "Version deleted successfully"));
 });
+
+export const getLiveTerms = asyncHandler(async (req, res) => {
+    const terms = await Terms.findOne({ status: "published" }).sort({ publishedAt: -1 });
+    if (!terms) throw new ApiError(404, "No live terms found");
+    res.status(200).json(new ApiResponse(200, terms, "Live terms fetched successfully"));
+});

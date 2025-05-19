@@ -25,6 +25,7 @@ import UserVerification from './Pages/Admin/UserVerification';
 import DocumentVerification from './Pages/User/DocumentVerification';
 import { ProtectedRoute } from './Middleware/ProtectedRoute';
 import { ProfilePage } from './Pages/Profile';
+import { Terms } from './Pages/Terms';
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
             <Route path="/login" element={<SignIn />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
-            <Route path ="/profile/:id" element={<ProfilePage />} />
+            <Route path="/profile/:id" element={<ProfilePage />} />
             <Route path="/dashboard" element={<UserDashboardLayout />}>
               <Route index element={<ItemDashboard />} />
               <Route path="myitems" element={<UserItems />} />
@@ -50,7 +51,7 @@ function App() {
               {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
             <Route path='/chat' element={<Chat />} />
-
+            <Route path='/terms' element={<Terms />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="/admin/items" element={<ManageItems />} />

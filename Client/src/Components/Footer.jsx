@@ -16,11 +16,8 @@ export const Footer = () => {
                         <Link to="/dashboard/tickets" className="text-sm text-gray-500 hover:text-primary">
                             <Headset className="h-4 w-4 inline-block mr-1" />
                         </Link>
-                        <Link to="#" className="text-sm text-gray-500 hover:text-primary">
+                        <Link to="/terms" className="text-sm text-gray-500 hover:text-primary">
                             {t('footer.terms')}
-                        </Link>
-                        <Link to="#" className="text-sm text-gray-500 hover:text-primary">
-                            {t('footer.privacy')}
                         </Link>
                         <Link to="#" className="text-sm text-gray-500 hover:text-primary">
                             {t('footer.support')}
