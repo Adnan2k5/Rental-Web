@@ -231,8 +231,8 @@ export default function BrowsePage() {
           <div className="space-y-2">
             {categories &&
               categories.length !== 0 &&
-              categories.map((category) => (
-                <div key={category._id}>
+              categories.map((category, index) => (
+                <div key={index}>
                   <div className="flex items-center">
                     <Checkbox
                       id={`category-${category._id}`}

@@ -91,8 +91,9 @@ export default function Dashboard() {
     setValue("category", selectedCat?.name_en)
   }, [selectedCategory, categories, isItemDialogOpen]);
 
+
   useEffect(() => {
-    if (user?.user?.isVerified) {
+    if (user?.user?.documentVerified === "verified") {
       setIsVerified(true);
     } else {
       setIsVerified(false);
@@ -178,7 +179,8 @@ export default function Dashboard() {
         formData.append("images", image.file)
       }
     })
-    try {      if (dialogMode === "post") {
+    try {
+      if (dialogMode === "post") {
         await createItems(formData)
         toast.success(t("product.itemPostedSuccess"))
       } else {
@@ -189,7 +191,8 @@ export default function Dashboard() {
       setIsItemDialogOpen(false)
       setUploadedFiles([])
       reset()
-      fetchItems()    } catch (error) {
+      fetchItems()
+    } catch (error) {
       toast.error(dialogMode === "post" ? t("product.failedToPost") : t("product.failedToUpdate"))
     } finally {
       setLoading(false)
@@ -203,7 +206,8 @@ export default function Dashboard() {
     try {
       const res = await fetchByUserId(user.user._id)
       setFetchItems(res.data.message)
-      setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))    } catch (error) {
+      setTotalPages(Math.ceil(res.data.message.length / ITEMS_PER_PAGE))
+    } catch (error) {
       toast.error(t("product.failedToFetch"))
     }
   }
@@ -346,35 +350,35 @@ export default function Dashboard() {
           transition={{ delay: 0.4 }}
         >
           <motion.div variants={buttonHover} initial="rest" whileHover="hover">              <Button
-                onClick={() => {
-                  if (!isVerified) {
-                    toast.error(t("userverification.pleaseVerify"));
-                    return;
-                  }
-                  setDialogMode("post")
-                  reset()
-                  // Set default location after reset
-                  if (selectedPosition) {
-                    const [lat, lng] = selectedPosition
-                    setLocationInput(`${lat},${lng}`)
-                    setValue("location", `${lat},${lng}`, { shouldValidate: true })
-                  }
-                  setIsItemDialogOpen(true)
-                }}
-                className="relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                }}
-            >
-              <motion.span
-                className="absolute inset-0 bg-white/20 rounded-md"
-                initial={{ x: "-100%", opacity: 0 }}
-                whileHover={{ x: "100%", opacity: 0.3 }}
-                transition={{ duration: 0.6 }}
-              />
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="relative">{t("dashboard.newItem")}</span>
-            </Button>
+            onClick={() => {
+              if (!isVerified) {
+                toast.error(t("userverification.pleaseVerify"));
+                return;
+              }
+              setDialogMode("post")
+              reset()
+              // Set default location after reset
+              if (selectedPosition) {
+                const [lat, lng] = selectedPosition
+                setLocationInput(`${lat},${lng}`)
+                setValue("location", `${lat},${lng}`, { shouldValidate: true })
+              }
+              setIsItemDialogOpen(true)
+            }}
+            className="relative overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+            }}
+          >
+            <motion.span
+              className="absolute inset-0 bg-white/20 rounded-md"
+              initial={{ x: "-100%", opacity: 0 }}
+              whileHover={{ x: "100%", opacity: 0.3 }}
+              transition={{ duration: 0.6 }}
+            />
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="relative">{t("dashboard.newItem")}</span>
+          </Button>
           </motion.div>
         </motion.div>
       </div>      {!isVerified && (
@@ -390,18 +394,13 @@ export default function Dashboard() {
       )}
 
       {/* Stats */}
-      <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" variants={itemFadeIn}>
+      <motion.div className="flex flex-col mb-10" variants={itemFadeIn}>
         {[
           {
             label: t("dashboard.totalitems"),
             value: fetchItemsfrombackend.length,
             icon: <Plus className="h-5 w-5 text-primary" />,
-          },
-          {
-            label: t("dashboard.activeListings"),
-            value: fetchItemsfrombackend.length,
-            icon: <Sparkles className="h-5 w-5 text-primary" />,
-          },
+          }
         ].map((stat, index) => (
           <motion.div
             key={index}
@@ -624,7 +623,7 @@ export default function Dashboard() {
                   <Label htmlFor="price">{t("addItem.price")} ($)</Label>
                   <Input
                     id="price"
-                    type="number"                    placeholder={t("addItem.pricePlaceholder")}
+                    type="number" placeholder={t("addItem.pricePlaceholder")}
                     className="mt-1.5"
                     {...register("price", {
                       required: t("product.priceRequired"),

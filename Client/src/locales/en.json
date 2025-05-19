@@ -198,7 +198,10 @@
     "emailUpdateSuccess": "Email updated successfully!",
     "emailUpdateFail": "Failed to update email",
     "emailUpdateError": "Error updating email:",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "security": "Security",
+    "securityDesc": "Manage your account security settings",
+    "changePassword": "Change Password"
   },
   "createTicket": {
     "title": "Create Support Ticket",
@@ -742,6 +745,7 @@
     "descriptionRequired": "Description is required",
     "priceRequired": "Price is required",
     "priceGreaterThanZero": "Price must be greater than 0",
-    "subCategory": "Subcategory"
+    "subCategory": "Subcategory",
+    "day": "Day"
   }
 }

@@ -1,11 +1,10 @@
 import {
   ChevronDown,
-  DollarSign,
   UserPlus,
   ShoppingBag,
   Activity,
   ArrowUp,
-  Calendar,
+  Euro,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '../../Components/ui/button';
@@ -184,7 +183,7 @@ export default function AdminDashboard() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-bl-full" />
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-primary" />
+                  <Euro className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex items-center">
                   <Badge
@@ -215,7 +214,7 @@ export default function AdminDashboard() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-bl-full" />
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
-                  <UserPlus className="h-6 w-6 text-secondary" />
+                  <UserPlus className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex items-center">
                   <Badge
@@ -249,7 +248,7 @@ export default function AdminDashboard() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-bl-full" />
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
-                  <ShoppingBag className="h-6 w-6 text-accent" />
+                  <ShoppingBag className="h-6 w-6 text-primary" />
                 </div>
               </div>
               <div className="text-muted-foreground text-sm mb-1">

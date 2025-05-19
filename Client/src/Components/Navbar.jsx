@@ -2,7 +2,8 @@ import { useAuth } from '../Middleware/AuthProvider'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Headset, MessageCircleMore, ShoppingCart } from 'lucide-react';
+import { Avatar } from './ui/avatar';
+import { MessageCircleMore, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { getCartCountApi } from '../api/carts.api';
 import { useTranslation } from 'react-i18next';
@@ -83,7 +84,7 @@ export const Navbar = () => {
                             ) : (
                                 <Avatar
                                     variant="ghost"
-                                    className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
+                                    className="w-8 h-8 flex items-center justify-center bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
                                     size="sm"
                                 >
                                     {user.name?.charAt(0).toUpperCase()}
