@@ -398,17 +398,11 @@ export default function SignUp() {
               >
                 {t('signUp.terms1')}
                 <Link
-                  href="#"
+                  to="/terms"
+                  target='_blank'
                   className="font-medium text-primary hover:underline underline-offset-4"
                 >
                   {t('signUp.terms2')}
-                </Link>
-                {t('signUp.and')}
-                <Link
-                  href="#"
-                  className="font-medium text-primary hover:underline underline-offset-4"
-                >
-                  {t('signUp.privacy')}
                 </Link>
               </label>
             </motion.div>

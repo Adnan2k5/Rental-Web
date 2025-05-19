@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import {
   ChevronRight,
   Star,
@@ -16,9 +16,11 @@ import ProductQuickView from '../Components/Quick-View';
 import { fetchTopReviewedItems } from '../api/items.api';
 import { useTranslation } from 'react-i18next';
 import { Footer } from '../Components/Footer';
+import { getStats } from '../api/admin.api';
 
 export default function LandingPage() {
   const { t } = useTranslation();
+  const [tstats, setStats] = useState([]);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const openQuickView = (product) => {
     setQuickViewProduct(product);
@@ -50,6 +52,26 @@ export default function LandingPage() {
       transition: { type: 'spring', stiffness: 100 },
     },
   };
+
+  const fetchStats = async () => {
+    const res = await getStats();
+    setStats(res.stats);
+  }
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const stats = [
+    {
+      label: t('landingPage.stats.happyCustomers'),
+      value: tstats?.totalUsers || 0,
+    },
+    {
+      label: t('landingPage.stats.productsAvailable'),
+      value: tstats?.totalItems || 0,
+    },
+  ]
 
   // Mock categories data
   const categories = [
@@ -88,12 +110,7 @@ export default function LandingPage() {
     });
   }, []);
 
-  // Stats for the counter animation
-  const stats = [
-    { value: 50000, label: t('landingPage.stats.happyCustomers') },
-    { value: 10000, label: t('landingPage.stats.productsAvailable') },
-    { value: 120, label: t('landingPage.stats.citiesCovered') },
-  ];
+
 
   useEffect(() => {
     // Smooth scroll for anchor as
@@ -220,7 +237,7 @@ export default function LandingPage() {
             className="flex flex-wrap justify-center gap-8 md:gap-16"
             variants={fadeIn}
           >
-            {stats.map((stat, index) => (
+            {stats?.map((stat, index) => (
               <motion.div
                 key={index}
                 className="text-center"

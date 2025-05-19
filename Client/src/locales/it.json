@@ -745,6 +745,7 @@
     "descriptionRequired": "La descrizione è obbligatoria",
     "priceRequired": "Il prezzo è obbligatorio",
     "priceGreaterThanZero": "Il prezzo deve essere maggiore di 0",
-    "subCategory": "Sottocategoria"
+    "subCategory": "Sottocategoria",
+    "day": "Giorno"
   }
 }
