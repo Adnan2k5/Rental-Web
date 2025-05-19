@@ -165,7 +165,12 @@ export const createItem = asyncHandler(async (req, res) => {
 
     const { lat, lng } = await getLatLongFromAddress(location);
 
-    if (!lat || !lng) {
+    const isInItaly =
+                lat >= 35.0 && lat <= 47.1 &&  // Latitude range
+                lng >= 6.6 && lng <= 18.5;
+
+
+    if (!lat || !lng || !isInItaly) {
         throw new ApiError(400, "Invalid location provided");
     }
 
