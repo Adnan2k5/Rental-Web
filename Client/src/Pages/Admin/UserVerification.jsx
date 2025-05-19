@@ -55,8 +55,8 @@ export default function UserVerification() {
 
     const filteredUsers = users.filter((user) => {
         const matchesSearch =
-            user.owner.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.owner.email?.toLowerCase().includes(searchQuery.toLowerCase())
+            user.owner?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.owner?.email?.toLowerCase().includes(searchQuery.toLowerCase())
         const matchesStatus = selectedStatus === "all" || user.verified === selectedStatus
         return matchesSearch && matchesStatus
     })
@@ -85,7 +85,7 @@ export default function UserVerification() {
             verifiedAt: new Date(),
         }
         try {
-            const res = await updateDocument(selectedUser._id, updatedUser)
+            const res = await updateDocument(selectedUser?._id, updatedUser)
             if (res.status === 200) {
                 toast.success("User verification approved")
             }
@@ -102,7 +102,7 @@ export default function UserVerification() {
                 verified: 'declined',
                 verifiedAt: new Date(),
             }
-            const res = await updateDocument(selectedUser._id, updatedUser)
+            const res = await updateDocument(selectedUser?._id, updatedUser)
             if (res.status === 200) {
                 toast.success("User verification declined")
             } else {
@@ -221,16 +221,16 @@ export default function UserVerification() {
                                                         <TableCell>
                                                             <div className="flex items-center gap-3">
                                                                 <Avatar className="h-8 w-8">
-                                                                    <AvatarFallback>{user.owner.name.charAt(0)}</AvatarFallback>
+                                                                    <AvatarFallback>{user?.owner?.name?.charAt(0)}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div>
-                                                                    <div className="font-medium">{user.owner.name}</div>
-                                                                    <div className="text-sm text-muted-foreground">{user.owner.email}</div>
+                                                                    <div className="font-medium">{user.owner?.name}</div>
+                                                                    <div className="text-sm text-muted-foreground">{user.owner?.email}</div>
                                                                 </div>
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell>{getStatusBadge(user.verified)}</TableCell>
-                                                        <TableCell>{format(user.createdAt, "dd MMM yyyy")}</TableCell>
+                                                        <TableCell>{getStatusBadge(user?.verified)}</TableCell>
+                                                        <TableCell>{format(user?.createdAt, "dd MMM yyyy")}</TableCell>
                                                         <TableCell className="">
                                                             <Button
                                                                 variant="outline"
