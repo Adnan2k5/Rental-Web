@@ -74,13 +74,21 @@ export const Navbar = () => {
                     </Link>
                     {user ? (
                         <Link to="/dashboard">
-                            <Button
-                                variant="ghost"
-                                className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
-                                size="sm"
-                            >
-                                {user.name?.charAt(0).toUpperCase()}
-                            </Button>
+                            {user.profilePicture ? (
+                                <img
+                                    src={user.profilePicture}
+                                    alt="Profile"
+                                    className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                                />
+                            ) : (
+                                <Avatar
+                                    variant="ghost"
+                                    className="w-8 h-8 bg-accent-foreground hover:bg-accent-foreground/50 duration-[400ms] transition-all hover:text-white rounded-3xl text-white"
+                                    size="sm"
+                                >
+                                    {user.name?.charAt(0).toUpperCase()}
+                                </Avatar>
+                            )}
                         </Link>
                     ) : (
                         <Link to="/login">
