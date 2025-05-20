@@ -27,6 +27,7 @@ import { ProtectedRoute } from './Middleware/ProtectedRoute';
 import { ProfilePage } from './Pages/Profile';
 import { Terms } from './Pages/Terms';
 import PayPalCheckout from './Pages/Payment';
+import { LinkPaypal } from './Pages/User/LinkPaypal';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
               <Route path="tickets" element={<UserTickets />} />
               <Route path='tickets/create' element={<CreateTicket />} />
               <Route path="tickets/:ticketId" element={<TicketDetails />} />
+              <Route path="paypal" element={<LinkPaypal />} />
               {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
             <Route path='/chat' element={<Chat />} />
