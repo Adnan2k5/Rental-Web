@@ -747,5 +747,31 @@
     "priceGreaterThanZero": "Price must be greater than 0",
     "subCategory": "Subcategory",
     "day": "Day"
+  },
+  "paymentPage": {
+    "bookingSuccess": "Booking successful!",
+    "bookingFailed": "Booking failed. Please try again.",
+    "paymentError": "An error occurred during payment.",
+    "paymentFailed": "Payment failed.",
+    "paymentProcessing": "Processing your payment...",
+    "paymentSuccess": "Payment successful!",
+    "payNow": "Pay Now",
+    "totalAmount": "Total Amount",
+    "fullName": "Full Name",
+    "enterFullName": "Please enter your full name.",
+    "confirmPayment": "Confirm Payment",
+    "processing": "Processing...",
+    "backToCart": "Back to Cart",
+    "selectPaymentMethod": "Select Payment Method",
+    "customerName": "Customer Name",
+    "itemsInOrder": "Items in Order",
+    "paymentMethod": "Payment Method",
+    "orderDetails": "Order Details",
+    "securePayment": "Secure Payment",
+    "breadcrumbHome": "Home",
+    "breadcrumbCart": "Cart",
+    "breadcrumbPayment": "Payment",
+    "pleaseTryAgain": "Please try again.",
+    "tryAgain": "Try Again"
   }
 }
