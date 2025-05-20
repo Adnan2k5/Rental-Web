@@ -23,7 +23,8 @@ import { initCloudinary } from "./utils/cloudinary.js";
 import initSocketIO from "./socket/socket.js";
 import { initTwilio } from "./utils/twilio.js";
 import { ensureDefaultTerms } from "./controllers/terms.controller.js";
-import translateText from "./middlewares/translate.middleware.js";
+import paypalRouter from "./routes/paypal.routes.js";
+import { getAccessToken } from "./utils/paypal.js";
 
 const app = express();
 
@@ -62,13 +63,15 @@ app.use("/api/booking", bookingRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/document", documentRoute);
 app.use("/api/terms", termRoutes);
+app.use("/api/paypal", paypalRouter);
 
 const PORT = process.env.PORT || 8080;
 // Use 'server' instead of 'app' to listen
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
   connectDB();
   initCloudinary();
   initTwilio(); // Initialize Twilio client
   ensureDefaultTerms();
+  getAccessToken();
 });
