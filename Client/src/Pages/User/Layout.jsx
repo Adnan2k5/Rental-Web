@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Outlet, Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge } from 'lucide-react'
+import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge, BadgeEuro } from 'lucide-react'
 import { Button } from "../../Components/ui/button"
 import {
     DropdownMenu,
@@ -64,6 +64,11 @@ const UserDashboardLayout = () => {
             label: t('sidebar.tickets'),
             path: "/dashboard/tickets",
         },
+        {
+            icon: <BadgeEuro className="h-4 w-4 mr-3" />,
+            label: t('sidebar.payments'),
+            path: "/dashboard/paypal"
+        }
     ]
 
     // Check if a navigation item is active
