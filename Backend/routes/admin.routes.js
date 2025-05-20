@@ -4,7 +4,7 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.route('/').get(verifyJWT, getAllStats);
+router.route('/').get(getAllStats);
 router.route('/users').get(verifyJWT, getAllUsers);
 router.route('/users/:userId').post(verifyJWT, changeUserStatus); 
 

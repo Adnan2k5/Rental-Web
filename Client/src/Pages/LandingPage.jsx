@@ -227,14 +227,14 @@ export default function LandingPage() {
         </div>
 
         <motion.div
-          className="container mt-24 md:mt-32"
+          className="container flex items-center justify-center mt-24 md:mt-32"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
           variants={staggerChildren}
         >
           <motion.div
-            className="flex flex-wrap justify-center gap-8 md:gap-16"
+            className="flex items-center justify-center gap-8 md:gap-16"
             variants={fadeIn}
           >
             {stats?.map((stat, index) => (

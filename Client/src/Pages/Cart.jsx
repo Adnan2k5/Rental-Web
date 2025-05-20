@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react"
+import { ChevronRight, CreditCard, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react'
 import { Button } from "../Components/ui/button"
 import { Input } from "../Components/ui/input"
 import { Separator } from "../Components/ui/separator"
@@ -138,24 +138,18 @@ export default function CartPage() {
     }
     setIsBooking(true)
     try {
-      const res = await createBookingApi(fullName)
-      if (res) {
-        setCartItems([]) // Clear cart after booking
-        toast.success(t("cartPage.bookingsCreated"), { description: t("cartPage.bookingsCreatedDesc") })
-      }
-      else {
-        toast.error(t("cartPage.errorCreatingBookings"), { description: t("cartPage.errorCreatingBookingsDesc") })
-        return
-      }
+      // Instead of creating bookings immediately, we'll store the name and redirect to payment
+      localStorage.setItem('bookingName', fullName);
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      localStorage.setItem('cartTotal', total.toFixed(2));
+
+      // Redirect to payment page
+      window.location.href = '/payment';
+
       setShowNameModal(false)
       setFullName("")
     } catch (e) {
-      if(e.status === 403) {
-        toast.error(t("cartPage.errorCreatingBookings"), { description: t("cartPage.pleaseVerify") })
-      }
-      else {
-        toast.error(t("cartPage.errorCreatingBookings"), { description: e.message })
-      }
+      toast.error(t("cartPage.errorRedirectingToPayment"), { description: e.message })
     }
     finally {
       setIsBooking(false)
@@ -254,37 +248,6 @@ export default function CartPage() {
                         </p>
 
                         <div className="flex flex-wrap gap-6 mt-2">
-                          <div>
-                            <Label
-                              htmlFor={`quantity-${item.item._id}`}
-                              className="text-xs text-muted-foreground mb-1 block"
-                            >
-                              {t("cartPage.quantity")}
-                            </Label>
-                            <div className="flex items-center">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-r-none"
-                                onClick={() => updateQuantity(item.item._id, item.quantity - 1)}
-                                disabled={item.quantity <= 1}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <div className="h-8 w-10 flex items-center justify-center border-y border-input">
-                                {item.quantity}
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-8 w-8 rounded-l-none"
-                                onClick={() => updateQuantity(item.item._id, item.quantity + 1)}
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-
                           <div>
                             <Label
                               htmlFor={`duration-${item.item._id}`}

@@ -26,6 +26,7 @@ import DocumentVerification from './Pages/User/DocumentVerification';
 import { ProtectedRoute } from './Middleware/ProtectedRoute';
 import { ProfilePage } from './Pages/Profile';
 import { Terms } from './Pages/Terms';
+import PayPalCheckout from './Pages/Payment';
 
 function App() {
   return (
@@ -60,8 +61,9 @@ function App() {
               <Route path='/admin/tickets' element={<TicketsSupport />} />
               <Route path='/admin/terms' element={<TermsConditions />} />
             </Route>
-
+            <Route path='/payment' element={<PayPalCheckout />} />
           </Routes>
+
 
         </AuthProvider>
       </BrowserRouter>
