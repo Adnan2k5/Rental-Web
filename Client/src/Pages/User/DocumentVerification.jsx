@@ -198,6 +198,7 @@ export default function DocumentVerification() {
         }
     }, [user])
 
+
     useEffect(() => {
         if (document) {
             if (document.verified === "verified") {

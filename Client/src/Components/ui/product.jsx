@@ -6,16 +6,24 @@ import { addItemToCartApi } from '../../api/carts.api';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18';
+import { useAuth } from '../../Middleware/AuthProvider';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { user } = useAuth();
+
     const addItemToCart = async (e) => {
         try {
-            e.preventDefault();
-            e.stopPropagation();
-            await addItemToCartApi(product._id, 1, 1);
-            toast.success(t("product.added"));
+            if (user.documentVerified === "declined" || user.documentVerified === "pending") {
+                toast.error("You must verify your documents")
+            }
+            else {
+                e.preventDefault();
+                e.stopPropagation();
+                await addItemToCartApi(product._id, 1, 1);
+                toast.success(t("product.added"));
+            }
         }
         catch (e) {
             toast.error(t("product.failedtoadd"));
