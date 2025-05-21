@@ -4,18 +4,20 @@ import ApiResponse from "../utils/ApiResponse.js";
 import axios from "axios";
 import { getAccessToken } from "../utils/paypal.js";
 import { PaymentDetailsModel } from "../models/paymentdetails.model.js";
-import { User } from "../models/user.model.js";
+import { v4 as uuidv4 } from 'uuid';
+
 
 export const getSignupPage = asyncHandler(async (req, res) => {
     const accessToken = await getAccessToken();
-    console.log("Access Token:", accessToken);
     try {
+        const trackingId = uuidv4();
+
         const response = await axios.post(
             'https://api-m.sandbox.paypal.com/v2/customer/partner-referrals',
             {
-                tracking_id: "TRACKING-ID", // Generate a unique tracking ID
+                tracking_id: trackingId, 
                 partner_config_override: {
-                    return_url: "http://localhost:5173/paypal/success" //
+                    return_url: "http://localhost:5173/paypal/success"
                 },
                 operations: [{
                     operation: "API_INTEGRATION",
@@ -73,33 +75,28 @@ export const getSuccessPage = asyncHandler(async (req, res) => {
         isEmailConfirmed
     } = req.body; 
 
-    console.log("Query Parameters:", req.body);
 
     if (!consentStatus || !isEmailConfirmed || !merchantId || !merchantIdInPayPal || !permissionsGranted || !productIntentId) {
         throw new ApiError(400, "Missing required query parameters");
     }
     const userId = req.user?._id; 
 
-    let paymentDetail = await PaymentDetailsModel.findOne({ merchantIdInPayPal });
-
-    if (!paymentDetail) {
-        paymentDetail = await PaymentDetailsModel.create({
-            merchantId,
-            merchantIdInPayPal,
-            permissionsGranted,
-            productIntentId,
-            consentStatus,
-            isEmailConfirmed
-        });
+    if(userId.paymentDetails) {
+        throw new ApiError(400, "Payment details already exist");
     }
 
-    if (userId) {
-        const user = await User.findById(userId);
-        if (user && !user.paymentDetails.includes(paymentDetail._id)) {
-            user.paymentDetails.push(paymentDetail._id);
-            await user.save();
-        }
-    }
+    const paymentDetail = await PaymentDetailsModel.create({
+        merchantId,
+        merchantIdInPayPal,
+        permissionsGranted,
+        productIntentId,
+        consentStatus,
+        isEmailConfirmed
+    });
+
+    req.user.paymentDetails = paymentDetail._id;
+
+    await req.user.save();
 
     return res.status(200).json(
         new ApiResponse(200, paymentDetail, "Payment details saved successfully")

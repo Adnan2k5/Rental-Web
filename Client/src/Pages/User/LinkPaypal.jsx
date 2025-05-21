@@ -12,13 +12,10 @@ export const LinkPaypal = () => {
         window.location.href = res.data.data.redirectUrl;
     }
 
+
     const checkStatus = async () => {
-        console.log("User at the time of redirect", user)
-        if (Array.isArray(user.paymentDetails) && user.paymentDetails.length > 0) {
+        if (user?.paymentDetails) {
             setLinked(true);
-        }
-        else {
-            fetchSignUp();
         }
     }
 
@@ -33,7 +30,10 @@ export const LinkPaypal = () => {
                 </div>
             ) : (
                 <div className='flex flex-col items-center justify-center h-screen'>
-                    <p className='text-lg'>Redirecting to Paypal...</p>
+                    <p className='text-lg'>Link your Paypal account</p>
+                    <button onClick={fetchSignUp} className='bg-blue-500 text-white px-4 py-2 rounded mt-4'>
+                        Link Paypal
+                    </button>
                 </div>
             )}
         </div>
