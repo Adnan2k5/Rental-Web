@@ -46,7 +46,6 @@ import { useState, useEffect } from 'react';
 import { getStats } from '../../api/admin.api';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { colors } from '../../assets/Color';
 import { itemFadeIn, pageTransition } from '../../assets/Animations';
 import { Particles } from '../../Components/Particles';
 import { useAuth } from '../../Middleware/AuthProvider';
@@ -65,6 +64,11 @@ export default function AdminDashboard() {
     activeItems: 0,
   });
 
+  const colors = [
+    '#8884d8', '#82ca9d', '#ffc658', '#ff8042',
+    '#8dd1e1', '#a4de6c', '#d0ed57', '#ffbb28',
+    '#d88884', '#a28fef', '#f26298', '#63cdda'
+  ];
   const [revenueData, setRevenueData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [recentUsers, setRecentUsers] = useState([]);

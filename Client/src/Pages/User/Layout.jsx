@@ -55,6 +55,11 @@ const UserDashboardLayout = () => {
             path: "/dashboard/verification",
         },
         {
+            icon: <BadgeEuro className="h-4 w-4 mr-3" />,
+            label: t('sidebar.payments'),
+            path: "/dashboard/paypal"
+        },
+        {
             icon: <Settings className="h-4 w-4 mr-3" />,
             label: t('sidebar.settings'),
             path: "/dashboard/settings",
@@ -63,11 +68,6 @@ const UserDashboardLayout = () => {
             icon: <TicketCheck className="h-4 w-4 mr-3" />,
             label: t('sidebar.tickets'),
             path: "/dashboard/tickets",
-        },
-        {
-            icon: <BadgeEuro className="h-4 w-4 mr-3" />,
-            label: t('sidebar.payments'),
-            path: "/dashboard/paypal"
         }
     ]
 
@@ -110,7 +110,7 @@ const UserDashboardLayout = () => {
                             }}
                             {...shimmerAnimation}
                         >
-                            Rental
+                            Noleggiarmi
                         </motion.div>
                     </Link>
                 </div>

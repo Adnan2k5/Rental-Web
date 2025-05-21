@@ -12,7 +12,7 @@ export const getUser = asyncHandler(async (req, res) => {
 
 export const getUserById = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const user = await User.findById(id).select("-password -refreshToken -reviews -bookings -role -cart");
+    const user = await User.findById(id).select("-password -refreshToken -reviews -bookings  -cart").populate("paymentDetails");
     if (!user) {
         throw new ApiError(404, "User not found");
     }

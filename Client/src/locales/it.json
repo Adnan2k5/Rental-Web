@@ -79,7 +79,8 @@
     "browse": "Sfoglia",
     "getverified": "Verificati",
     "tickets": "Ticket & Supporto",
-    "logout": "Disconnetti"
+    "logout": "Disconnetti",
+    "payments": "Collega il tuo PayPal"
   },
   "userbooks": {
     "title": "Oggetti noleggiati",
@@ -354,7 +355,8 @@
     "stats": {
       "happyCustomers": "Clienti soddisfatti",
       "productsAvailable": "Prodotti disponibili",
-      "citiesCovered": "Città servite"
+      "citiesCovered": "Città servite",
+      "total": "Categoria"
     },
     "categories": {
       "electronics": "Elettronica",
@@ -473,7 +475,8 @@
     "feature3Title": "Supporto 24/7",
     "feature3Desc": "Assistenza sempre disponibile.",
     "enterOtp": "Inserisci OTP",
-    "resendOtp": "Reinvia OTP"
+    "resendOtp": "Reinvia OTP",
+    "google": "Google"
   },
   "signUp": {
     "brand": "Rental",
@@ -514,7 +517,8 @@
     "otpResentSuccess": "OTP reinviato con successo",
     "otpResentFail": "Impossibile reinviare OTP",
     "accountCreated": "Account creato con successo.",
-    "invalidOtp": "OTP non valido. Riprova."
+    "invalidOtp": "OTP non valido. Riprova.",
+    "google": "Google"
   },
   "adminDashboard": {
     "title": "Dashboard",
@@ -541,7 +545,7 @@
     "joined": "Iscritto il {{date}}"
   },
   "adminSidebar": {
-    "rentalAdmin": "Admin Rental",
+    "rentalAdmin": "Admin Noleggiarmi",
     "overview": "Panoramica",
     "dashboard": "Dashboard",
     "management": "Gestione",

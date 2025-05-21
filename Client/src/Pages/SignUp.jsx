@@ -458,7 +458,34 @@ export default function SignUp() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="mt-6 grid grid-cols-3 gap-4">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="w-full h-11 border-muted hover:border-primary hover:bg-primary/5"
+                >
+                  {/* Google SVG icon */}
+                  <span className="mr-2">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g clipPath="url(#clip0_17_40)">
+                        <path d="M17.64 9.2045C17.64 8.5665 17.5827 7.95225 17.4764 7.3635H9V10.845H13.8436C13.635 11.97 12.9645 12.915 12.009 13.5645V15.5775H14.8245C16.4325 14.085 17.64 11.895 17.64 9.2045Z" fill="#4285F4" />
+                        <path d="M9 18C11.43 18 13.467 17.1975 14.8245 15.5775L12.009 13.5645C11.265 14.064 10.245 14.37 9 14.37C6.6555 14.37 4.6785 12.765 3.9645 10.635H1.0515V12.705C2.40225 15.555 5.4555 18 9 18Z" fill="#34A853" />
+                        <path d="M3.9645 10.635C3.7845 10.1355 3.681 9.594 3.681 9C3.681 8.406 3.7845 7.8645 3.9645 7.365V5.295H1.0515C0.3825 6.579 0 7.743 0 9C0 10.257 0.3825 11.421 1.0515 12.705L3.9645 10.635Z" fill="#FBBC05" />
+                        <path d="M9 3.63C10.341 3.63 11.5275 4.089 12.465 4.98L14.889 2.565C13.464 1.233 11.427 0.36 9 0.36C5.4555 0.36 2.40225 2.805 1.0515 5.655L3.9645 7.365C4.6785 5.235 6.6555 3.63 9 3.63Z" fill="#EA4335" />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_17_40">
+                          <rect width="18" height="18" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </span>
+                  Google
+                </Button>
+              </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
