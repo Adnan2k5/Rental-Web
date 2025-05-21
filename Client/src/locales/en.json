@@ -475,7 +475,8 @@
     "feature3Title": "24/7 Support",
     "feature3Desc": "Get help whenever you need it.",
     "enterOtp": "Enter OTP",
-    "resendOtp": "Resend OTP"
+    "resendOtp": "Resend OTP",
+    "google": "Google"
   },
   "signUp": {
     "brand": "Rental",
@@ -516,7 +517,8 @@
     "otpResentSuccess": "OTP resent successfully",
     "otpResentFail": "Failed to resend OTP",
     "accountCreated": "Account created successfully.",
-    "invalidOtp": "Invalid OTP. Please try again."
+    "invalidOtp": "Invalid OTP. Please try again.",
+    "google": "Google"
   },
   "adminDashboard": {
     "title": "Dashboard",

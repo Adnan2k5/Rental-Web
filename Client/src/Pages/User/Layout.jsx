@@ -102,13 +102,7 @@ const UserDashboardLayout = () => {
                 <div className="p-6">
                     <Link to="/">
                         <motion.div
-                            className="text-2xl font-bold"
-                            style={{
-                                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                            }}
-                            {...shimmerAnimation}
+                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-green-600"
                         >
                             Noleggiarmi
                         </motion.div>
