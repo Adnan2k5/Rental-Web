@@ -6,10 +6,10 @@ const bookingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
-        item: {
+        item: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: "Item",
-        },
+        }],
         price: {
             type: Number,
             required: true,

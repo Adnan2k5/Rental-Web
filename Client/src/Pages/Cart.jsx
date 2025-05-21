@@ -144,10 +144,9 @@ export default function CartPage() {
       localStorage.setItem('cartTotal', total.toFixed(2));
 
       // Redirect to payment page
-      window.location.href = '/payment';
+      window.location.href = '/payment?name=' + encodeURIComponent(fullName);
 
       setShowNameModal(false)
-      setFullName("")
     } catch (e) {
       toast.error(t("cartPage.errorRedirectingToPayment"), { description: e.message })
     }
@@ -157,9 +156,10 @@ export default function CartPage() {
   }
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate),
+    (total, item) => total + (item.item?.price || 0) * item.quantity * calculateDaysBetween(item.startDate, item.endDate),
     0
   )
+
   const discount = 0
   const total = subtotal
 
@@ -219,6 +219,7 @@ export default function CartPage() {
 
                 <div className="divide-y divide-gray-100">
                   {cartItems.map((item) => (
+                    (item.item &&
                     <motion.div
                       key={item.item._id}
                       className="p-6 flex flex-col sm:flex-row items-start gap-4"
@@ -280,7 +281,7 @@ export default function CartPage() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </motion.div>
+                    </motion.div>)
                   ))}
                 </div>
               </div>

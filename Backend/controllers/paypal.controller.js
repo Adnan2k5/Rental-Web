@@ -5,6 +5,9 @@ import axios from "axios";
 import { getAccessToken } from "../utils/paypal.js";
 import { PaymentDetailsModel } from "../models/paymentdetails.model.js";
 import { v4 as uuidv4 } from 'uuid';
+import { Cart } from "../models/cart.model.js";
+import sendEmail from "../utils/sendOTP.js";
+
 
 
 export const getSignupPage = asyncHandler(async (req, res) => {
@@ -15,7 +18,7 @@ export const getSignupPage = asyncHandler(async (req, res) => {
         const response = await axios.post(
             'https://api-m.sandbox.paypal.com/v2/customer/partner-referrals',
             {
-                tracking_id: trackingId, 
+                tracking_id: trackingId,
                 partner_config_override: {
                     return_url: "http://localhost:5173/paypal/success"
                 },
@@ -73,15 +76,15 @@ export const getSuccessPage = asyncHandler(async (req, res) => {
         productIntentId,
         consentStatus,
         isEmailConfirmed
-    } = req.body; 
+    } = req.body;
 
 
     if (!consentStatus || !isEmailConfirmed || !merchantId || !merchantIdInPayPal || !permissionsGranted || !productIntentId) {
         throw new ApiError(400, "Missing required query parameters");
     }
-    const userId = req.user?._id; 
+    const userId = req.user?._id;
 
-    if(userId.paymentDetails) {
+    if (userId.paymentDetails) {
         throw new ApiError(400, "Payment details already exist");
     }
 

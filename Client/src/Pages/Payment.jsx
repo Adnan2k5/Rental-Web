@@ -14,6 +14,7 @@ import { createBookingApi } from "../api/bookings.api"
 import { toast } from "sonner"
 import i18n from "../i18"
 import { containerVariants, itemVariants, successVariants } from "../assets/Animations"
+import { } from "../api/bookings.api"
 
 const PaymentPage = () => {
     const { t } = useTranslation()
@@ -61,8 +62,12 @@ const PaymentPage = () => {
 
     const createOrder = async () => {
         setIsProcessing(true)
-        // This would typically call your backend to create a PayPal order
-        return "mock-order-id-" + Math.random().toString(36).substring(2, 15)
+        try {
+            const res = await createBookingApi(fullName);
+        }
+        catch (error) {
+            console.error("Error creating order:", error)   
+        }
     }
 
     const onApprove = async (data, actions) => {
