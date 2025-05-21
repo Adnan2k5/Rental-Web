@@ -20,7 +20,7 @@ export const Footer = () => {
                             {t('footer.support')}
                         </Link>
                     </div>
-                    <LanguageSelector />
+                    <LanguageSelector direction='up' />
                 </div>
 
             </div>

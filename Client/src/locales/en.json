@@ -11,7 +11,7 @@
     "signin": "Sign In"
   },
   "footer": {
-    "copyright": "Rental. All rights reserved.",
+    "copyright": "Noleggiarmi. All rights reserved.",
     "terms": "Terms",
     "privacy": "Privacy",
     "support": "Support"
@@ -79,7 +79,8 @@
     "browse": "Browse",
     "getverified": "Get Verified",
     "tickets": "Tickets & Support",
-    "logout": "Logout"
+    "logout": "Logout",
+    "payments": "Link your Paypal"
   },
   "userbooks": {
     "title": "Items Rented",
@@ -354,7 +355,8 @@
     "stats": {
       "happyCustomers": "Happy Customers",
       "productsAvailable": "Products Available",
-      "citiesCovered": "Cities Covered"
+      "citiesCovered": "Cities Covered",
+      "total": "Categories"
     },
     "categories": {
       "electronics": "Electronics",
@@ -424,7 +426,7 @@
       "termsOfService": "Terms of Service",
       "privacyPolicy": "Privacy Policy",
       "cookies": "Cookies",
-      "copyright": "Rental. All rights reserved.",
+      "copyright": "Noleggiarmi. All rights reserved.",
       "terms": "Terms",
       "privacy": "Privacy"
     }
@@ -541,7 +543,7 @@
     "joined": "Joined {{date}}"
   },
   "adminSidebar": {
-    "rentalAdmin": "Rental Admin",
+    "rentalAdmin": "Noleggiarmi",
     "overview": "Overview",
     "dashboard": "Dashboard",
     "management": "Management",

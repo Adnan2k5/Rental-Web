@@ -17,6 +17,8 @@ import { fetchTopReviewedItems } from '../api/items.api';
 import { useTranslation } from 'react-i18next';
 import { Footer } from '../Components/Footer';
 import { getStats } from '../api/admin.api';
+import { validators } from 'tailwind-merge';
+import LanguageSelector from '../Components/LanguageSelector';
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -55,7 +57,7 @@ export default function LandingPage() {
 
   const fetchStats = async () => {
     const res = await getStats();
-    setStats(res.stats);
+    setStats(res);
   }
 
   useEffect(() => {
@@ -65,13 +67,17 @@ export default function LandingPage() {
   const stats = [
     {
       label: t('landingPage.stats.happyCustomers'),
-      value: tstats?.totalUsers || 0,
+      value: tstats?.stats?.totalUsers || 0,
     },
     {
       label: t('landingPage.stats.productsAvailable'),
-      value: tstats?.totalItems || 0,
+      value: tstats?.stats?.totalItems || 0,
     },
-  ]
+    {
+      label: t('landingPage.stats.total'),
+      value: Array.isArray(tstats?.categories) ? tstats.categories.length : 0,
+    }
+  ];
 
   // Mock categories data
   const categories = [
@@ -131,6 +137,10 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <div className="lang flex items-center justify-end bg-white px-3 py-3">
+        <LanguageSelector direction='down' />
+      </div>
+
       {/* Hero Section */}
       <section className="relative pt-16 md:pt-24 lg:pt-32 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

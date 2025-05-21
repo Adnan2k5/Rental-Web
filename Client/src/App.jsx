@@ -28,6 +28,7 @@ import { ProfilePage } from './Pages/Profile';
 import { Terms } from './Pages/Terms';
 import PayPalCheckout from './Pages/Payment';
 import { LinkPaypal } from './Pages/User/LinkPaypal';
+import { CallBack } from './Pages/User/PaypalCallBack';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               <Route path="paypal" element={<LinkPaypal />} />
               {/* <Route path="tickets/create" element={<CreateTicket />} />  */}
             </Route>
+            <Route path='/paypal/success' element={<CallBack />} />
             <Route path='/chat' element={<Chat />} />
             <Route path='/terms' element={<Terms />} />
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
@@ -65,8 +67,6 @@ function App() {
             </Route>
             <Route path='/payment' element={<PayPalCheckout />} />
           </Routes>
-
-
         </AuthProvider>
       </BrowserRouter>
     </>

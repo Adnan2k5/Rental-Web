@@ -63,6 +63,12 @@ const userSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
+    paymentDetails: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PaymentDetails",
+      },
+    ],
   },
   { timestamps: true }
 );

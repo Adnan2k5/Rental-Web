@@ -108,6 +108,8 @@ export function ProfilePage() {
         )
     }
 
+    console.log("User data:", user)
+
     return (
         <div className="container mx-auto p-6">
             <Button variant="ghost" onClick={handleBack} className="mb-4">
@@ -118,39 +120,39 @@ export function ProfilePage() {
             <Card className="overflow-hidden border border-gray-200">
                 {/* Profile Header */}
 
-                                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white">
-                                    <div className="flex flex-col md:flex-row items-center gap-6">
-                                        <Avatar className="h-24 w-24 border-4 border-white">
-                                            {user.profilePicture ? (
-                                                <img 
-                                                    src={user.profilePicture} 
-                                                    alt={`${user.name || "User"}'s profile`}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex h-24 w-24 items-center justify-center bg-muted text-2xl font-semibold uppercase">
-                                                    {user.name ? user.name.charAt(0) : "U"}
-                                                </div>
-                                            )}
-                                        </Avatar>
-                                        <div className="text-center md:text-left">
-                                            <h1 className="text-3xl font-bold mb-2">{user.name || "User"}</h1>
-                                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                                                <Badge variant="secondary" className="px-3 py-1 text-sm">
-                                                    {user.role === "admin" ? "Administrator" : "Member"}
-                                                </Badge>
-                                                <Badge variant={user.verified ? "success" : "outline"} className="px-3 py-1 text-sm">
-                                                    {user.verified ? "Verified" : "Unverified"}
-                                                </Badge>
-                                                <Badge variant={user.status === "active" ? "success" : "destructive"} className="px-3 py-1 text-sm">
-                                                    {user.status}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                        <Avatar className="h-24 w-24 border-4 border-white">
+                            {user.profilePicture ? (
+                                <img
+                                    src={user.profilePicture}
+                                    alt={`${user.name || "User"}'s profile`}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div className="flex h-24 bg-black w-24 items-center justify-center  text-2xl font-semibold uppercase">
+                                    {user.name ? user.name.charAt(0) : "U"}
                                 </div>
+                            )}
+                        </Avatar>
+                        <div className="text-center md:text-left">
+                            <h1 className="text-3xl font-bold mb-2">{user.name || "User"}</h1>
+                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                                <Badge variant="secondary" className="px-3 py-1 text-sm">
+                                    {user.role === "admin" ? "Administrator" : "Member"}
+                                </Badge>
+                                <Badge variant={user.verified ? "success" : "outline"} className="px-3 py-1 text-sm">
+                                    {user.verified ? "Verified" : "Unverified"}
+                                </Badge>
+                                <Badge variant={user.status === "active" ? "success" : "destructive"} className="px-3 py-1 text-sm">
+                                    {user.status}
+                                </Badge>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                {/* Profile Content */}
+                {/* Profile Content */}
                 <Tabs defaultValue="info" className="p-6">
                     <TabsList className="grid grid-cols-2 mb-8 bg-gray-100">
                         <TabsTrigger value="info" className="data-[state=active]:bg-black data-[state=active]:text-white">
