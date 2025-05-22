@@ -4,7 +4,22 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getCart = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: req.user._id }).populate("items.item", "name price images name_it");
+    const userId = req.user._id;
+
+    const cart = await Cart.findOne({ user: userId })
+            .populate({
+                path: "items.item",
+                select: "price name images owner name_it",
+                populate: {
+                    path: "owner",
+                    select: "name email paymentDetails",
+                    populate: {
+                        path: "paymentDetails",
+                        select: "merchantIdInPayPal"
+                    }
+                }
+            });
+
     if (!cart) {
         return res.status(200).json(new ApiResponse(200, [], "Cart is empty"));
     }

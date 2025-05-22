@@ -76,6 +76,7 @@ export const createBooking = asyncHandler(async (req, res) => {
         ownerMap.get(payeeId).platformFee += cartItem.item.price * 0.18;
     });
 
+
     // Create one purchase_unit per owner
     const purchase_units = Array.from(ownerMap.values()).map(ownerEntry => {
         return {
@@ -95,7 +96,7 @@ export const createBooking = asyncHandler(async (req, res) => {
                             value: ownerEntry.platformFee.toFixed(2),
                         },
                         payee: {
-                            email_address: "saquibjawed4444@gmail.com",
+                            merchant_id: process.env.PAYPAL_PLATFORM_MERCHANT_ID, // Set in your .env
                         }
                     }
                 ]
@@ -103,6 +104,8 @@ export const createBooking = asyncHandler(async (req, res) => {
             description: ownerEntry.items.map(i => i.item.name).join(", ")
         };
     });
+    console.log("Purchase units to be sent to PayPal:", JSON.stringify(purchase_units, null, 2));
+    console.log(process.env.PAYPAL_PLATFORM_MERCHANT_ID);
 
     // Build the PayPal order payload
     const payload = {
@@ -141,15 +144,21 @@ export const createBooking = asyncHandler(async (req, res) => {
     const paypalData = await response.json();
 
     if (!response.ok) {
+        console.error("PayPal API error:", paypalData);
+
         throw new ApiError(response.status, paypalData.message || "Failed to create PayPal order");
     }
 
     const orderId = paypalData.id;
     await req.user.save();
+
+    const merchantIds = Array.from(ownerMap.keys());
+
     res.status(201).json(new ApiResponse(true, "Booking created successfully", {
         orderId,
         totalPrice,
         bookings,
+        merchantIds,
     }));
 });
 

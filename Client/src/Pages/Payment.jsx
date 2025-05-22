@@ -4,17 +4,16 @@ import { useEffect, useState } from "react"
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
-import { ChevronRight, Check, AlertCircle, ArrowLeft, CreditCard, Calendar, Package, User } from "lucide-react"
+import { ChevronRight, Check, AlertCircle, ArrowLeft, CreditCard, Calendar, Package, User, CodeSquare } from "lucide-react"
 import { Button } from "../Components/ui/button"
 import { Separator } from "../Components/ui/separator"
 import { Navbar } from "../Components/Navbar"
 import { Footer } from "../Components/Footer"
 import { useTranslation } from "react-i18next"
-import { createBookingApi } from "../api/bookings.api"
+import { createBookingApi, approveBookingApi } from "../api/bookings.api"
 import { toast } from "sonner"
 import i18n from "../i18"
 import { containerVariants, itemVariants, successVariants } from "../assets/Animations"
-import { } from "../api/bookings.api"
 
 const PaymentPage = () => {
     const { t } = useTranslation()
@@ -32,6 +31,7 @@ const PaymentPage = () => {
 
         setFullName(storedName || "")
         setCartItems(storedItems)
+
         setTotal(Number.parseFloat(storedTotal))
 
         // If no items or name, redirect back to cart
@@ -60,22 +60,23 @@ const PaymentPage = () => {
         })
     }
 
-    const createOrder = async () => {
+    const createOrder = async (data, actions) => {
         setIsProcessing(true)
         try {
             const res = await createBookingApi(fullName);
+            const { orderId } = res.data.message;
+            return orderId;
         }
         catch (error) {
-            console.error("Error creating order:", error)   
+            console.error("Error creating order:", error)
         }
     }
 
     const onApprove = async (data, actions) => {
         try {
             setPaymentStatus("processing")
-
-            // Create the actual booking in your system
-            const res = await createBookingApi(fullName)
+            // // Create the actual booking in your system
+            const res = await approveBookingApi(data.orderID)
 
             if (res) {
                 // Show success animation
@@ -86,10 +87,12 @@ const PaymentPage = () => {
                     localStorage.removeItem("cartTotal")
                 }, 1000)
             } else {
+                console.error("Error approving order:", res)
                 setPaymentStatus("error")
                 toast.error(t("paymentPage.bookingFailed"))
             }
         } catch (error) {
+            console.error("Error approving order:", error)
             setPaymentStatus("error")
             toast.error(t("paymentPage.paymentError"), { description: error.message })
         } finally {
@@ -97,12 +100,25 @@ const PaymentPage = () => {
         }
     }
 
-    const onError = () => {
+    const onError = (error) => {
+        console.error("PayPal error:", error)
         setPaymentStatus("error")
         setIsProcessing(false)
         toast.error(t("paymentPage.paymentFailed"))
     }
 
+    const merchantIds = Array.from(
+        new Set(
+            cartItems
+                .map(item => item.item.owner?.paymentDetails?.merchantIdInPayPal)
+                .filter(Boolean)
+        )
+    );
+
+    if (import.meta.env.VITE_PAYPAL_MERCHANT_ID && !merchantIds.includes(import.meta.env.VITE_PAYPAL_MERCHANT_ID)) {
+        merchantIds.push(import.meta.env.VITE_PAYPAL_MERCHANT_ID);
+    }
+    const merchantIdsString = merchantIds.join(",");
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -308,6 +324,7 @@ const PaymentPage = () => {
                                                     options={{
                                                         "client-id":
                                                             import.meta.env.VITE_PAYPAL_CLIENT_ID,
+                                                        "merchantId": merchantIdsString,
                                                         currency: "EUR",
                                                     }}
                                                 >
