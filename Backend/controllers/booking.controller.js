@@ -79,6 +79,7 @@ export const createBooking = asyncHandler(async (req, res) => {
 
     // Create one purchase_unit per owner
     const purchase_units = Array.from(ownerMap.values()).map(ownerEntry => {
+        console.log(ownerEntry.payeeId);
         return {
             amount: {
                 currency_code: "EUR",
@@ -96,7 +97,7 @@ export const createBooking = asyncHandler(async (req, res) => {
                             value: ownerEntry.platformFee.toFixed(2),
                         },
                         payee: {
-                            merchant_id: process.env.PAYPAL_PLATFORM_MERCHANT_ID, // Set in your .env
+                            merchant_id: "7B8A6WUFFHA6U", // Set in your .env
                         }
                     }
                 ]
@@ -104,8 +105,6 @@ export const createBooking = asyncHandler(async (req, res) => {
             description: ownerEntry.items.map(i => i.item.name).join(", ")
         };
     });
-    console.log("Purchase units to be sent to PayPal:", JSON.stringify(purchase_units, null, 2));
-    console.log(process.env.PAYPAL_PLATFORM_MERCHANT_ID);
 
     // Build the PayPal order payload
     const payload = {
@@ -163,7 +162,7 @@ export const createBooking = asyncHandler(async (req, res) => {
 });
 
 export const approveBooking = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: userId })
+    const cart = await Cart.findOne({ user: req.user._id })
         .populate({
             path: "items.item",
             select: "price name images owner",
@@ -178,7 +177,8 @@ export const approveBooking = asyncHandler(async (req, res) => {
         });
 
     const accessToken = await getAccessToken();
-
+    console.log(accessToken)
+    console.log(req.params.id)
     const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${req.params.id}/capture`, {}, {
         headers: {
             "Content-Type": "application/json",

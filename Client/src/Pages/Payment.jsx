@@ -119,6 +119,7 @@ const PaymentPage = () => {
         merchantIds.push(import.meta.env.VITE_PAYPAL_MERCHANT_ID);
     }
     const merchantIdsString = merchantIds.join(",");
+    console.log("Merchant IDs:", merchantIdsString);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -324,7 +325,7 @@ const PaymentPage = () => {
                                                     options={{
                                                         "client-id":
                                                             import.meta.env.VITE_PAYPAL_CLIENT_ID,
-                                                        "merchantId": merchantIdsString,
+                                                        "data-merchant-id": merchantIdsString,
                                                         currency: "EUR",
                                                     }}
                                                 >
