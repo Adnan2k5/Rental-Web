@@ -84,22 +84,22 @@ export default function LandingPage() {
     {
       name: t('landingPage.categories.electronics'),
       icon: <Monitor className="h-10 w-10 text-primary" />,
-      count: t('landingPage.categories.electronicsCount'),
+
     },
     {
       name: t('landingPage.categories.furniture'),
       icon: <Sofa className="h-10 w-10 text-primary" />,
-      count: t('landingPage.categories.furnitureCount'),
+
     },
     {
       name: t('landingPage.categories.appliances'),
       icon: <Package className="h-10 w-10 text-primary" />,
-      count: t('landingPage.categories.appliancesCount'),
+
     },
     {
       name: t('landingPage.categories.lifestyle'),
       icon: <Coffee className="h-10 w-10 text-primary" />,
-      count: t('landingPage.categories.lifestyleCount'),
+
     },
   ];
 
@@ -395,7 +395,7 @@ export default function LandingPage() {
                     {item.name}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-primary">${item.price}/{t('landingPage.trendingSection.perMonth')}</p>
+                    <p className="font-bold text-primary">€{item.price}/{t('landingPage.trendingSection.perMonth')}</p>
                     <Link
                       to={`/product/${item._id}`}
                       className="text-xs text-gray-500 hover:text-primary flex items-center"
@@ -439,7 +439,7 @@ export default function LandingPage() {
             variants={staggerChildren}
           >
             {/* Connecting line */}
-            <div className="hidden md:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-primary/50 to-primary/20"></div>
+
 
             {[
               {

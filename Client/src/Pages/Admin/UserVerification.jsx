@@ -35,6 +35,7 @@ export default function UserVerification() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
 
+
     const fetchDocuments = async () => {
         const res = await getAllDocuments()
         if (res.status === 200) {
@@ -187,8 +188,9 @@ export default function UserVerification() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">{t('userVerificationAdmin.statusAll')}</SelectItem>
-                                            <SelectItem value="false">{t('userVerificationAdmin.statusPending')}</SelectItem>
-                                            <SelectItem value="true">{t('userVerificationAdmin.statusApproved')}</SelectItem>
+                                            <SelectItem value="pending">{t('userVerificationAdmin.statusPending')}</SelectItem>
+                                            <SelectItem value="verified">{t('userVerificationAdmin.statusApproved')}</SelectItem>
+                                            <SelectItem value="declined">{t('userVerificationAdmin.statusDeclined')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

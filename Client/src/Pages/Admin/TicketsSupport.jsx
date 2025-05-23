@@ -277,7 +277,7 @@ export default function TicketsSupport() {
                                             const matchesSearch =
                                                 ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                                 ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                ticket.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                                ticket?.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
                                             return matchesSearch;
                                         }).map((ticket) => (
                                             <motion.div
@@ -297,10 +297,10 @@ export default function TicketsSupport() {
                                                 <div className="col-span-3 hidden md:block">
                                                     <div className="flex items-center gap-2">
                                                         <Avatar className="h-6 w-6">
-                                                            <AvatarImage src={"/placeholder.svg"} alt={ticket.user.name} />
-                                                            <AvatarFallback>{ticket.user.name.charAt(0)}</AvatarFallback>
+                                                            <AvatarImage src={"/placeholder.svg"} alt={ticket?.user?.name} />
+                                                            <AvatarFallback>{ticket?.user?.name?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
-                                                        <span className="truncate">{ticket.user.name}</span>
+                                                        <span className="truncate">{ticket?.user?.name}</span>
                                                     </div>
                                                 </div>
                                                 <div className="col-span-3 md:col-span-2">{getStatusBadge(ticket.status)}</div>

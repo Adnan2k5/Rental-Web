@@ -620,7 +620,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="price">{t("addItem.price")} ($)</Label>
+                  <Label htmlFor="price">{t("addItem.price")} (€)</Label>
                   <Input
                     id="price"
                     type="number" placeholder={t("addItem.pricePlaceholder")}
