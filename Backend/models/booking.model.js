@@ -6,10 +6,20 @@ const bookingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
-        item: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Item",
-        }],
+        item: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Item",
+                startDate: {
+                    type: Date,
+                    required: true,
+                },
+                endDate: {
+                    type: Date,
+                    required: true,
+                },
+            }
+        ],
         price: {
             type: Number,
             required: true,
@@ -22,14 +32,6 @@ const bookingSchema = new mongoose.Schema(
         bookingDate: {
             type: Date,
             default: Date.now,
-        },
-        startDate: {
-            type: Date,
-            required: true,
-        },
-        endDate: {
-            type: Date,
-            required: true,
         },
         status: {
             type: String,
