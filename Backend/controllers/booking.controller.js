@@ -51,7 +51,7 @@ export const createBooking = asyncHandler(async (req, res) => {
         quantity: cart.items.length,
     });
 
-    console.log("Booking created:", booking);
+
 
     const ownerMap = new Map();
     cart.items.forEach(cartItem => {
@@ -74,8 +74,6 @@ export const createBooking = asyncHandler(async (req, res) => {
         ownerMap.get(payeeId).platformFee += cartItem.item.price * 0.18;
     });
 
-    console.log("Owner map:", ownerMap);
-    console.log("Platform Merchant ID:", process.env.PAYPAL_PLATFORM_MERCHANT_ID);
 
     const purchase_units = Array.from(ownerMap.values()).map(ownerEntry => ({
         amount: {
@@ -93,7 +91,7 @@ export const createBooking = asyncHandler(async (req, res) => {
                     value: ownerEntry.platformFee.toFixed(2),
                 },
                 payee: {
-                    merchant_id: process.env.PLATFORM_MERCHANT_ID,
+                    merchant_id: process.env.PAYPAL_PLATFORM_MERCHANT_ID,
                 }
             }]
         },
@@ -113,8 +111,6 @@ export const createBooking = asyncHandler(async (req, res) => {
     const clientId = process.env.PAYPAL_CLIENT_ID;
     const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
 
-    console.log("Access Token:", accessToken);
-    console.log("sellerPayeeId:", sellerPayeeId);
 
     const encodeObjectToBase64 = (object) => Buffer.from(JSON.stringify(object)).toString("base64");
     const header = { alg: "none" };
@@ -134,10 +130,8 @@ export const createBooking = asyncHandler(async (req, res) => {
         body: JSON.stringify(payload),
     });
 
-    console.log("Paypal Api response:", response);
 
     const paypalData = await response.json();
-
     if (!response.ok) {
         console.error("PayPal API error:", paypalData);
         throw new ApiError(response.status, paypalData.message || "Failed to create PayPal order");
@@ -161,7 +155,7 @@ export const createBooking = asyncHandler(async (req, res) => {
 
 export const approveBooking = asyncHandler(async (req, res) => {
     const paypalOrderId = req.params.id;
-    console.log(paypalOrderId)
+    
     const cart = await Cart.findOne({ user: req.user._id })
         .populate({
             path: "items.item",
@@ -178,15 +172,13 @@ export const approveBooking = asyncHandler(async (req, res) => {
 
     const accessToken = await getAccessToken();
 
-    const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {}, {
+    const response = await axios.post(`https://api.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {}, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
             "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
         }
     });
-
-    console.log(response)
 
     if (response.status === 201 || response.status === 200) {
         const booking = await Booking.findOneAndUpdate(
@@ -219,7 +211,7 @@ export const approveBooking = asyncHandler(async (req, res) => {
             });
         });
 
-        res.status(200).json(new ApiResponse(true, "Booking approved successfully", booking));
+        res.status(200).json(new ApiResponse(true, "Booking approved successfully"));
     } else {
         throw new ApiError(response.status, response.data.message || "Failed to approve booking");
     }

@@ -319,7 +319,7 @@
     "failedUpdateDuration": "Failed to update rental period.",
     "cartCleared": "Cart cleared.",
     "errorClearingCart": "Failed to clear cart.",
-    "pricePerDay": "${{price}} per day",
+    "pricePerDay": "€{{price}} per day",
     "quantity": "Quantity",
     "rentalPeriod": "Rental Period",
     "havePromo": "Have a promo code?",

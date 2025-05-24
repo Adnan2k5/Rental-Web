@@ -310,7 +310,6 @@ const PaymentPage = () => {
 
                                         <motion.div className="space-y-4" variants={itemVariants}>
                                             <h3 className="font-medium">{t("paymentPage.selectPaymentMethod")}</h3>
-
                                             <div className="relative">
                                                 {isProcessing && (
                                                     <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg">
