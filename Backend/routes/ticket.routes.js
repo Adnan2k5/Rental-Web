@@ -14,14 +14,14 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = Router();
 
 // Apply JWT verification to all routes
-router.use(verifyJWT);
+// router.use(verifyJWT);
 
 // User routes
 router.post("/create", upload.array("attachments", 5), createTicket);
 router.get("/my-tickets", getUserTickets);
-router.get("/:ticketId", getTicketById);
-router.post("/:ticketId/respond", addTicketResponse);
-router.patch("/:ticketId/status", updateTicketStatus);
+router.get("/:ticketId", verifyJWT, getTicketById);
+router.post("/:ticketId/respond", verifyJWT,addTicketResponse);
+router.patch("/:ticketId/status", verifyJWT,updateTicketStatus);
 
 // Admin routes
 router.get("/", getAllTickets);

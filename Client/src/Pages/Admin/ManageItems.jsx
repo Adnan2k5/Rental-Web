@@ -697,7 +697,8 @@ export default function ManageItems() {
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
                           <div className="flex items-center justify-between">
                             <div className="text-primary font-semibold">
-                              ${item.price}
+                              €
+                              {item.price}
                               <span className="text-xs text-muted-foreground font-normal">
                                 /{item.period || "month"}
                               </span>
@@ -790,7 +791,8 @@ export default function ManageItems() {
                                 </TableCell>
                                 <TableCell>
                                   <div className="text-primary font-semibold">
-                                    ${item.price}
+                                    €
+                                    {item.price}
                                     <span className="text-xs text-muted-foreground font-normal">
                                       /{item.period || "month"}
                                     </span>
@@ -996,7 +998,8 @@ export default function ManageItems() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">{t("addItem.price")} ($)</Label>
+                    <Label htmlFor="price">{t("addItem.price")} (€
+                      )</Label>
                     <Input
                       id="price"
                       name="price"
@@ -1193,7 +1196,7 @@ export default function ManageItems() {
                 />
               </div>
               <div className="mb-2 font-semibold">{t("manageItems.category", "Category")}: {selectedItemDetails.category}</div>
-              <div className="mb-2 font-semibold">{t("manageItems.price", "Price")}: ${selectedItemDetails.price} / {selectedItemDetails.period || "month"}</div>
+              <div className="mb-2 font-semibold">{t("manageItems.price", "Price")}: €{selectedItemDetails.price} / {selectedItemDetails.period || "month"}</div>
               <div className="mb-2 font-semibold">{t("manageItems.status", "Status")}: {selectedItemDetails.status}</div>
               <div className="mb-2 font-semibold">{t("manageItems.owner", "Owner")}: {selectedItemDetails.owner?.name || "Unknown"}</div>
               {/* Add more fields as needed */}

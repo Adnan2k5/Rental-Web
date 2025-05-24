@@ -80,7 +80,8 @@
     "getverified": "Get Verified",
     "tickets": "Tickets & Support",
     "logout": "Logout",
-    "payments": "Link your Paypal"
+    "payments": "Link your Paypal",
+    "login": "Login"
   },
   "userbooks": {
     "title": "Items Rented",
@@ -238,7 +239,8 @@
       "subject": "Subject is required.",
       "description": "Description is required.",
       "category": "Category is required."
-    }
+    },
+    "success": "Ticket submitted successfully!"
   },
   "userTickets": {
     "title": "My Support Tickets",

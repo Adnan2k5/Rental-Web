@@ -48,7 +48,8 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
         key={index}
         variants={fadeIn}
         whileHover={{ y: -5 }}
-        className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group"
+        className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group cursor-pointer"
+        onClick={() => onQuickView()}
     >
         <div className="relative">
             <img
@@ -90,14 +91,14 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                 {product?.name}
             </h3>
             <div className="div flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground mb-3 cursor-pointer hover:underline" onClick={() => { navigate(`/profile/${product?.owner?._id}`) }}>
+                <p className="text-sm text-muted-foreground mb-3 cursor-pointer hover:underline" onClick={(e) => { e.stopPropagation(); navigate(`/profile/${product?.owner?._id}`) }}>
                     {t("product.by")} {product?.owner?.name}
                 </p>
                 <Button
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
-                    onClick={goToChat}
+                    onClick={(e) => { e.stopPropagation(); goToChat(e); }}
                 >
                     {t("buttons.chat")}
                 </Button>
@@ -112,7 +113,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
-                    onClick={addItemToCart}
+                    onClick={(e) => { e.stopPropagation(); addItemToCart(e); }}
                 >
                     {t("buttons.add")}
                 </Button>

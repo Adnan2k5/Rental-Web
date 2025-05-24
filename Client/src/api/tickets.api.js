@@ -5,6 +5,8 @@ export const createTicket = async (ticketData) => {
   const formData = new FormData();
 
   // Add text fields
+  formData.append('name', ticketData.name);
+  formData.append('email', ticketData.email);
   formData.append('subject', ticketData.subject);
   formData.append('description', ticketData.description);
   formData.append('category', ticketData.category);
@@ -43,21 +45,29 @@ export const getTicketById = async (ticketId) => {
 
 // Add a response to a ticket
 export const addTicketResponse = async (ticketId, message) => {
-  const response = await axiosClient.post(`/api/tickets/${ticketId}/respond`, {
-    message,
-  }, {
-    withCredentials: true,
-  });
+  const response = await axiosClient.post(
+    `/api/tickets/${ticketId}/respond`,
+    {
+      message,
+    },
+    {
+      withCredentials: true,
+    }
+  );
   return response.data;
 };
 
 // Update ticket status
 export const updateTicketStatus = async (ticketId, status) => {
-  const response = await axiosClient.patch(`/api/tickets/${ticketId}/status`, {
-    status,
-  },{
-    withCredentials: true,
-  });
+  const response = await axiosClient.patch(
+    `/api/tickets/${ticketId}/status`,
+    {
+      status,
+    },
+    {
+      withCredentials: true,
+    }
+  );
   return response.data;
 };
 
@@ -72,8 +82,11 @@ export const getAllTickets = async (filters = {}) => {
   queryParams.append('page', page);
   queryParams.append('limit', limit);
 
-  const response = await axiosClient.get(`/api/tickets?${queryParams.toString()}`, {
-    withCredentials: true,
-  });
+  const response = await axiosClient.get(
+    `/api/tickets?${queryParams.toString()}`,
+    {
+      withCredentials: true,
+    }
+  );
   return response.data;
 };
