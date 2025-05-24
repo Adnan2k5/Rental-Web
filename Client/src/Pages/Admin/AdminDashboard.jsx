@@ -49,6 +49,7 @@ import { useTranslation } from 'react-i18next';
 import { itemFadeIn, pageTransition } from '../../assets/Animations';
 import { Particles } from '../../Components/Particles';
 import { useAuth } from '../../Middleware/AuthProvider';
+import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -147,7 +148,7 @@ export default function AdminDashboard() {
     >
       {/* Content */}
       <main className="flex-1 p-6 overflow-auto relative">
-        <Particles />
+
 
         <div className="relative z-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -517,7 +518,7 @@ export default function AdminDashboard() {
                 <div className="space-y-4">
                   {recentUsers.map((user) => (
                     <motion.div
-                      key={user.id}
+                      key={user._id}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                       whileHover={{ backgroundColor: '#f9fafb', x: 2 }}
                     >
@@ -527,7 +528,7 @@ export default function AdminDashboard() {
                           <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium">{user.name}</div>
+                          <div className="font-medium"><Link to={`/profile/${user._id}`}>{user.name}</Link></div>
                           <div className="text-sm text-muted-foreground">
                             {user.email}
                           </div>
@@ -537,9 +538,6 @@ export default function AdminDashboard() {
                         <div className="text-sm text-right">
                           <div>{t('adminDashboard.joined', { date: format(user.createdAt, 'dd-MM-yyyy') })}</div>
                         </div>
-                        <Button variant="ghost" size="icon">
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
                       </div>
                     </motion.div>
                   ))}

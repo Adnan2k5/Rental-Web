@@ -432,7 +432,7 @@
     }
   },
   "signIn": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "welcomeBack": "Welcome Back!",
     "signInToContinue": "Sign in to continue to your account",
     "email": "Email",
@@ -479,7 +479,7 @@
     "google": "Google"
   },
   "signUp": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "headline": "Start your rental journey today",
     "subheadline": "Join our community and experience the freedom of renting instead of buying.",
     "feature1Title": "Flexible Plans",
@@ -507,7 +507,7 @@
     "twitter": "Twitter",
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
-    "whyChoose": "Why choose Rental?",
+    "whyChoose": "Why choose Noleggiarmi?",
     "mobileDesc": "Access premium products without commitment. Easy upgrades, flexible returns, and free maintenance included.",
     "otpTitle": "Enter OTP",
     "otpPlaceholder": "Enter OTP",

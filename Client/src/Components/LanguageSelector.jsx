@@ -70,8 +70,8 @@ const LanguageSelector = ({ className, direction = "down" }) => {
                         <button
                             key={lang.code}
                             className={`flex items-center w-full text-left px-3 py-1 text-sm hover:bg-gray-50 ${i18n.language === lang.code
-                                    ? "text-primary font-medium"
-                                    : "text-gray-700"
+                                ? "text-primary font-medium"
+                                : "text-gray-700"
                                 }`}
                             onClick={() => changeLanguage(lang.code)}
                         >

@@ -159,7 +159,7 @@ export default function SignIn() {
     >
       {/* Floating Language Selector */}
       <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 50 }}>
-        <LanguageSelector className="text-white" />
+        <LanguageSelector direction='up' className="text-white" />
       </div>
 
       {/* Left side - Login Form */}
@@ -167,7 +167,7 @@ export default function SignIn() {
         className="flex-1 flex items-center justify-center p-8 relative"
         variants={itemFadeIn}
       >
-        <Particles />
+
 
         <div className="max-w-md w-full relative z-10">
           <motion.div variants={itemFadeIn} className="text-center mb-8">
@@ -180,7 +180,11 @@ export default function SignIn() {
               }}
               {...shimmerAnimation}
             >
-              {t('signIn.brand')}
+              <Link to="/" className="flex items-center justify-center">
+                {t('signIn.brand')}
+              </Link>
+
+
             </motion.div>
             <motion.h1
               className="text-2xl font-bold mb-2 text-dark"
@@ -356,9 +360,6 @@ export default function SignIn() {
 
           <motion.div variants={itemFadeIn} className="mt-6">
             <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-light px-2 text-muted-foreground">
                   {t('signIn.orContinueWith')}

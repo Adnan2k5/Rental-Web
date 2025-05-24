@@ -202,7 +202,7 @@ export default function ManageUsers() {
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
         {/* Content */}
         <main className="flex-1 p-6 overflow-auto relative">
-          <Particles />
+
 
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">

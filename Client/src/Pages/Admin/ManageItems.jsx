@@ -71,6 +71,10 @@ export default function ManageItems() {
   const [newItemSubCategoryInput, setNewItemSubCategoryInput] = useState("")
   const [subCategoryOptions, setSubCategoryOptions] = useState([])
 
+  // State for item details dialog
+  const [isItemDetailsDialogOpen, setIsItemDetailsDialogOpen] = useState(false)
+  const [selectedItemDetails, setSelectedItemDetails] = useState(null)
+
   const { categories, setCategories } = useCategories()
 
   // Fetch items from API
@@ -432,7 +436,7 @@ export default function ManageItems() {
     >
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
         <main className="flex-1 p-6 overflow-auto relative">
-          <Particles />
+
 
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
@@ -481,22 +485,6 @@ export default function ManageItems() {
                   {t("manageItems.addCategory", "Add Category")}
                 </Button>
 
-                <Button
-                  className="relative overflow-hidden h-9"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  }}
-                  onClick={() => setIsNewItemDialogOpen(true)}
-                >
-                  <motion.span
-                    className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: "-100%", opacity: 0 }}
-                    whileHover={{ x: "100%", opacity: 0.3 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span className="relative">{t("manageItems.addItem", "Add Item")}</span>
-                </Button>
               </motion.div>
             </div>
 
@@ -725,7 +713,9 @@ export default function ManageItems() {
                                   </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>{t("manageItems.viewDetails", "View Details")}</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => { setSelectedItemDetails(item); setIsItemDetailsDialogOpen(true); }}>
+                                    {t("manageItems.viewDetails", "View Details")}
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     {t("manageItems.deleteItem", "Delete Item")}
                                   </DropdownMenuItem>
@@ -1183,6 +1173,39 @@ export default function ManageItems() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Item Details Dialog */}
+      {selectedItemDetails && (
+        <Dialog open={isItemDetailsDialogOpen} onOpenChange={setIsItemDetailsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="text-xl">{selectedItemDetails.name || selectedItemDetails.title}</DialogTitle>
+              <DialogDescription>
+                {selectedItemDetails.description}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
+              <div className="mb-4">
+                <img
+                  src={selectedItemDetails.images?.[0] || "/placeholder.svg?height=200&width=300"}
+                  alt={selectedItemDetails.name || selectedItemDetails.title}
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+              </div>
+              <div className="mb-2 font-semibold">{t("manageItems.category", "Category")}: {selectedItemDetails.category}</div>
+              <div className="mb-2 font-semibold">{t("manageItems.price", "Price")}: ${selectedItemDetails.price} / {selectedItemDetails.period || "month"}</div>
+              <div className="mb-2 font-semibold">{t("manageItems.status", "Status")}: {selectedItemDetails.status}</div>
+              <div className="mb-2 font-semibold">{t("manageItems.owner", "Owner")}: {selectedItemDetails.owner?.name || "Unknown"}</div>
+              {/* Add more fields as needed */}
+            </div>
+            <DialogFooter className="px-6 py-4 bg-gray-50">
+              <Button variant="outline" onClick={() => setIsItemDetailsDialogOpen(false)}>
+                {t("dialogbox.cancel")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </motion.div>
   )
 }

@@ -29,6 +29,8 @@ import { Terms } from './Pages/Terms';
 import PayPalCheckout from './Pages/Payment';
 import { LinkPaypal } from './Pages/User/LinkPaypal';
 import { CallBack } from './Pages/User/PaypalCallBack';
+import { Contact } from "./Pages/Contact"
+import About from './Pages/About';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
             <Route path="/login" element={<SignIn />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/browse" element={<BrowsePage />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/about' element={<About />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
             <Route path="/dashboard" element={<UserDashboardLayout />}>
               <Route index element={<ItemDashboard />} />

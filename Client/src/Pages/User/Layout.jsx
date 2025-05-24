@@ -170,12 +170,9 @@ const UserDashboardLayout = () => {
                                         WebkitTextFillColor: "transparent",
                                     }}
                                 >
-                                    Rental
+                                    Noleggiarmi
                                 </motion.div>
                             </Link>
-                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-                                <X className="h-5 w-5" />
-                            </Button>
                         </div>
                     </div>
 
@@ -237,12 +234,10 @@ const UserDashboardLayout = () => {
                                     }}
                                     {...shimmerAnimation}
                                 >
-                                    Rental
+                                    Noleggiarmi
                                 </motion.div>
                             </div>
                         </div>
-
-
                         <div className="flex items-center space-x-4">
 
                             <DropdownMenu>
@@ -282,7 +277,7 @@ const UserDashboardLayout = () => {
 
                 {/* Content */}
                 <main className="flex-1 p-6 overflow-auto relative">
-                    <Particles />
+
                     <div className="relative z-10">
                         {/* This is where child Components will be rendered */}
                         <Outlet />

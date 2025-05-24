@@ -156,7 +156,9 @@ export default function SignUp() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              {t('signUp.brand')}
+              <Link to="/" className="flex items-center justify-center">
+                {t('signUp.brand')}
+              </Link>
             </motion.div>
 
             <motion.h2
@@ -165,7 +167,9 @@ export default function SignUp() {
               initial="initial"
               animate="animate"
             >
-              {t('signUp.headline')}
+              <Link to="/" className="flex items-center justify-center">
+                {t('signUp.headline')}
+              </Link>
             </motion.h2>
 
             <motion.p
@@ -226,10 +230,10 @@ export default function SignUp() {
         className="flex-1 flex items-center justify-center p-8 relative"
         variants={itemFadeIn}
       >
-        <Particles />
+
         {/* Language Selector bottom right */}
         <div className="fixed bottom-4 right-4 z-50">
-          <LanguageSelector />
+          <LanguageSelector direction='up' />
         </div>
         <div className="max-w-md w-full relative z-10">
           <motion.div variants={itemFadeIn} className="text-center mb-8">
@@ -242,7 +246,9 @@ export default function SignUp() {
               }}
               {...shimmerAnimation}
             >
-              {t('signUp.brand')}
+              <Link to="/" className="flex items-center justify-center">
+                {t('signUp.brand')}
+              </Link>
             </motion.div>
             <motion.h1
               className="text-2xl font-bold mb-2 text-dark"
@@ -448,9 +454,6 @@ export default function SignUp() {
 
           <motion.div variants={itemFadeIn} className="mt-6">
             <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-light px-2 text-muted-foreground">
                   {t('signUp.orContinueWith')}

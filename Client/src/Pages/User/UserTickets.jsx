@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Plus, Clock, CheckCircle, AlertCircle, HelpCircle, RefreshCw } from "lucide-react"
@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "../../Components/ui/tabs"
 import { itemFadeIn } from "../../assets/Animations"
 import { Loader } from "../../Components/loader"
 import { useTranslation } from "react-i18next"
+import { useAuth } from "../../Middleware/AuthProvider"
 
 export const UserTickets = () => {
     const [tickets, setTickets] = useState([])
@@ -21,6 +22,8 @@ export const UserTickets = () => {
     const [activeTab, setActiveTab] = useState("all")
     const navigate = useNavigate()
     const { t } = useTranslation()
+    const { user } = useAuth()
+
 
     useEffect(() => {
         const fetchTickets = async () => {
@@ -40,6 +43,12 @@ export const UserTickets = () => {
         fetchTickets()
     }, [])
 
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login")
+        }
+    }, [user, navigate])
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
             case "open":

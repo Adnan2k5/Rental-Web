@@ -7,16 +7,23 @@ import { addItemToCartApi } from "../api/carts.api"
 import { toast } from "sonner"
 import { Label } from "./ui/label"
 import { Link } from "react-router-dom"
+import DateRangePicker from "./DateRangePicker"
 
 export default function ProductQuickView({ isOpen, onClose, product }) {
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [startDate, setStart] = useState(new Date());
-  const [endDate, setEnd] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [duration, setDuration] = useState(1);
 
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0];
+  // Calculate days between two dates
+  const calculateDaysBetween = (start, end) => {
+    if (!start || !end) return 1;
+    const s = new Date(start);
+    const e = new Date(end);
+    const diff = e.getTime() - s.getTime();
+    return Math.max(1, Math.ceil(diff / (1000 * 3600 * 24)));
+  };
 
   const updateQuantity = (value) => {
     if (value >= 1) {
@@ -24,19 +31,26 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
     }
   }
 
-  const handleAddToCart = async () => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      setDuration(diffDays);
+  const handleDateChange = (start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+    if (start && end) {
+      setDuration(calculateDaysBetween(start, end));
     }
+  };
+
+  const handleAddToCart = async () => {
+    if (!startDate || !endDate) {
+      toast.error("Please select a rental period.");
+      return;
+    }
+    const days = calculateDaysBetween(startDate, endDate);
+    setDuration(days);
     try {
       setIsLoading(true)
-      await addItemToCartApi(product._id, quantity, duration)
+      await addItemToCartApi(product._id, quantity, days)
       toast.success("Item added to cart successfully", {
-        description: `${quantity} ${quantity > 1 ? "items" : "item"} for ${duration} ${duration > 1 ? "Days" : "Day"}`,
+        description: `${quantity} ${quantity > 1 ? "items" : "item"} for ${days} ${days > 1 ? "Days" : "Day"}`,
       })
       onClose()
     } catch (error) {
@@ -101,7 +115,7 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                 </div>
 
                 <div className="mb-4">
-                  <div className="text-2xl font-bold text-black mb-1">${product.price}</div>
+                  <div className="text-2xl font-bold text-black mb-1">€{product.price}</div>
                 </div>
 
                 <div className="flex items-center gap-2 mb-4">
@@ -138,13 +152,13 @@ export default function ProductQuickView({ isOpen, onClose, product }) {
                   </div>
 
                   <div className="flex flex-col">
-                    <Label className="text-sm font-medium  block text-black">Rental Duration (Days)</Label>
-                    <div className="inputs flex flex-col gap-5">
-                      <Label className="text-sm font-medium  block text-black">Starting Date</Label>
-                      <input placeholder="Start Date" type="date" min={today} onChange={(e) => { setStart(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md " />
-                      <Label className="text-sm font-medium  block text-black">Ending Date</Label>
-                      <input placeholder="End Date" type="date" min={today} onChange={(e) => { setEnd(e.target.value) }} className="h-8 px-4 border border-gray-400 text-black rounded-md" />
-                    </div>
+                    <Label className="text-sm font-medium block text-black">Rental Period</Label>
+                    <DateRangePicker
+                      startDate={startDate}
+                      endDate={endDate}
+                      onChange={handleDateChange}
+                      className="w-[300px] mt-2"
+                    />
                   </div>
                 </div>
 
