@@ -65,6 +65,7 @@ const PaymentPage = () => {
         try {
             const res = await createBookingApi(fullName);
             const { orderId } = res.data.message;
+            console.log("Order created:", orderId)
             return orderId;
         }
         catch (error) {
@@ -75,9 +76,7 @@ const PaymentPage = () => {
     const onApprove = async (data, actions) => {
         try {
             setPaymentStatus("processing")
-            // // Create the actual booking in your system
             const res = await approveBookingApi(data.orderID)
-
             if (res) {
                 // Show success animation
                 setPaymentStatus("success")
@@ -119,7 +118,8 @@ const PaymentPage = () => {
         merchantIds.push(import.meta.env.VITE_PAYPAL_MERCHANT_ID);
     }
     const merchantIdsString = merchantIds.join(",");
-    console.log("Merchant IDs:", merchantIdsString);
+    const merchantIdsArray = merchantIdsString.split(',');
+    const firstMerchantId = merchantIdsArray[0];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
