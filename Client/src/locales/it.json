@@ -11,7 +11,7 @@
     "signin": "Accedi"
   },
   "footer": {
-    "copyright": "Rental. Tutti i diritti riservati.",
+    "copyright": "Noleggiarmi. Tutti i diritti riservati.",
     "terms": "Termini",
     "privacy": "Privacy",
     "support": "Supporto"
@@ -426,13 +426,13 @@
       "termsOfService": "Termini di servizio",
       "privacyPolicy": "Privacy Policy",
       "cookies": "Cookie",
-      "copyright": "Rental. Tutti i diritti riservati.",
+      "copyright": "Noleggiarmi. Tutti i diritti riservati.",
       "terms": "Termini",
       "privacy": "Privacy"
     }
   },
   "signIn": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "welcomeBack": "Bentornato!",
     "signInToContinue": "Accedi per continuare al tuo account",
     "email": "Email",
@@ -479,7 +479,7 @@
     "google": "Google"
   },
   "signUp": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "headline": "Inizia il tuo viaggio di noleggio oggi",
     "subheadline": "Unisciti alla nostra community e scopri la libertà del noleggio invece dell'acquisto.",
     "feature1Title": "Piani flessibili",
@@ -507,7 +507,7 @@
     "twitter": "Twitter",
     "alreadyHaveAccount": "Hai già un account?",
     "signIn": "Accedi",
-    "whyChoose": "Perché scegliere Rental?",
+    "whyChoose": "Perché scegliere Noleggiarmi?",
     "mobileDesc": "Accedi a prodotti premium senza impegno. Upgrade facili, resi flessibili e manutenzione gratuita inclusa.",
     "otpTitle": "Inserisci OTP",
     "otpPlaceholder": "Inserisci OTP",

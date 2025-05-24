@@ -5,7 +5,6 @@ import { Filter, Search, ShoppingCart, Star, X } from "lucide-react"
 import { Button } from "../Components/ui/button"
 import { Input } from "../Components/ui/input"
 import { Checkbox } from "../Components/ui/checkbox"
-import { Slider } from "../Components/ui/slider"
 import { Badge } from "../Components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "../Components/ui/sheet"
 import { Link, useNavigate } from "react-router-dom"
@@ -21,6 +20,8 @@ import { Footer } from "../Components/Footer"
 import { Loader } from "../Components/loader"
 import { useCategories } from "../hooks/useCategories"
 import { useTranslation } from "react-i18next"
+import 'rc-slider/assets/index.css'
+import Slider from 'rc-slider'
 
 
 export default function BrowsePage() {
@@ -213,14 +214,21 @@ export default function BrowsePage() {
           <h4 className="font-medium mb-3">{t("filterPanel.priceRange")}</h4>
           <div className="px-2">
             <Slider
-              defaultValue={50}
-              value={filters.priceRange}
+              range
+              min={0}
               max={200}
               step={1}
-              onValueChange={handlePriceChange}
-              className="my-6"
+              value={filters.priceRange}
+              onChange={handlePriceChange}
+              allowCross={false}
+              trackStyle={[{ backgroundColor: '#6366f1', height: 8 }]}
+              handleStyle={[
+                { borderColor: '#6366f1', height: 24, width: 24, marginLeft: -12, marginTop: -8, backgroundColor: '#fff' },
+                { borderColor: '#6366f1', height: 24, width: 24, marginLeft: -12, marginTop: -8, backgroundColor: '#fff' }
+              ]}
+              railStyle={{ backgroundColor: '#e5e7eb', height: 8 }}
             />
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-2">
               <span className="text-sm">€{filters.priceRange[0]}</span>
               <span className="text-sm">€{filters.priceRange[1]}</span>
             </div>

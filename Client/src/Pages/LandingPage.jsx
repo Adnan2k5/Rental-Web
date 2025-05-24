@@ -205,32 +205,6 @@ export default function LandingPage() {
                   height={600}
                   className="w-full rounded-xl shadow-sm"
                 />
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 flex items-center gap-3 border border-gray-100">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">
-                      {t('landingPage.hero.smartUpgrades')}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {t('landingPage.hero.smartUpgradesDesc')}
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute -top-6 -right-6 bg-white rounded-xl shadow-lg p-4 flex items-center gap-3 border border-gray-100">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    <Users className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">
-                      {t('landingPage.hero.usersCount')}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {t('landingPage.hero.usersTrusted')}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -244,13 +218,13 @@ export default function LandingPage() {
           variants={staggerChildren}
         >
           <motion.div
-            className="flex items-center justify-center gap-8 md:gap-16"
+            className="flex  items-center justify-center gap-8 md:gap-16"
             variants={fadeIn}
           >
             {stats?.map((stat, index) => (
               <motion.div
                 key={index}
-                className="text-center"
+                className="text-center items-center justify-center"
                 variants={scaleUp}
                 custom={index}
               >
@@ -571,9 +545,6 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 {[
                   t('landingPage.footer.aboutUs'),
-                  t('landingPage.footer.careers'),
-                  t('landingPage.footer.blog'),
-                  t('landingPage.footer.press'),
                   t('landingPage.footer.contactUs'),
                 ].map((item, index) => (
                   <li key={index}>
@@ -590,11 +561,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 {[
                   t('landingPage.footer.helpCenter'),
-                  t('landingPage.footer.faqs'),
-                  t('landingPage.footer.shippingPolicy'),
-                  t('landingPage.footer.returnPolicy'),
                   t('landingPage.footer.termsOfService'),
-                  t('landingPage.footer.privacyPolicy'),
                 ].map((item, index) => (
                   <li key={index}>
                     <Link to="#" className="text-gray-600 hover:text-primary">

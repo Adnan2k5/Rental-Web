@@ -207,7 +207,7 @@ function AdminSidebar({ pathname, handleLogout, t }) {
 
         {/* Continue with other sidebar groups */}
       </SidebarContent>
-      <LanguageSelector className="ml-5" />
+      <LanguageSelector direction='up' className="ml-5" />
       <SidebarFooter className="border-t p-4">
         <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
