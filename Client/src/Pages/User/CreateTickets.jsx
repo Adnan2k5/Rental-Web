@@ -14,11 +14,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { pageTransition } from "../../assets/Animations"
 import { Alert, AlertDescription, AlertTitle } from "../../Components/ui/alert"
 import { useTranslation } from "react-i18next"
+import { useAuth } from "../../Middleware/AuthProvider"
+import { toast } from "sonner"
 
 export const CreateTicket = () => {
     const { t } = useTranslation()
+    const { user } = useAuth()
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
+        name: user?.name || "",
+        email: user?.email || "",
         subject: "",
         description: "",
         category: "",
@@ -42,19 +47,6 @@ export const CreateTicket = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
-
-        // Clear error for this field if it exists
-        if (errors[name]) {
-            setErrors((prev) => {
-                const newErrors = { ...prev }
-                delete newErrors[name]
-                return newErrors
-            })
-        }
-    }
-
-    const handleSelectChange = (name, value) => {
         setFormData((prev) => ({ ...prev, [name]: value }))
 
         // Clear error for this field if it exists
@@ -111,14 +103,18 @@ export const CreateTicket = () => {
     const validateForm = () => {
         const newErrors = {}
 
+        if (!formData.name.trim()) {
+            newErrors.name = t("createTicket.errors.name") || "Name is required"
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = t("createTicket.errors.email") || "Email is required"
+        }
         if (!formData.subject.trim()) {
             newErrors.subject = t("createTicket.errors.subject")
         }
-
         if (!formData.description.trim()) {
             newErrors.description = t("createTicket.errors.description")
         }
-
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
     }
@@ -139,8 +135,16 @@ export const CreateTicket = () => {
                 // Clean up file preview URLs
                 filePreview.forEach((file) => URL.revokeObjectURL(file.url))
 
-                // Navigate to the ticket details page
-                navigate(`/dashboard/tickets/${response.data._id}`)
+                if (!user.user) {
+                    toast.success(t("createTicket.success"))
+                }
+                else {
+                    toast.success(t("createTicket.success"))
+                    navigate(`/dashboard/tickets/${response.data._id}`)
+
+                }
+
+
             }
         } catch (err) {
             setError("Failed to create ticket. Please try again later.")
@@ -180,6 +184,35 @@ export const CreateTicket = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className={errors.name ? "text-red-500" : ""}>
+                                {t("createTicket.name") || "Name"} {errors.name && <span className="text-red-500">*</span>}
+                            </Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                placeholder={t("createTicket.namePlaceholder") || "Enter your name"}
+                                value={formData.name}
+                                onChange={handleChange}
+                                disabled={!!user?.name}
+                            />
+                            {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className={errors.email ? "text-red-500" : ""}>
+                                {t("createTicket.email") || "Email"} {errors.email && <span className="text-red-500">*</span>}
+                            </Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder={t("createTicket.emailPlaceholder") || "Enter your email"}
+                                value={formData.email}
+                                onChange={handleChange}
+                                disabled={!!user?.email}
+                            />
+                            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="subject" className={errors.subject ? "text-red-500" : ""}>
                                 {t("createTicket.subject")} {errors.subject && <span className="text-red-500">*</span>}

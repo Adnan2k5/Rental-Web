@@ -26,6 +26,10 @@ export const UserTickets = () => {
 
 
     useEffect(() => {
+        if (!user) {
+            setLoading(false)
+            return
+        }
         const fetchTickets = async () => {
             try {
                 setLoading(true)
@@ -41,14 +45,14 @@ export const UserTickets = () => {
         }
 
         fetchTickets()
-    }, [])
+    }, [user])
 
 
-    useEffect(() => {
-        if (!user) {
-            navigate("/login")
-        }
-    }, [user, navigate])
+    // useEffect(() => {
+    //     if (!user) {
+    //         navigate("/login")
+    //     }
+    // }, [user, navigate])
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
             case "open":
@@ -110,6 +114,16 @@ export const UserTickets = () => {
 
     if (loading) {
         return <Loader />
+    }
+
+    if (!user) {
+        // Allow non-logged-in users to create tickets, but don't show ticket list
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+                <HelpCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                <Button onClick={() => navigate("/dashboard/tickets/create")}>{t("userTickets.createFirstTicket") || "Create Ticket"}</Button>
+            </div>
+        )
     }
 
     return (

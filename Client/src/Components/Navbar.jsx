@@ -58,7 +58,7 @@ export const Navbar = () => {
                 <div className="flex items-center space-x-4">
                     <Link
                         to="/chat"
-                        className="hidden md:flex items-center text-gray-700 hover:text-primary"
+                        className="md:flex items-center text-gray-700 hover:text-primary"
                     >
                         <MessageCircleMore className="h-5 w-5" />
                     </Link>

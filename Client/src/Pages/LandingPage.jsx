@@ -22,7 +22,7 @@ import LanguageSelector from '../Components/LanguageSelector';
 
 export default function LandingPage() {
   const { t } = useTranslation();
-  const [tstats, setStats] = useState([]);
+  const [tstats, setStats] = useState({}); // should be an object, not an array
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const openQuickView = (product) => {
     setQuickViewProduct(product);
@@ -55,9 +55,28 @@ export default function LandingPage() {
     },
   };
 
+  const [trendingItems, setTrendingItems] = useState([]);
+  const [trendingLoading, setTrendingLoading] = useState(true); // loading state for trending
+  useEffect(() => {
+    setTrendingLoading(true);
+    fetchTopReviewedItems().then((res) => {
+      if (res && Array.isArray(res.message)) {
+        setTrendingItems(res.message);
+      } else if (res && res.data && Array.isArray(res.data.data)) {
+        setTrendingItems(res.data.data);
+      } else {
+        setTrendingItems([]); // fallback to empty array
+      }
+      setTrendingLoading(false);
+    });
+  }, []);
+
+  const [statsLoading, setStatsLoading] = useState(true); // loading state for stats
   const fetchStats = async () => {
+    setStatsLoading(true);
     const res = await getStats();
     setStats(res);
+    setStatsLoading(false);
   }
 
   useEffect(() => {
@@ -67,11 +86,11 @@ export default function LandingPage() {
   const stats = [
     {
       label: t('landingPage.stats.happyCustomers'),
-      value: tstats?.stats?.totalUsers || 0,
+      value: tstats?.stats?.totalUsers ?? 0,
     },
     {
       label: t('landingPage.stats.productsAvailable'),
-      value: tstats?.stats?.totalItems || 0,
+      value: tstats?.stats?.totalItems ?? 0,
     },
     {
       label: t('landingPage.stats.total'),
@@ -103,23 +122,8 @@ export default function LandingPage() {
     },
   ];
 
-  const [trendingItems, setTrendingItems] = useState([]);
+  // Smooth scroll for anchor links
   useEffect(() => {
-    fetchTopReviewedItems().then((res) => {
-      if (res && Array.isArray(res.message)) {
-        setTrendingItems(res.message);
-      } else if (res && res.data && Array.isArray(res.data.data)) {
-        setTrendingItems(res.data.data);
-      } else {
-        setTrendingItems([]); // fallback to empty array
-      }
-    });
-  }, []);
-
-
-
-  useEffect(() => {
-    // Smooth scroll for anchor as
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -142,7 +146,7 @@ export default function LandingPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-16 md:pt-24 lg:pt-32 overflow-hidden">
+      <section className="relative pt-16 flex flex-col items-center justify-center md:pt-24 lg:pt-32 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -right-1/4 -top-1/4 w-2/3 h-2/3 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 blur-3xl opacity-30 transform rotate-12"></div>
           <div className="absolute -left-1/4 -bottom-1/4 w-2/3 h-2/3 rounded-full bg-gradient-to-tr from-teal-50 to-blue-50 blur-3xl opacity-30 transform -rotate-12"></div>
@@ -221,19 +225,29 @@ export default function LandingPage() {
             className="flex  items-center justify-center gap-8 md:gap-16"
             variants={fadeIn}
           >
-            {stats?.map((stat, index) => (
-              <motion.div
-                key={index}
-                className="text-center items-center justify-center"
-                variants={scaleUp}
-                custom={index}
-              >
-                <h3 className="text-4xl font-bold text-gray-900">
-                  <CounterAnimation target={stat.value} />+
-                </h3>
-                <p className="text-gray-600">{stat.label}</p>
-              </motion.div>
-            ))}
+            {statsLoading
+              ? Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center justify-center animate-pulse"
+                >
+                  <div className="h-10 w-24 bg-gray-200 rounded mb-2" />
+                  <div className="h-4 w-20 bg-gray-100 rounded" />
+                </div>
+              ))
+              : stats?.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  className="text-center items-center justify-center"
+                  variants={scaleUp}
+                  custom={index}
+                >
+                  <h3 className="text-4xl font-bold text-gray-900">
+                    <CounterAnimation target={stat.value} />+
+                  </h3>
+                  <p className="text-gray-600">{stat.label}</p>
+                </motion.div>
+              ))}
           </motion.div>
         </motion.div>
       </section>
@@ -323,63 +337,78 @@ export default function LandingPage() {
             viewport={{ once: true, margin: '-100px' }}
             variants={staggerChildren}
           >
-            {trendingItems.map((item, index) => (
-              <motion.div
-                key={item._id || index}
-                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 group cursor-pointer"
-                variants={scaleUp}
-                whileHover={{ y: -8 }}
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={item.images?.[0] || '/placeholder.svg'}
-                    alt={item.name}
-                    width={300}
-                    height={200}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      openQuickView(item);
-                    }}
-                    className="absolute bottom-3 left-0 right-0 mx-auto w-3/4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
-                  >
-                    {t('landingPage.trendingSection.quickView')}
-                  </Button>
+            {trendingLoading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 animate-pulse"
+                >
+                  <div className="relative h-48 bg-gray-200" />
+                  <div className="p-5">
+                    <div className="h-4 w-24 bg-gray-200 rounded mb-2" />
+                    <div className="h-3 w-16 bg-gray-100 rounded mb-1" />
+                    <div className="h-3 w-20 bg-gray-100 rounded mb-2" />
+                    <div className="h-4 w-28 bg-gray-200 rounded" />
+                  </div>
                 </div>
-                <div className="p-5">
-                  <div className="flex items-center mb-2">
-                    <div className="flex items-center text-amber-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span className="ml-1 text-sm font-medium">
-                        {item.avgRating?.toFixed(1) || 0}
+              ))
+              : trendingItems.map((item, index) => (
+                <motion.div
+                  key={item._id || index}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 group cursor-pointer"
+                  variants={scaleUp}
+                  whileHover={{ y: -8 }}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={item.images?.[0] || '/placeholder.svg'}
+                      alt={item.name}
+                      width={300}
+                      height={200}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openQuickView(item);
+                      }}
+                      className="absolute bottom-3 left-0 right-0 mx-auto w-3/4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
+                    >
+                      {t('landingPage.trendingSection.quickView')}
+                    </Button>
+                  </div>
+                  <div className="p-5">
+                    <div className="flex items-center mb-2">
+                      <div className="flex items-center text-amber-500">
+                        <Star className="h-4 w-4 fill-current" />
+                        <span className="ml-1 text-sm font-medium">
+                          {item.avgRating?.toFixed(1) || 0}
+                        </span>
+                      </div>
+                      <span className="mx-2 text-gray-300">•</span>
+                      <span className="text-xs text-gray-500">
+                        {item.totalReviews} {t('landingPage.trendingSection.reviews')}
                       </span>
                     </div>
-                    <span className="mx-2 text-gray-300">•</span>
-                    <span className="text-xs text-gray-500">
-                      {item.totalReviews} {t('landingPage.trendingSection.reviews')}
-                    </span>
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-primary">€{item.price}/{t('landingPage.trendingSection.perMonth')}</p>
+                      <Link
+                        to={`/product/${item._id}`}
+                        className="text-xs text-gray-500 hover:text-primary flex items-center"
+                      >
+                        {t('landingPage.trendingSection.seeDetails')} <ChevronRight className="h-3 w-3 ml-1" />
+                      </Link>
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    {item.name}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <p className="font-bold text-primary">€{item.price}/{t('landingPage.trendingSection.perMonth')}</p>
-                    <Link
-                      to={`/product/${item._id}`}
-                      className="text-xs text-gray-500 hover:text-primary flex items-center"
-                    >
-                      {t('landingPage.trendingSection.seeDetails')} <ChevronRight className="h-3 w-3 ml-1" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </motion.div>
         </div>
       </section>
@@ -544,12 +573,19 @@ export default function LandingPage() {
               <h3 className="font-semibold text-lg mb-4">{t('landingPage.footer.company')}</h3>
               <ul className="space-y-3">
                 {[
-                  t('landingPage.footer.aboutUs'),
-                  t('landingPage.footer.contactUs'),
+                  {
+                    label: t('landingPage.footer.aboutUs'),
+                    link: '/about'
+                  },
+                  {
+                    label: t('landingPage.footer.contactUs'),
+                    link: '/contact'
+                  }
+
                 ].map((item, index) => (
                   <li key={index}>
-                    <Link to="#" className="text-gray-600 hover:text-primary">
-                      {item}
+                    <Link to={item.link} className="text-gray-600 hover:text-primary">
+                      {item.label}
                     </Link>
                   </li>
                 ))}

@@ -71,6 +71,11 @@ const UserDashboardLayout = () => {
         }
     ]
 
+    // Filter navItems for sidebar based on user login status
+    const filteredNavItems = user
+        ? navItems
+        : navItems.filter(item => item.label === t('sidebar.tickets'))
+
     // Check if a navigation item is active
     const isActive = (path) => {
         if (path === "/dashboard" && location.pathname === "/dashboard") {
@@ -112,15 +117,16 @@ const UserDashboardLayout = () => {
                 <div className="flex-1 py-6">
                     <div className="px-3 mb-6">
                         <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">MENU</div>
-                        {navItems.map((item, index) => (
-                            <Link to={item.path} key={index}>
+                        {filteredNavItems.map((item, index) => (
+                            <Link to={item.path} key={index} tabIndex={user ? 0 : (item.label === t('sidebar.tickets') ? 0 : -1)}>
                                 <motion.button
                                     className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${isActive(item.path)
                                         ? "bg-primary/10 text-primary font-medium"
                                         : "text-muted-foreground hover:bg-gray-100"
-                                        }`}
+                                        } ${!user && item.label !== t('sidebar.tickets') ? 'opacity-50 pointer-events-none' : ''}`}
                                     whileHover={{ x: 5 }}
                                     transition={{ type: "spring", stiffness: 400 }}
+                                    disabled={!user && item.label !== t('sidebar.tickets')}
                                 >
                                     {item.icon}
                                     {item.label}
@@ -143,15 +149,27 @@ const UserDashboardLayout = () => {
 
                     <div className="px-3">
                         <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">ACCOUNT</div>
-                        <motion.button
-                            className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
-                            whileHover={{ x: 5 }}
-                            transition={{ type: "spring", stiffness: 400 }}
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="h-4 w-4 mr-3" />
-                            {t('sidebar.logout')}
-                        </motion.button>
+                        {user ? (
+                            <motion.button
+                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-4 w-4 mr-3" />
+                                {t('sidebar.logout')}
+                            </motion.button>
+                        ) : (
+                            <motion.button
+                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                                onClick={() => navigate('/login')}
+                            >
+                                <LogOut className="h-4 w-4 mr-3" />
+                                {t('sidebar.login') || 'Login'}
+                            </motion.button>
+                        )}
                     </div>
                 </div>
             </motion.div>
@@ -179,13 +197,14 @@ const UserDashboardLayout = () => {
                     <div className="flex-1 py-6">
                         <div className="px-3 mb-6">
                             <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">MENU</div>
-                            {navItems.map((item, index) => (
-                                <Link to={item.path} key={index} onClick={() => setIsMobileMenuOpen(false)}>
+                            {filteredNavItems.map((item, index) => (
+                                <Link to={item.path} key={index} onClick={() => setIsMobileMenuOpen(false)} tabIndex={user ? 0 : (item.label === t('sidebar.tickets') ? 0 : -1)}>
                                     <motion.button
                                         className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${isActive(item.path)
                                             ? "bg-primary/10 text-primary font-medium"
                                             : "text-muted-foreground hover:bg-gray-100"
-                                            }`}
+                                            } ${!user && item.label !== t('sidebar.tickets') ? 'opacity-50 pointer-events-none' : ''}`}
+                                        disabled={!user && item.label !== t('sidebar.tickets')}
                                     >
                                         {item.icon}
                                         {item.label}
@@ -197,16 +216,29 @@ const UserDashboardLayout = () => {
                         <Separator className="my-6" />
                         <div className="px-3">
                             <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">ACCOUNT</div>
-                            <motion.button
-                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
-                                onClick={() => {
-                                    handleLogout()
-                                    setIsMobileMenuOpen(false)
-                                }}
-                            >
-                                <LogOut className="h-4 w-4 mr-3" />
-                                Logout
-                            </motion.button>
+                            {user ? (
+                                <motion.button
+                                    className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                    onClick={() => {
+                                        handleLogout()
+                                        setIsMobileMenuOpen(false)
+                                    }}
+                                >
+                                    <LogOut className="h-4 w-4 mr-3" />
+                                    Logout
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                    onClick={() => {
+                                        navigate('/login')
+                                        setIsMobileMenuOpen(false)
+                                    }}
+                                >
+                                    <LogOut className="h-4 w-4 mr-3" />
+                                    {t('sidebar.login') || 'Login'}
+                                </motion.button>
+                            )}
                         </div>
                     </div>
                 </SheetContent>

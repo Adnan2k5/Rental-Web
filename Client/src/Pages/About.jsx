@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion';
 import { Footer } from '../Components/Footer';
 import { Navbar } from '../Components/Navbar';
+import { useEffect } from 'react';
 
 export default function About() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }
+        , []);
+
+
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
             <Navbar />

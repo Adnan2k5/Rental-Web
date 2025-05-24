@@ -80,7 +80,8 @@
     "getverified": "Verificati",
     "tickets": "Ticket & Supporto",
     "logout": "Disconnetti",
-    "payments": "Collega il tuo PayPal"
+    "payments": "Collega il tuo PayPal",
+    "login": "Accedi"
   },
   "userbooks": {
     "title": "Oggetti noleggiati",
@@ -238,7 +239,8 @@
       "subject": "L'oggetto è obbligatorio.",
       "description": "La descrizione è obbligatoria.",
       "category": "La categoria è obbligatoria."
-    }
+    },
+    "success": "Ticket creato con successo!"
   },
   "userTickets": {
     "title": "I miei ticket di supporto",
