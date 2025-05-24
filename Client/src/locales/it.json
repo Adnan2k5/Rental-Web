@@ -776,6 +776,7 @@
     "securePayment": "Pagamento sicuro",
     "breadcrumbHome": "Casa",
     "breadcrumbCart": "Carrello",
-    "breadcrumbPayment": "Pagamento"
+    "breadcrumbPayment": "Pagamento",
+    "quantity": "Quantità"
   }
 }

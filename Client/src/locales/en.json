@@ -778,6 +778,7 @@
     "breadcrumbCart": "Cart",
     "breadcrumbPayment": "Payment",
     "pleaseTryAgain": "Please try again.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "quantity": "Quantity"
   }
 }

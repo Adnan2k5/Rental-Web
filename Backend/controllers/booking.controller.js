@@ -102,12 +102,13 @@ export const createBooking = asyncHandler(async (req, res) => {
         intent: "CAPTURE",
         purchase_units,
         application_context: {
-            return_url: `${process.env.CLIENT_URL}/payment/success`,
+            return_url: `${process.env.CLIENT_URL}/payment/approve`,
             cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
         }
     };
 
     const accessToken = await getAccessToken();
+    console.log("Access Token", accessToken);
     const clientId = process.env.PAYPAL_CLIENT_ID;
     const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
 
@@ -150,6 +151,7 @@ export const createBooking = asyncHandler(async (req, res) => {
         totalPrice,
         booking,
         merchantIds,
+        redirectURL :paypalData.links[1].href // This is the approval URL for the PayPal order
     }));
 });
 
@@ -171,14 +173,29 @@ export const approveBooking = asyncHandler(async (req, res) => {
         });
 
     const accessToken = await getAccessToken();
+    console.log("Access Token", accessToken);
 
-    const response = await axios.post(`https://api.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {}, {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
+
+    const encodeObjectToBase64 = (object) => Buffer.from(JSON.stringify(object)).toString("base64");
+    const header = { alg: "none" };
+    const encodedHeader = encodeObjectToBase64(header);
+    const payloadAssertion = { iss: clientId, payer_id: sellerPayeeId };
+    const encodedPayload = encodeObjectToBase64(payloadAssertion);
+    const paypalAuthAssertion = `${encodedHeader}.${encodedPayload}.`;
+    
+    const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {}, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
             "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+            "PayPal-Auth-Assertion": paypalAuthAssertion,
+
         }
     });
+
+    console.log(response.data);
 
     if (response.status === 201 || response.status === 200) {
         const booking = await Booking.findOneAndUpdate(
@@ -213,6 +230,7 @@ export const approveBooking = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(true, "Booking approved successfully"));
     } else {
+        console.log(response.data);
         throw new ApiError(response.status, response.data.message || "Failed to approve booking");
     }
 });

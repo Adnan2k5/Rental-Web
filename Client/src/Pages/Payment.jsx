@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
 import { ChevronRight, Check, AlertCircle, ArrowLeft, CreditCard, Calendar, Package, User, CodeSquare } from "lucide-react"
@@ -60,11 +59,12 @@ const PaymentPage = () => {
         })
     }
 
-    const createOrder = async (data, actions) => {
+    const createOrder = async () => {
         setIsProcessing(true)
         try {
             const res = await createBookingApi(fullName);
-            const { orderId } = res.data.message;
+            const { orderId, redirectURL } = res.data.message;
+            window.location.href = redirectURL;
             console.log("Order created:", orderId)
             return orderId;
         }
@@ -73,7 +73,7 @@ const PaymentPage = () => {
         }
     }
 
-    const onApprove = async (data, actions) => {
+    const onApprove = async (data) => {
         try {
             setPaymentStatus("processing")
             const res = await approveBookingApi(data.orderID)
@@ -319,29 +319,13 @@ const PaymentPage = () => {
                                                         </div>
                                                     </div>
                                                 )}
-
-                                                <PayPalScriptProvider
-                                                    options={{
-                                                        "client-id":
-                                                            import.meta.env.VITE_PAYPAL_CLIENT_ID,
-                                                        "data-merchant-id": merchantIdsString,
-                                                        currency: "EUR",
-                                                    }}
+                                                <button
+                                                    onClick={createOrder}
+                                                    className="w-full bg-blue-600 text-white py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
                                                 >
-                                                    <PayPalButtons
-                                                        style={{
-                                                            layout: "vertical",
-                                                            color: "gold",
-                                                            shape: "pill",
-                                                            label: "pay",
-
-                                                        }}
-                                                        createOrder={createOrder}
-                                                        onApprove={onApprove}
-                                                        onError={onError}
-                                                        disabled={isProcessing}
-                                                    />
-                                                </PayPalScriptProvider>
+                                                    <CodeSquare className="h-5 w-5" />
+                                                    {t("paymentPage.payWithPayPal")}
+                                                </button>
                                             </div>
 
                                             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-4">

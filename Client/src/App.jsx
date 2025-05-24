@@ -31,6 +31,7 @@ import { LinkPaypal } from './Pages/User/LinkPaypal';
 import { CallBack } from './Pages/User/PaypalCallBack';
 import { Contact } from "./Pages/Contact"
 import About from './Pages/About';
+import { PaymentCallback } from './Pages/PaymentCallback';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             <Route path='/contact' element={<Contact />} />
             <Route path='/about' element={<About />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path='/payment/approve' element={<PaymentCallback />} />
             <Route path="/dashboard" element={<UserDashboardLayout />}>
               <Route index element={<ItemDashboard />} />
               <Route path="myitems" element={<UserItems />} />
