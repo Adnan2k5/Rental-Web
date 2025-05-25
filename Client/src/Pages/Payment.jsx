@@ -14,12 +14,12 @@ import { toast } from "sonner"
 import i18n from "../i18"
 import { containerVariants, itemVariants, successVariants } from "../assets/Animations"
 
-const PaymentPage = () => {
+const PaymentPage = ({ paystatus = "pending" }) => {
     const { t } = useTranslation()
     const [cartItems, setCartItems] = useState([])
     const [fullName, setFullName] = useState("")
     const [total, setTotal] = useState(0)
-    const [paymentStatus, setPaymentStatus] = useState("pending") // pending, success, error
+    const [paymentStatus, setPaymentStatus] = useState(paystatus) // pending, success, error
     const [isProcessing, setIsProcessing] = useState(false)
 
     useEffect(() => {

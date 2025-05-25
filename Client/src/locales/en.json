@@ -81,7 +81,8 @@
     "tickets": "Tickets & Support",
     "logout": "Logout",
     "payments": "Link your Paypal",
-    "login": "Login"
+    "login": "Login",
+    "myprofile": "My Profile"
   },
   "userbooks": {
     "title": "Items Rented",

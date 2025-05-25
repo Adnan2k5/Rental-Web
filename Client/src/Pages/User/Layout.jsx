@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Outlet, Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge, BadgeEuro } from 'lucide-react'
+import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge, BadgeEuro, User } from 'lucide-react'
 import { Button } from "../../Components/ui/button"
 import {
     DropdownMenu,
@@ -43,6 +43,11 @@ const UserDashboardLayout = () => {
             icon: <Box className="h-4 w-4 mr-3" />,
             label: t('sidebar.myitems'),
             path: "/dashboard/myitems",
+        },
+        {
+            icon: <User className="h-4 w-4 mr-3" />,
+            label: t('sidebar.myprofile') || 'My Profile',
+            path: user && user._id ? `/profile/${user._id}` : "/dashboard"
         },
         {
             icon: <LayoutGrid className="h-4 w-4 mr-3" />,

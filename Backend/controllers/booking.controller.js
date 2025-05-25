@@ -6,6 +6,7 @@ import { Cart } from "../models/cart.model.js";
 import { Booking } from "../models/booking.model.js";
 import { getAccessToken } from "../utils/paypal.js";
 import axios from "axios";
+import sendEmail from "../utils/sendOTP.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
     const { name } = req.body;
@@ -173,7 +174,6 @@ export const approveBooking = asyncHandler(async (req, res) => {
         });
 
     const accessToken = await getAccessToken();
-    console.log("Access Token", accessToken);
 
     const clientId = process.env.PAYPAL_CLIENT_ID;
     const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
@@ -185,19 +185,46 @@ export const approveBooking = asyncHandler(async (req, res) => {
     const encodedPayload = encodeObjectToBase64(payloadAssertion);
     const paypalAuthAssertion = `${encodedHeader}.${encodedPayload}.`;
     
-    const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`, {}, {
+    const response = await axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
             "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
             "PayPal-Auth-Assertion": paypalAuthAssertion,
-
         }
     });
 
-    console.log(response.data);
+    console.log("On Approve",response.data);
+
+    // const payment_source = response.data.payment_source;
+
+    // const approvecall = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/confirm-payment-source`, {payment_source}, {
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${accessToken}`,
+    //         "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+    //         "PayPal-Auth-Assertion": paypalAuthAssertion,
+    //     }
+    // })
+
+    // console.log("Approve Call Response:", approvecall.data);
 
     if (response.status === 201 || response.status === 200) {
+        try{
+            const captureResponse = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`,{},{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+                "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+                "PayPal-Auth-Assertion": paypalAuthAssertion,
+            }
+        });
+        }catch (error) {
+            if(error.response === 422){
+                return;
+            }
+        }
+
         const booking = await Booking.findOneAndUpdate(
             { paypalOrderId },
             { status: "confirmed" },
@@ -209,24 +236,25 @@ export const approveBooking = asyncHandler(async (req, res) => {
         }
 
         const mails = cart.items;
-        cart.items = [];
-        await cart.save();
+        console.log("Mails", mails)
+        // cart.items = [];
+        // await cart.save();
 
-        sendEmail({
-            from: process.env.SMTP_EMAIL,
-            to: req.user.email,
-            subject: "Booking Confirmation",
-            text: `Your booking has been confirmed. Booking details: ${JSON.stringify(booking)}`
-        });
+        // sendEmail({
+        //     from: process.env.SMTP_EMAIL,
+        //     to: req.user.email,
+        //     subject: "Booking Confirmation",
+        //     text: `Your booking has been confirmed. Booking details: ${JSON.stringify(booking)}`
+        // });
 
-        mails.forEach(async (cartItem) => {
-            sendEmail({
-                from: process.env.SMTP_EMAIL,
-                to: cartItem.item.owner.email,
-                subject: "New Booking",
-                text: `You have a new booking for your item ${cartItem.item.name}. Booking details: ${JSON.stringify(booking)}`
-            });
-        });
+        // mails.forEach(async (cartItem) => {
+        //     sendEmail({
+        //         from: process.env.SMTP_EMAIL,
+        //         to: cartItem.item.owner.email,
+        //         subject: "New Booking",
+        //         text: `You have a new booking for your item ${cartItem.item.name}. Booking details: ${JSON.stringify(booking)}`
+        //     });
+        // });
 
         res.status(200).json(new ApiResponse(true, "Booking approved successfully"));
     } else {

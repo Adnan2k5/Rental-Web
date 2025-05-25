@@ -1,26 +1,51 @@
+import { useNavigate } from 'react-router-dom';
 import { approveBookingApi } from '../api/bookings.api';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import PaymentPage from './Payment';
+import { toast } from 'sonner';
 
 export const PaymentCallback = () => {
     const queryParams = new URLSearchParams(window.location.search);
     const token = queryParams.get('token');
     const PayerID = queryParams.get('PayerID');
+    const [loading, setloading] = useState(true);
+    const [success, setSuccess] = useState(null);
 
-    useEffect(async () => {
-        if (token && PayerID) {
-            const res = await approveBookingApi(token);
-            console.log(res);
-            if (res.status === 200) {
-                // Handle successful payment approval
-                console.log("Payment approved successfully");
-                // You can redirect or show a success message here
-            } else {
-                // Handle failure
-                console.error("Payment approval failed");
+
+    const approveBooking = async () => {
+        try {
+            if (token) {
+                const res = await approveBookingApi(token);
+                if (res.status === 200) {
+                    setSuccess(true);
+                }
             }
+        }
+        catch (error) {
+            toast.error("Payment approval failed. Please try again.");
+            setSuccess(false);
+        }
+        finally {
+            setloading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (token && PayerID) {
+            approveBooking();
         }
     })
     return (
-        <div>Loading...</div>
+        <div className="flex flex-col items-center justify-center h-screen">
+            {
+                loading ? (
+                    <div className="text-lg font-semibold">Processing your payment...</div>
+                ) : !loading && success ? (
+                    <PaymentPage paystatus='success' />
+                ) : !loading && success === false ? (
+                    <div className="text-lg font-semibold text-red-600">Payment approval failed. Please try again.</div>
+                ) : null
+            }
+        </div>
     )
 }

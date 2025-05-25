@@ -159,3 +159,48 @@ export const updateProfilePicture = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, updatedUser, "Profile picture updated successfully"));
 });
+
+export const updateProfileBanner = asyncHandler(async (req,res)=> {
+    const id = req.user._id;
+
+    // Check if file exists in the request
+    if (!req.file) {
+        throw new ApiError(400, "Profile picture file is required");
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Get the local path to the uploaded file
+    const localFilePath = req.file.path;
+
+    // Upload the file to Cloudinary
+    const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+    
+    if (!cloudinaryResponse || !cloudinaryResponse.url) {
+        throw new ApiError(500, "Failed to upload profile picture");
+    }
+
+    // If user already has a profile picture, we can delete the old one from Cloudinary
+    // This would require storing the public_id of the previous image
+    if (user.profilePicture) {
+        await deleteFromCloudinary(user.profilePictureId);
+    }
+
+    // Update user with new profile picture URL and public_id
+    const updatedUser = await User.findByIdAndUpdate(
+        id,
+        {
+            $set: {
+                profileBanner: cloudinaryResponse.url,
+                // Store the public_id for future deletion if needed
+                profileBannerId: cloudinaryResponse.public_id
+            }
+        },
+        { new: true }
+    ).select("-password -refreshToken");
+
+    return res.status(200).json(new ApiResponse(200, updatedUser, "Profile Banner updated successfully"));
+})
