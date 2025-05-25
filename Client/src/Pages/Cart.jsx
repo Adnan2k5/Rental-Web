@@ -156,7 +156,7 @@ export default function CartPage() {
   }
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + (item.item?.price || 0) * item.quantity * calculateDaysBetween(item.startDate, item.endDate),
+    (total, item) => total + (item.item?.price || 0) * item.quantity * (calculateDaysBetween(item.startDate, item.endDate) + 1),
     0
   )
 
@@ -240,7 +240,7 @@ export default function CartPage() {
                             <h3 className="font-medium text-lg">{i18n.language === 'it' ? item.item.name_it : item.item.name}</h3>
                             <div className="flex items-center">
                               <span className="font-bold text-lg text-primary">
-                                €{item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
+                                €{item.item.price * item.quantity * ((calculateDaysBetween(item.startDate, item.endDate)) + 1)}
                               </span>
                             </div>
                           </div>
