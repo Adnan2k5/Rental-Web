@@ -203,8 +203,6 @@ export default function UserItems() {
                                             </PaginationItem>
                                         )
                                     }
-
-                                    // Show ellipsis for skipped pages
                                     if (
                                         (pageNumber === 2 && currentPage > 3) ||
                                         (pageNumber === totalPages - 1 && currentPage < totalPages - 2)

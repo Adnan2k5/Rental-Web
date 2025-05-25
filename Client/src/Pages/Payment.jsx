@@ -109,7 +109,7 @@ const PaymentPage = ({ paystatus = "pending" }) => {
     const merchantIds = Array.from(
         new Set(
             cartItems
-                .map(item => item.item.owner?.paymentDetails?.merchantIdInPayPal)
+                .map(item => item.item?.owner?.paymentDetails?.merchantIdInPayPal)
                 .filter(Boolean)
         )
     );
@@ -239,7 +239,7 @@ const PaymentPage = ({ paystatus = "pending" }) => {
                                             <div className="space-y-4">
                                                 {cartItems.map((item, index) => (
                                                     <motion.div
-                                                        key={item.item._id}
+                                                        key={item.item?._id}
                                                         className="flex gap-4 p-4 border border-gray-100 rounded-lg"
                                                         initial={{ opacity: 0, y: 10 }}
                                                         animate={{ opacity: 1, y: 0 }}
@@ -247,22 +247,22 @@ const PaymentPage = ({ paystatus = "pending" }) => {
                                                     >
                                                         <div className="h-16 w-16 bg-gray-50 rounded-md overflow-hidden flex-shrink-0">
                                                             <img
-                                                                src={item.item.images[0] || "/placeholder.svg"}
-                                                                alt={item.item.name}
+                                                                src={item.item?.images[0] || "/placeholder.svg"}
+                                                                alt={item.item?.name}
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         </div>
                                                         <div className="flex-1">
                                                             <div className="flex justify-between">
                                                                 <h4 className="font-medium">
-                                                                    {i18n.language === "it" ? item.item.name_it : item.item.name}
+                                                                    {i18n.language === "it" ? item.item?.name_it : item.item?.name}
                                                                 </h4>
                                                                 <span className="font-bold text-primary">
                                                                     €
                                                                     {(
-                                                                        item.item.price *
-                                                                        item.quantity *
-                                                                        calculateDaysBetween(item.startDate, item.endDate)
+                                                                        item.item?.price *
+                                                                        item?.quantity *
+                                                                        calculateDaysBetween(item?.startDate, item.endDate)
                                                                     ).toFixed(2)}
                                                                 </span>
                                                             </div>
@@ -270,14 +270,14 @@ const PaymentPage = ({ paystatus = "pending" }) => {
                                                                 <div className="flex items-center gap-1">
                                                                     <Package className="h-3 w-3" />
                                                                     <span>
-                                                                        {t("paymentPage.quantity")}: {item.quantity}
+                                                                        {t("paymentPage.quantity")}: {item?.quantity}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1 mt-1">
                                                                     <Calendar className="h-3 w-3" />
                                                                     <span>
-                                                                        {formatDate(item.startDate)} - {formatDate(item.endDate)} (
-                                                                        {calculateDaysBetween(item.startDate, item.endDate)} {t("paymentPage.days")})
+                                                                        {formatDate(item?.startDate)} - {formatDate(item?.endDate)} (
+                                                                        {calculateDaysBetween(item?.startDate, item?.endDate)} {t("paymentPage.days")})
                                                                     </span>
                                                                 </div>
                                                             </div>
