@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema(
     profilePictureId: {
       type: String,
     },
+    profileBannerId: {
+      type: String,
+    },
+    profileBanner: {
+      type: String,
+    },
     name: {
       type: String,
     },

@@ -17,10 +17,7 @@ export const createBookingApi = async (fullName) => {
 
 export const approveBookingApi = async (id) => {
   try {
-    console.log('Approving booking with ID:', id);
-    const cleanId = id.split(':')[0];
-    console.log('Cleaned ID:', cleanId);
-    const res = await axiosClient.get(`/api/booking/approve/${cleanId}`, {
+    const res = await axiosClient.get(`/api/booking/approve/${id}`, {
       withCredentials: true,
     });
     return res;

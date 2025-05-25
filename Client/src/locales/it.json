@@ -81,7 +81,8 @@
     "tickets": "Ticket & Supporto",
     "logout": "Disconnetti",
     "payments": "Collega il tuo PayPal",
-    "login": "Accedi"
+    "login": "Accedi",
+    "myprofile": "Il mio profilo"
   },
   "userbooks": {
     "title": "Oggetti noleggiati",
@@ -776,6 +777,7 @@
     "securePayment": "Pagamento sicuro",
     "breadcrumbHome": "Casa",
     "breadcrumbCart": "Carrello",
-    "breadcrumbPayment": "Pagamento"
+    "breadcrumbPayment": "Pagamento",
+    "quantity": "Quantità"
   }
 }

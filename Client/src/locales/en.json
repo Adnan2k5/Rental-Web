@@ -81,7 +81,8 @@
     "tickets": "Tickets & Support",
     "logout": "Logout",
     "payments": "Link your Paypal",
-    "login": "Login"
+    "login": "Login",
+    "myprofile": "My Profile"
   },
   "userbooks": {
     "title": "Items Rented",
@@ -319,7 +320,7 @@
     "failedUpdateDuration": "Failed to update rental period.",
     "cartCleared": "Cart cleared.",
     "errorClearingCart": "Failed to clear cart.",
-    "pricePerDay": "${{price}} per day",
+    "pricePerDay": "€{{price}} per day",
     "quantity": "Quantity",
     "rentalPeriod": "Rental Period",
     "havePromo": "Have a promo code?",
@@ -778,6 +779,7 @@
     "breadcrumbCart": "Cart",
     "breadcrumbPayment": "Payment",
     "pleaseTryAgain": "Please try again.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "quantity": "Quantity"
   }
 }

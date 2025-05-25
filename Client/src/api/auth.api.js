@@ -148,21 +148,24 @@ export const UserUpdate = async (data, dispatch) => {
 
 export const updateProfilePicture = async (formData, dispatch) => {
   try {
-    const res = await axiosClient.put('/api/user/update-profile-picture', formData, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    
+    const res = await axiosClient.put(
+      '/api/user/update-profile-picture',
+      formData,
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
     if (res.status === 200) {
-      dispatch(loginSuccess(res.data.data));
       return true;
     } else {
       return false;
     }
   } catch (err) {
-    console.error("Error updating profile picture:", err);
+    console.error('Error updating profile picture:', err);
     return false;
   }
 };
