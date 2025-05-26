@@ -570,7 +570,6 @@ const verifyPhoneNumber = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
     req.user.refreshToken = null;
     await req.user.save();
-
     res.clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: 'None' });
     res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: 'None' });
 

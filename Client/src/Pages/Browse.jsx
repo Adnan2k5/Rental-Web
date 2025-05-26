@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Filter, Search, ShoppingCart, Star, X } from "lucide-react"
+import { Filter, MessageCircleMoreIcon, Search, ShoppingCart, Star, X } from "lucide-react"
 import { Button } from "../Components/ui/button"
 import { Input } from "../Components/ui/input"
 import { Checkbox } from "../Components/ui/checkbox"
-import { Slider } from "../Components/ui/slider"
 import { Badge } from "../Components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "../Components/ui/sheet"
 import { Link, useNavigate } from "react-router-dom"
@@ -21,6 +20,7 @@ import { Footer } from "../Components/Footer"
 import { Loader } from "../Components/loader"
 import { useCategories } from "../hooks/useCategories"
 import { useTranslation } from "react-i18next"
+import Slider from '@mui/material/Slider'
 
 
 export default function BrowsePage() {
@@ -49,6 +49,8 @@ export default function BrowsePage() {
   const [openquickview, setOpenQuickView] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [subCategories, setSubCategories] = useState([])
+  const [price, setPrice] = useState([0, 200])
+  const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
 
   const { categories } = useCategories() || []
   const { i18n } = useTranslation();
@@ -163,10 +165,11 @@ export default function BrowsePage() {
     }))
   }
 
-  const handlePriceChange = (value) => {
-    setFilters((prev) => ({
+  const handleAmazonStylePriceChange = (event, newValue) => {
+    setPrice(newValue)
+    setFilters(prev => ({
       ...prev,
-      priceRange: value,
+      priceRange: newValue,
       page: 1,
     }))
   }
@@ -204,25 +207,36 @@ export default function BrowsePage() {
     <div className="space-y-6 ">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">{t("filterPanel.filters")}</h3>
-        <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 text-xs text-muted-foreground">
-          {t("filterPanel.clearall")}
-        </Button>
+        {/* Removed the top Clear All button for mobile sidebar */}
       </div>
       <div className="space-y-4">
         <div>
           <h4 className="font-medium mb-3">{t("filterPanel.priceRange")}</h4>
           <div className="px-2">
             <Slider
-              defaultValue={50}
-              value={filters.priceRange}
+              value={price}
+              min={0}
               max={200}
               step={1}
-              onValueChange={handlePriceChange}
-              className="my-6"
+              onChange={handleAmazonStylePriceChange}
+              valueLabelDisplay="auto"
+              marks={[{ value: 0, label: '€0' }, { value: 50, label: '€50' }, { value: 100, label: '€100' }, { value: 150, label: '€150' }, { value: 200, label: '€200' }]}
+              sx={{
+                color: '#6366f1',
+                '& .MuiSlider-thumb': {
+                  transition: 'box-shadow 0.2s',
+                  '&:hover, &.Mui-focusVisible': {
+                    boxShadow: '0 0 0 8px rgba(99,102,241,0.16)',
+                  },
+                },
+                '& .MuiSlider-rail': {
+                  opacity: 0.5,
+                },
+              }}
             />
-            <div className="flex items-center justify-between">
-              <span className="text-sm">€{filters.priceRange[0]}</span>
-              <span className="text-sm">€{filters.priceRange[1]}</span>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-sm">Min: €{price[0]}</span>
+              <span className="text-sm">Max: €{price[1]}</span>
             </div>
           </div>
         </div>
@@ -293,26 +307,55 @@ export default function BrowsePage() {
     </div>
   )
 
+  // User sidebar nav items (reuse from user layout)
+  const userSidebarLinks = [
+    { label: t('sidebar.dashboard'), path: "/dashboard" },
+    { label: t('sidebar.myitems'), path: "/dashboard/myitems" },
+    { label: t('sidebar.browse'), path: "/browse" },
+    { label: t('sidebar.getverified'), path: "/dashboard/verification" },
+    { label: t('sidebar.payments'), path: "/dashboard/paypal" },
+    { label: t('sidebar.settings'), path: "/dashboard/settings" },
+    { label: t('sidebar.tickets'), path: "/dashboard/tickets" },
+  ];
+
+  function UserSidebarLinks({ onNavigate }) {
+    return (
+      <div className="mt-4">
+        <div className="text-xs font-semibold text-muted-foreground mb-2 px-1">USER MENU</div>
+        <div className="flex flex-col gap-1">
+          {userSidebarLinks.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={onNavigate}
+              className={`px-3 py-2 rounded-md text-sm transition-colors ${window.location.pathname === item.path ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-gray-100"}`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Navbar />
-
       <main className="container mx-auto px-4 py-8">
         <motion.div
-          className="mb-8 flex justify-between items-center"
+          className="mb-8 flex justify-end  items-center"
           initial="hidden"
           animate="visible"
           variants={fadeIn}
         >
-          <div>
-            <p className="text-gray-600">{t("browsePage.title")}</p>
+          <div className="flex items-center gap-2">
+            <Link to="/cart" className="relative">
+              <Button variant="outline" className="flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5" />
+                <span>{t("browsePage.cart")}</span>
+              </Button>
+            </Link>
           </div>
-          <Link to="/cart" className="relative">
-            <Button variant="outline" className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5" />
-              <span>{t("browsePage.cart")}</span>
-            </Button>
-          </Link>
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -323,11 +366,14 @@ export default function BrowsePage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="sticky top-24 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <div className="sticky top-24  bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
               <FilterPanel />
+              <UserSidebarLinks />
             </div>
           </motion.div>
-          <div className="lg:hidden mb-4">
+
+          {/* Menu button and sidebar for mobile */}
+          <div className="lg:hidden mb-4 flex flex-col gap-2">
             <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full flex items-center justify-center gap-2">
@@ -335,8 +381,30 @@ export default function BrowsePage() {
                   {t("filterPanel.filters")}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto">
-                <FilterPanel />
+              <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto px-4 py-6 flex flex-col">
+                <div className="flex-1">
+                  <FilterPanel />
+                </div>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="h-10 text-xs  mt-4 w-full bg-primary text-white shadow"
+                  onClick={clearFilters}
+                >
+                  {t("filterPanel.clearall")}
+                </Button>
+              </SheetContent>
+            </Sheet>
+            {/* Menu button for user sidebar, now below filter button */}
+            <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Menu
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[260px] sm:w-[300px] overflow-y-auto px-4 py-6 flex flex-col">
+                <UserSidebarLinks onNavigate={() => setIsMenuSheetOpen(false)} />
               </SheetContent>
             </Sheet>
           </div>
@@ -377,12 +445,15 @@ export default function BrowsePage() {
 
                   {filters.priceRange[0] > 0 || filters.priceRange[1] < 200 ? (
                     <Badge variant="outline" className="font-normal">
-                      ${filters.priceRange[0]} - ${filters.priceRange[1]}/month
+                      €{filters.priceRange[0]} - €{filters.priceRange[1]}
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-4 w-4 ml-1 p-0"
-                        onClick={() => handlePriceChange([0, 200])}
+                        onClick={() => {
+                          setPrice([0, 200]);
+                          setFilters(prev => ({ ...prev, priceRange: [0, 200], page: 1 }));
+                        }}
                       >
                         <X className="h-3 w-3" />
                       </Button>

@@ -59,10 +59,10 @@ export default function TermsConditions() {
         getTerms().then((data) => {
             setTerms({
                 current: {
-                    id: data.current?.version || "",
-                    content: data.current?.content || "",
-                    publishedAt: data.current?.publishedAt || "",
-                    status: data.current?.status || "published",
+                    id: data?.version || "",
+                    content: data?.content || "",
+                    publishedAt: data?.publishedAt || "",
+                    status: data?.status || "published",
                 },
                 draft: {
                     id: data.draft?.version || "",

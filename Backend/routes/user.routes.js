@@ -10,7 +10,8 @@ import {
     updateReviewById,
     deleteReviewById,
     updateUser,
-    updateProfilePicture
+    updateProfilePicture,
+    updateProfileBanner
 } from '../controllers/user.controller.js';
 import { reviewItem } from '../controllers/item.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
@@ -27,6 +28,7 @@ router.get('/reviews', verifyJWT, getUserReviews);
 
 router.put('/update/:id', verifyJWT, updateUser);
 router.put('/update-profile-picture', verifyJWT, upload.single('profilePicture'), updateProfilePicture);
+router.put('/update-profile-banner', verifyJWT, upload.single('profileBanner'), updateProfileBanner);
 
 router.route('/reviews/:id')
     .get(verifyJWT, getReviewDetailsById)

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Outlet, Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge, BadgeEuro } from 'lucide-react'
+import { Package, Settings, LogOut, ChevronDown, LayoutGrid, Box, TicketCheck, Menu, X, Badge, BadgeEuro, User } from 'lucide-react'
 import { Button } from "../../Components/ui/button"
 import {
     DropdownMenu,
@@ -45,6 +45,11 @@ const UserDashboardLayout = () => {
             path: "/dashboard/myitems",
         },
         {
+            icon: <User className="h-4 w-4 mr-3" />,
+            label: t('sidebar.myprofile') || 'My Profile',
+            path: user && user._id ? `/profile/${user._id}` : "/dashboard"
+        },
+        {
             icon: <LayoutGrid className="h-4 w-4 mr-3" />,
             label: t('sidebar.browse'),
             path: "/browse",
@@ -70,6 +75,11 @@ const UserDashboardLayout = () => {
             path: "/dashboard/tickets",
         }
     ]
+
+    // Filter navItems for sidebar based on user login status
+    const filteredNavItems = user
+        ? navItems
+        : navItems.filter(item => item.label === t('sidebar.tickets'))
 
     // Check if a navigation item is active
     const isActive = (path) => {
@@ -102,13 +112,7 @@ const UserDashboardLayout = () => {
                 <div className="p-6">
                     <Link to="/">
                         <motion.div
-                            className="text-2xl font-bold"
-                            style={{
-                                background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                            }}
-                            {...shimmerAnimation}
+                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-green-600"
                         >
                             Noleggiarmi
                         </motion.div>
@@ -118,15 +122,16 @@ const UserDashboardLayout = () => {
                 <div className="flex-1 py-6">
                     <div className="px-3 mb-6">
                         <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">MENU</div>
-                        {navItems.map((item, index) => (
-                            <Link to={item.path} key={index}>
+                        {filteredNavItems.map((item, index) => (
+                            <Link to={item.path} key={index} tabIndex={user ? 0 : (item.label === t('sidebar.tickets') ? 0 : -1)}>
                                 <motion.button
                                     className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${isActive(item.path)
                                         ? "bg-primary/10 text-primary font-medium"
                                         : "text-muted-foreground hover:bg-gray-100"
-                                        }`}
+                                        } ${!user && item.label !== t('sidebar.tickets') ? 'opacity-50 pointer-events-none' : ''}`}
                                     whileHover={{ x: 5 }}
                                     transition={{ type: "spring", stiffness: 400 }}
+                                    disabled={!user && item.label !== t('sidebar.tickets')}
                                 >
                                     {item.icon}
                                     {item.label}
@@ -149,15 +154,27 @@ const UserDashboardLayout = () => {
 
                     <div className="px-3">
                         <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">ACCOUNT</div>
-                        <motion.button
-                            className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
-                            whileHover={{ x: 5 }}
-                            transition={{ type: "spring", stiffness: 400 }}
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="h-4 w-4 mr-3" />
-                            {t('sidebar.logout')}
-                        </motion.button>
+                        {user ? (
+                            <motion.button
+                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-4 w-4 mr-3" />
+                                {t('sidebar.logout')}
+                            </motion.button>
+                        ) : (
+                            <motion.button
+                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                whileHover={{ x: 5 }}
+                                transition={{ type: "spring", stiffness: 400 }}
+                                onClick={() => navigate('/login')}
+                            >
+                                <LogOut className="h-4 w-4 mr-3" />
+                                {t('sidebar.login') || 'Login'}
+                            </motion.button>
+                        )}
                     </div>
                 </div>
             </motion.div>
@@ -176,25 +193,23 @@ const UserDashboardLayout = () => {
                                         WebkitTextFillColor: "transparent",
                                     }}
                                 >
-                                    Rental
+                                    Noleggiarmi
                                 </motion.div>
                             </Link>
-                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-                                <X className="h-5 w-5" />
-                            </Button>
                         </div>
                     </div>
 
                     <div className="flex-1 py-6">
                         <div className="px-3 mb-6">
                             <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">MENU</div>
-                            {navItems.map((item, index) => (
-                                <Link to={item.path} key={index} onClick={() => setIsMobileMenuOpen(false)}>
+                            {filteredNavItems.map((item, index) => (
+                                <Link to={item.path} key={index} onClick={() => setIsMobileMenuOpen(false)} tabIndex={user ? 0 : (item.label === t('sidebar.tickets') ? 0 : -1)}>
                                     <motion.button
                                         className={`flex items-center w-full px-3 py-2 mb-1 rounded-md text-sm ${isActive(item.path)
                                             ? "bg-primary/10 text-primary font-medium"
                                             : "text-muted-foreground hover:bg-gray-100"
-                                            }`}
+                                            } ${!user && item.label !== t('sidebar.tickets') ? 'opacity-50 pointer-events-none' : ''}`}
+                                        disabled={!user && item.label !== t('sidebar.tickets')}
                                     >
                                         {item.icon}
                                         {item.label}
@@ -206,16 +221,29 @@ const UserDashboardLayout = () => {
                         <Separator className="my-6" />
                         <div className="px-3">
                             <div className="text-xs font-semibold text-muted-foreground mb-2 px-3">ACCOUNT</div>
-                            <motion.button
-                                className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
-                                onClick={() => {
-                                    handleLogout()
-                                    setIsMobileMenuOpen(false)
-                                }}
-                            >
-                                <LogOut className="h-4 w-4 mr-3" />
-                                Logout
-                            </motion.button>
+                            {user ? (
+                                <motion.button
+                                    className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                    onClick={() => {
+                                        handleLogout()
+                                        setIsMobileMenuOpen(false)
+                                    }}
+                                >
+                                    <LogOut className="h-4 w-4 mr-3" />
+                                    Logout
+                                </motion.button>
+                            ) : (
+                                <motion.button
+                                    className="flex items-center w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-gray-100"
+                                    onClick={() => {
+                                        navigate('/login')
+                                        setIsMobileMenuOpen(false)
+                                    }}
+                                >
+                                    <LogOut className="h-4 w-4 mr-3" />
+                                    {t('sidebar.login') || 'Login'}
+                                </motion.button>
+                            )}
                         </div>
                     </div>
                 </SheetContent>
@@ -243,12 +271,10 @@ const UserDashboardLayout = () => {
                                     }}
                                     {...shimmerAnimation}
                                 >
-                                    Rental
+                                    Noleggiarmi
                                 </motion.div>
                             </div>
                         </div>
-
-
                         <div className="flex items-center space-x-4">
 
                             <DropdownMenu>
@@ -288,7 +314,7 @@ const UserDashboardLayout = () => {
 
                 {/* Content */}
                 <main className="flex-1 p-6 overflow-auto relative">
-                    <Particles />
+
                     <div className="relative z-10">
                         {/* This is where child Components will be rendered */}
                         <Outlet />

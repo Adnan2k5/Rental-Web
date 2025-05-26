@@ -173,7 +173,7 @@ export default function DocumentVerification() {
 
     useEffect(() => {
         getStatusBadge()
-    }, [user.documentVerified])
+    }, [user?.documentVerified])
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A"
@@ -197,6 +197,7 @@ export default function DocumentVerification() {
             fetchDocuments()
         }
     }, [user])
+
 
     useEffect(() => {
         if (document) {

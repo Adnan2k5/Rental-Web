@@ -465,7 +465,8 @@ export default function Dashboard() {
                   <h3 className="font-semibold mb-1 text-dark">{item.name}</h3>
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
                   <div className="flex items-center justify-between">
-                    <div className="text-primary font-semibold">${item.price}</div>
+                    <div className="text-primary font-semibold">€
+                      {item.price}</div>
                     <div className="flex space-x-2">
                       <button className="p-1.5 rounded-md hover:bg-gray-100" onClick={() => openEditDialog(item)}>
                         <Edit className="h-4 w-4 text-muted-foreground" />
@@ -620,7 +621,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label htmlFor="price">{t("addItem.price")} ($)</Label>
+                  <Label htmlFor="price">{t("addItem.price")} (€)</Label>
                   <Input
                     id="price"
                     type="number" placeholder={t("addItem.pricePlaceholder")}

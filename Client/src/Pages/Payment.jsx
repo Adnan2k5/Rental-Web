@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom"
 import { ChevronRight, Check, AlertCircle, ArrowLeft, CreditCard, Calendar, Package, User, CodeSquare } from "lucide-react"
@@ -15,12 +14,12 @@ import { toast } from "sonner"
 import i18n from "../i18"
 import { containerVariants, itemVariants, successVariants } from "../assets/Animations"
 
-const PaymentPage = () => {
+const PaymentPage = ({ paystatus = "pending" }) => {
     const { t } = useTranslation()
     const [cartItems, setCartItems] = useState([])
     const [fullName, setFullName] = useState("")
     const [total, setTotal] = useState(0)
-    const [paymentStatus, setPaymentStatus] = useState("pending") // pending, success, error
+    const [paymentStatus, setPaymentStatus] = useState(paystatus) // pending, success, error
     const [isProcessing, setIsProcessing] = useState(false)
 
     useEffect(() => {
@@ -60,11 +59,13 @@ const PaymentPage = () => {
         })
     }
 
-    const createOrder = async (data, actions) => {
+    const createOrder = async () => {
         setIsProcessing(true)
         try {
             const res = await createBookingApi(fullName);
-            const { orderId } = res.data.message;
+            const { orderId, redirectURL } = res.data.message;
+            window.location.href = redirectURL;
+            console.log("Order created:", orderId)
             return orderId;
         }
         catch (error) {
@@ -72,12 +73,10 @@ const PaymentPage = () => {
         }
     }
 
-    const onApprove = async (data, actions) => {
+    const onApprove = async (data) => {
         try {
             setPaymentStatus("processing")
-            // // Create the actual booking in your system
             const res = await approveBookingApi(data.orderID)
-
             if (res) {
                 // Show success animation
                 setPaymentStatus("success")
@@ -110,7 +109,7 @@ const PaymentPage = () => {
     const merchantIds = Array.from(
         new Set(
             cartItems
-                .map(item => item.item.owner?.paymentDetails?.merchantIdInPayPal)
+                .map(item => item.item?.owner?.paymentDetails?.merchantIdInPayPal)
                 .filter(Boolean)
         )
     );
@@ -119,6 +118,8 @@ const PaymentPage = () => {
         merchantIds.push(import.meta.env.VITE_PAYPAL_MERCHANT_ID);
     }
     const merchantIdsString = merchantIds.join(",");
+    const merchantIdsArray = merchantIdsString.split(',');
+    const firstMerchantId = merchantIdsArray[0];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -238,7 +239,7 @@ const PaymentPage = () => {
                                             <div className="space-y-4">
                                                 {cartItems.map((item, index) => (
                                                     <motion.div
-                                                        key={item.item._id}
+                                                        key={item.item?._id}
                                                         className="flex gap-4 p-4 border border-gray-100 rounded-lg"
                                                         initial={{ opacity: 0, y: 10 }}
                                                         animate={{ opacity: 1, y: 0 }}
@@ -246,22 +247,22 @@ const PaymentPage = () => {
                                                     >
                                                         <div className="h-16 w-16 bg-gray-50 rounded-md overflow-hidden flex-shrink-0">
                                                             <img
-                                                                src={item.item.images[0] || "/placeholder.svg"}
-                                                                alt={item.item.name}
+                                                                src={item.item?.images[0] || "/placeholder.svg"}
+                                                                alt={item.item?.name}
                                                                 className="h-full w-full object-cover"
                                                             />
                                                         </div>
                                                         <div className="flex-1">
                                                             <div className="flex justify-between">
                                                                 <h4 className="font-medium">
-                                                                    {i18n.language === "it" ? item.item.name_it : item.item.name}
+                                                                    {i18n.language === "it" ? item.item?.name_it : item.item?.name}
                                                                 </h4>
                                                                 <span className="font-bold text-primary">
                                                                     €
                                                                     {(
-                                                                        item.item.price *
-                                                                        item.quantity *
-                                                                        calculateDaysBetween(item.startDate, item.endDate)
+                                                                        item.item?.price *
+                                                                        item?.quantity *
+                                                                        calculateDaysBetween(item?.startDate, item.endDate)
                                                                     ).toFixed(2)}
                                                                 </span>
                                                             </div>
@@ -269,14 +270,14 @@ const PaymentPage = () => {
                                                                 <div className="flex items-center gap-1">
                                                                     <Package className="h-3 w-3" />
                                                                     <span>
-                                                                        {t("paymentPage.quantity")}: {item.quantity}
+                                                                        {t("paymentPage.quantity")}: {item?.quantity}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center gap-1 mt-1">
                                                                     <Calendar className="h-3 w-3" />
                                                                     <span>
-                                                                        {formatDate(item.startDate)} - {formatDate(item.endDate)} (
-                                                                        {calculateDaysBetween(item.startDate, item.endDate)} {t("paymentPage.days")})
+                                                                        {formatDate(item?.startDate)} - {formatDate(item?.endDate)} (
+                                                                        {calculateDaysBetween(item?.startDate, item?.endDate)} {t("paymentPage.days")})
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -309,7 +310,6 @@ const PaymentPage = () => {
 
                                         <motion.div className="space-y-4" variants={itemVariants}>
                                             <h3 className="font-medium">{t("paymentPage.selectPaymentMethod")}</h3>
-
                                             <div className="relative">
                                                 {isProcessing && (
                                                     <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-lg">
@@ -319,29 +319,13 @@ const PaymentPage = () => {
                                                         </div>
                                                     </div>
                                                 )}
-
-                                                <PayPalScriptProvider
-                                                    options={{
-                                                        "client-id":
-                                                            import.meta.env.VITE_PAYPAL_CLIENT_ID,
-                                                        "merchantId": merchantIdsString,
-                                                        currency: "EUR",
-                                                    }}
+                                                <button
+                                                    onClick={createOrder}
+                                                    className="w-full bg-blue-600 text-white py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
                                                 >
-                                                    <PayPalButtons
-                                                        style={{
-                                                            layout: "vertical",
-                                                            color: "gold",
-                                                            shape: "pill",
-                                                            label: "pay",
-
-                                                        }}
-                                                        createOrder={createOrder}
-                                                        onApprove={onApprove}
-                                                        onError={onError}
-                                                        disabled={isProcessing}
-                                                    />
-                                                </PayPalScriptProvider>
+                                                    <CodeSquare className="h-5 w-5" />
+                                                    {t("paymentPage.payWithPayPal")}
+                                                </button>
                                             </div>
 
                                             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-4">

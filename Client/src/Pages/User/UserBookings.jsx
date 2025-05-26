@@ -159,7 +159,8 @@ export default function UserItems() {
                                 <h3 className="font-semibold mb-1 text-dark">{item.item?.name}</h3>
                                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.item?.description}</p>
                                 <div className="flex items-center justify-between">
-                                    <div className="text-primary font-semibold">${item.item?.price}</div>
+                                    <div className="text-primary font-semibold">€
+                                        {item.item?.price}</div>
                                     <div className="flex space-x-2">
                                         <Button onClick={() => handleSetReview(item.item?._id)} className="p-1.5 rounded-md">
                                             Add Review
@@ -202,8 +203,6 @@ export default function UserItems() {
                                             </PaginationItem>
                                         )
                                     }
-
-                                    // Show ellipsis for skipped pages
                                     if (
                                         (pageNumber === 2 && currentPage > 3) ||
                                         (pageNumber === totalPages - 1 && currentPage < totalPages - 2)

@@ -5,7 +5,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { createServer } from "http";
+import { createServer, get } from "http";
 import { Server } from "socket.io";
 import connectDB from "./config/db.config.js";
 import authRoute from "./routes/auth.routes.js";

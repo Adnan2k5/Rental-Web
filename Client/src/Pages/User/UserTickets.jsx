@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Plus, Clock, CheckCircle, AlertCircle, HelpCircle, RefreshCw } from "lucide-react"
@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "../../Components/ui/tabs"
 import { itemFadeIn } from "../../assets/Animations"
 import { Loader } from "../../Components/loader"
 import { useTranslation } from "react-i18next"
+import { useAuth } from "../../Middleware/AuthProvider"
 
 export const UserTickets = () => {
     const [tickets, setTickets] = useState([])
@@ -21,8 +22,14 @@ export const UserTickets = () => {
     const [activeTab, setActiveTab] = useState("all")
     const navigate = useNavigate()
     const { t } = useTranslation()
+    const { user } = useAuth()
+
 
     useEffect(() => {
+        if (!user) {
+            setLoading(false)
+            return
+        }
         const fetchTickets = async () => {
             try {
                 setLoading(true)
@@ -38,8 +45,14 @@ export const UserTickets = () => {
         }
 
         fetchTickets()
-    }, [])
+    }, [user])
 
+
+    // useEffect(() => {
+    //     if (!user) {
+    //         navigate("/login")
+    //     }
+    // }, [user, navigate])
     const getStatusIcon = (status) => {
         switch (status.toLowerCase()) {
             case "open":
@@ -101,6 +114,16 @@ export const UserTickets = () => {
 
     if (loading) {
         return <Loader />
+    }
+
+    if (!user) {
+        // Allow non-logged-in users to create tickets, but don't show ticket list
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[300px]">
+                <HelpCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                <Button onClick={() => navigate("/dashboard/tickets/create")}>{t("userTickets.createFirstTicket") || "Create Ticket"}</Button>
+            </div>
+        )
     }
 
     return (

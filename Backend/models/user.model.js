@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema(
     profilePictureId: {
       type: String,
     },
+    profileBannerId: {
+      type: String,
+    },
+    profileBanner: {
+      type: String,
+    },
     name: {
       type: String,
     },
@@ -63,10 +69,9 @@ const userSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
-    paymentDetails:
-    {
+    paymentDetails: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PaymentDetails",
+      ref: "paymentDetails",
     },
   },
   { timestamps: true }

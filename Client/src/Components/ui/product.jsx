@@ -6,16 +6,24 @@ import { addItemToCartApi } from '../../api/carts.api';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18';
+import { useAuth } from '../../Middleware/AuthProvider';
 
 export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { user } = useAuth();
+
     const addItemToCart = async (e) => {
         try {
-            e.preventDefault();
-            e.stopPropagation();
-            await addItemToCartApi(product._id, 1, 1);
-            toast.success(t("product.added"));
+            if (user.documentVerified === "declined" || user.documentVerified === "pending") {
+                toast.error("You must verify your documents")
+            }
+            else {
+                e.preventDefault();
+                e.stopPropagation();
+                await addItemToCartApi(product._id, 1, 1);
+                toast.success(t("product.added"));
+            }
         }
         catch (e) {
             toast.error(t("product.failedtoadd"));
@@ -40,7 +48,8 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
         key={index}
         variants={fadeIn}
         whileHover={{ y: -5 }}
-        className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group"
+        className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm group cursor-pointer"
+        onClick={() => onQuickView()}
     >
         <div className="relative">
             <img
@@ -82,14 +91,14 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                 {product?.name}
             </h3>
             <div className="div flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground mb-3 cursor-pointer hover:underline" onClick={() => { navigate(`/profile/${product?.owner?._id}`) }}>
+                <p className="text-sm text-muted-foreground mb-3 cursor-pointer hover:underline" onClick={(e) => { e.stopPropagation(); navigate(`/profile/${product?.owner?._id}`) }}>
                     {t("product.by")} {product?.owner?.name}
                 </p>
                 <Button
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
-                    onClick={goToChat}
+                    onClick={(e) => { e.stopPropagation(); goToChat(e); }}
                 >
                     {t("buttons.chat")}
                 </Button>
@@ -104,7 +113,7 @@ export const ProductCard = ({ index, fadeIn, product, onQuickView }) => {
                     size="sm"
                     variant="outline"
                     className="h-8 px-3"
-                    onClick={addItemToCart}
+                    onClick={(e) => { e.stopPropagation(); addItemToCart(e); }}
                 >
                     {t("buttons.add")}
                 </Button>

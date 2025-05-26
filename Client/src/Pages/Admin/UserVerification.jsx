@@ -35,6 +35,7 @@ export default function UserVerification() {
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
 
+
     const fetchDocuments = async () => {
         const res = await getAllDocuments()
         if (res.status === 200) {
@@ -118,7 +119,7 @@ export default function UserVerification() {
         <motion.div className="min-h-screen bg-light flex" initial="hidden" animate="visible" variants={pageTransition}>
             <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
                 <main className="flex-1 p-6 overflow-auto relative">
-                    <Particles />
+
                     <div className="relative z-10">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
                             <div>
@@ -187,8 +188,9 @@ export default function UserVerification() {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">{t('userVerificationAdmin.statusAll')}</SelectItem>
-                                            <SelectItem value="false">{t('userVerificationAdmin.statusPending')}</SelectItem>
-                                            <SelectItem value="true">{t('userVerificationAdmin.statusApproved')}</SelectItem>
+                                            <SelectItem value="pending">{t('userVerificationAdmin.statusPending')}</SelectItem>
+                                            <SelectItem value="verified">{t('userVerificationAdmin.statusApproved')}</SelectItem>
+                                            <SelectItem value="declined">{t('userVerificationAdmin.statusDeclined')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

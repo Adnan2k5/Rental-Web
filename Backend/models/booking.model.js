@@ -42,6 +42,9 @@ const bookingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Payment",
         },
+        paypalOrderId: {
+            type: String,
+        }
     },
     { timestamps: true }
 );

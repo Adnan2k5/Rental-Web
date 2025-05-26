@@ -30,4 +30,4 @@ const PaymentDetails = new mongoose.Schema(
     }
 )
 
-export const PaymentDetailsModel = mongoose.model("PaymentDetails", PaymentDetails);
+export const PaymentDetailsModel = mongoose.model("paymentDetails", PaymentDetails);

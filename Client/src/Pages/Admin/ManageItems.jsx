@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Search, Grid, List, Filter, Plus, Edit, MoreHorizontal, Upload, X, Tag } from "lucide-react"
+import { Search, Grid, List, Filter, Edit, MoreHorizontal, Upload, X, Tag } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { colors } from "../../assets/Color"
 import { Button } from "../../Components/ui/button"
@@ -62,14 +62,13 @@ export default function ManageItems() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
   const itemsPerPage = 12
-  // For category management section
   const [subCategoryInputs, setSubCategoryInputs] = useState({})
   const [subCategoryLoading, setSubCategoryLoading] = useState({})
-
-  // For new item dialog
   const [selectedCategoryName, setSelectedCategoryName] = useState("")
   const [newItemSubCategoryInput, setNewItemSubCategoryInput] = useState("")
   const [subCategoryOptions, setSubCategoryOptions] = useState([])
+  const [isItemDetailsDialogOpen, setIsItemDetailsDialogOpen] = useState(false)
+  const [selectedItemDetails, setSelectedItemDetails] = useState(null)
 
   const { categories, setCategories } = useCategories()
 
@@ -93,7 +92,6 @@ export default function ManageItems() {
       setLoading(false)
     }
     fetchData()
-    // eslint-disable-next-line
   }, [currentPage])
 
   useEffect(() => {
@@ -102,7 +100,6 @@ export default function ManageItems() {
     setNewItemSubCategoryInput("")
   }, [selectedCategoryName, categories, isNewItemDialogOpen])
 
-  // Animation variants
   const pageTransition = {
     hidden: { opacity: 0 },
     visible: {
@@ -134,39 +131,6 @@ export default function ManageItems() {
         damping: 10,
       },
     },
-  }
-
-  // Particle effect Components
-  const Particles = () => {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-primary/10 to-secondary/10"
-            style={{
-              width: Math.random() * 40 + 10,
-              height: Math.random() * 40 + 10,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            initial={{ opacity: 0.1, scale: 0 }}
-            animate={{
-              opacity: [0.1, 0.3, 0.1],
-              scale: [0, 1, 0],
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
-      </div>
-    )
   }
 
   // Filter items based on search query, category and status
@@ -229,14 +193,13 @@ export default function ManageItems() {
       title: formData.get("title"),
       description: formData.get("description"),
       category: formData.get("category"),
-      subCategory: newItemSubCategoryInput, // Use our state variable instead of form data
+      subCategory: newItemSubCategoryInput,
       price: formData.get("price"),
       period: formData.get("period"),
       featured: formData.has("featured"),
       available: formData.has("available"),
     }
 
-    // Here you would typically send the data to your API
     console.log("Submitting item data:", itemData)
 
     // Close dialog and reset state
@@ -250,7 +213,6 @@ export default function ManageItems() {
     e.preventDefault()
 
     if (categoryName.trim() === "") return
-    // Process form data
     try {
       await createCategoryApi(categoryName)
       setCategories((prev) => [...prev, { id: Date.now(), name: categoryName, color: colors.primary }])
@@ -258,7 +220,6 @@ export default function ManageItems() {
     } catch (e) {
       toast.error("Error creating category")
     }
-    // Close dialog
     setIsNewCategoryDialogOpen(false)
   }
 
@@ -312,7 +273,7 @@ export default function ManageItems() {
   // Grid Skeleton Components
   const GridSkeleton = () => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {[...Array(6)].map((_, index) => (
           <div key={index} className="bg-white rounded-lg overflow-hidden border border-gray-100">
             <div className="relative h-48 bg-gray-100">
@@ -354,58 +315,60 @@ export default function ManageItems() {
     return (
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">ID</TableHead>
-                <TableHead>Item</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[...Array(5)].map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton className="h-4 w-8" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                      <div className="w-full">
-                        <Skeleton className="h-5 w-3/4 mb-1" />
-                        <Skeleton className="h-4 w-full" />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-6 w-20 rounded-md" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Skeleton className="h-6 w-6 rounded-full mr-2" />
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                      <Skeleton className="h-8 w-8 rounded-md" />
-                    </div>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[50px] hidden sm:table-cell">ID</TableHead>
+                  <TableHead>Item</TableHead>
+                  <TableHead className="hidden md:table-cell">Category</TableHead>
+                  <TableHead className="hidden lg:table-cell">Price</TableHead>
+                  <TableHead className="hidden md:table-cell">Status</TableHead>
+                  <TableHead className="hidden lg:table-cell">Owner</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {[...Array(5)].map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="hidden sm:table-cell">
+                      <Skeleton className="h-4 w-8" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="h-10 w-10 rounded-md" />
+                        <div className="w-full">
+                          <Skeleton className="h-5 w-3/4 mb-1" />
+                          <Skeleton className="h-4 w-full" />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Skeleton className="h-6 w-20 rounded-md" />
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <Skeleton className="h-5 w-16" />
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Skeleton className="h-5 w-16 rounded-full" />
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      <div className="flex items-center">
+                        <Skeleton className="h-6 w-6 rounded-full mr-2" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     )
@@ -431,14 +394,12 @@ export default function ManageItems() {
       variants={pageTransition}
     >
       <motion.div className="flex-1 flex flex-col" variants={itemFadeIn}>
-        <main className="flex-1 p-6 overflow-auto relative">
-          <Particles />
-
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <main className="flex-1 p-4 sm:p-6 overflow-auto relative">
+          <div className="relative z-10 max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
               <div>
                 <motion.h1
-                  className="text-2xl font-bold text-dark mb-1"
+                  className="text-xl sm:text-2xl font-bold text-dark mb-1"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -446,7 +407,7 @@ export default function ManageItems() {
                   {t("adminSidebar.itemsManagement")}
                 </motion.h1>
                 <motion.p
-                  className="text-muted-foreground"
+                  className="text-sm sm:text-base text-muted-foreground"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -456,7 +417,7 @@ export default function ManageItems() {
               </div>
 
               <motion.div
-                className="flex items-center space-x-3 mt-4 md:mt-0"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-0"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
@@ -476,26 +437,13 @@ export default function ManageItems() {
                   </button>
                 </div>
 
-                <Button variant="outline" className="h-9" onClick={() => setIsNewCategoryDialogOpen(true)}>
+                <Button
+                  variant="outline"
+                  className="h-9 w-full sm:w-auto"
+                  onClick={() => setIsNewCategoryDialogOpen(true)}
+                >
                   <Tag className="h-4 w-4 mr-2" />
                   {t("manageItems.addCategory", "Add Category")}
-                </Button>
-
-                <Button
-                  className="relative overflow-hidden h-9"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
-                  }}
-                  onClick={() => setIsNewItemDialogOpen(true)}
-                >
-                  <motion.span
-                    className="absolute inset-0 bg-white/20 rounded-md"
-                    initial={{ x: "-100%", opacity: 0 }}
-                    whileHover={{ x: "100%", opacity: 0.3 }}
-                    transition={{ duration: 0.6 }}
-                  />
-                  <Plus className="h-4 w-4 mr-2" />
-                  <span className="relative">{t("manageItems.addItem", "Add Item")}</span>
                 </Button>
               </motion.div>
             </div>
@@ -506,11 +454,11 @@ export default function ManageItems() {
                 <CategorySkeleton />
               ) : (
                 <div className="flex flex-col gap-4 pb-2">
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-3 overflow-x-auto pb-2">
                     <motion.button
                       className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${selectedCategory === "all"
-                        ? "bg-primary text-white"
-                        : "bg-white text-muted-foreground hover:bg-gray-50"
+                          ? "bg-primary text-white"
+                          : "bg-white text-muted-foreground hover:bg-gray-50"
                         }`}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.97 }}
@@ -524,8 +472,8 @@ export default function ManageItems() {
                         <motion.button
                           key={category._id}
                           className={`px-4 py-2 rounded-full text-sm whitespace-nowrap flex items-center ${selectedCategory === category.name.toLowerCase()
-                            ? "bg-primary text-white"
-                            : "bg-white text-muted-foreground hover:bg-gray-50"
+                              ? "bg-primary text-white"
+                              : "bg-white text-muted-foreground hover:bg-gray-50"
                             }`}
                           whileHover={{ y: -2 }}
                           whileTap={{ scale: 0.97 }}
@@ -541,9 +489,9 @@ export default function ManageItems() {
                     categories.length > 0 &&
                     categories.map((category) => (
                       <div key={category._id} className="bg-white rounded-lg p-4 border border-gray-100">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
                           <div className="font-semibold text-dark">{category.name}</div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <Input
                               size="sm"
                               placeholder="Add subcategory"
@@ -551,12 +499,13 @@ export default function ManageItems() {
                               onChange={(e) =>
                                 setSubCategoryInputs((prev) => ({ ...prev, [category.id]: e.target.value }))
                               }
-                              className="w-40"
+                              className="w-full sm:w-40"
                             />
                             <Button
                               size="sm"
                               disabled={subCategoryLoading[category.id]}
                               onClick={() => addSubCategory(category.id, subCategoryInputs[category.id] || "")}
+                              className="w-full sm:w-auto"
                             >
                               {subCategoryLoading[category.id] ? "Adding..." : "Add"}
                             </Button>
@@ -587,7 +536,7 @@ export default function ManageItems() {
 
             {/* Filters */}
             <motion.div className="bg-white p-4 rounded-lg border border-gray-100 mb-6" variants={itemFadeIn}>
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -600,14 +549,14 @@ export default function ManageItems() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <div className="flex items-center">
                     <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span className="text-sm">{t("manageItems.filter", "Filter:")}</span>
                   </div>
 
                   <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                    <SelectTrigger className="w-[140px]">
+                    <SelectTrigger className="w-full sm:w-[140px]">
                       <SelectValue placeholder={t("manageItems.status", "Status")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -648,7 +597,7 @@ export default function ManageItems() {
                   // Grid View
                   <motion.div
                     key="grid"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -671,9 +620,14 @@ export default function ManageItems() {
                           />
                           <div className="absolute top-3 right-3 flex space-x-2">
                             {item.featured && (
-                              <Badge className="bg-secondary text-white">{t("manageItems.featured", "Featured")}</Badge>
+                              <Badge className="bg-secondary text-white text-xs">
+                                {t("manageItems.featured", "Featured")}
+                              </Badge>
                             )}
-                            <Badge variant={item.status === "active" ? "default" : "secondary"} className="capitalize">
+                            <Badge
+                              variant={item.status === "active" ? "default" : "secondary"}
+                              className="capitalize text-xs"
+                            >
                               {item.status}
                             </Badge>
                           </div>
@@ -690,26 +644,28 @@ export default function ManageItems() {
                         </div>
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center">
-                              <Avatar className="h-6 w-6 mr-2">
+                            <div className="flex items-center min-w-0 flex-1">
+                              <Avatar className="h-6 w-6 mr-2 flex-shrink-0">
                                 <AvatarImage
                                   src={item.owner?.avatar || "/placeholder.svg"}
                                   alt={item.owner?.name || "Owner"}
                                 />
                                 <AvatarFallback>{item.owner?._id?.charAt(0) || "U"}</AvatarFallback>
                               </Avatar>
-                              <div className="text-xs text-muted-foreground">{item.owner?.name || "Unknown"}</div>
+                              <div className="text-xs text-muted-foreground truncate">
+                                {item.owner?.name || "Unknown"}
+                              </div>
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground flex-shrink-0">
                               {item.postedDate ||
                                 (item.createdAt && new Date(item.createdAt).toLocaleDateString("en-US"))}
                             </div>
                           </div>
-                          <h3 className="font-semibold mb-1 text-dark">{item.name || item.title}</h3>
+                          <h3 className="font-semibold mb-1 text-dark truncate">{item.name || item.title}</h3>
                           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{item.description}</p>
                           <div className="flex items-center justify-between">
                             <div className="text-primary font-semibold">
-                              ${item.price}
+                              €{item.price}
                               <span className="text-xs text-muted-foreground font-normal">
                                 /{item.period || "month"}
                               </span>
@@ -725,7 +681,14 @@ export default function ManageItems() {
                                   </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>{t("manageItems.viewDetails", "View Details")}</DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedItemDetails(item)
+                                      setIsItemDetailsDialogOpen(true)
+                                    }}
+                                  >
+                                    {t("manageItems.viewDetails", "View Details")}
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     {t("manageItems.deleteItem", "Delete Item")}
                                   </DropdownMenuItem>
@@ -742,116 +705,141 @@ export default function ManageItems() {
                   <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <Card>
                       <CardContent className="p-0">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-[50px]">ID</TableHead>
-                              <TableHead>{t("manageItems.item", "Item")}</TableHead>
-                              <TableHead>{t("manageItems.category", "Category")}</TableHead>
-                              <TableHead>{t("manageItems.price", "Price")}</TableHead>
-                              <TableHead>{t("manageItems.status", "Status")}</TableHead>
-                              <TableHead>{t("manageItems.owner", "Owner")}</TableHead>
-                              <TableHead className="text-right">{t("manageItems.actions", "Actions")}</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {filteredItems.map((item) => (
-                              <TableRow key={item.id || item._id} className="hover:bg-gray-50">
-                                <TableCell className="font-medium">{item.id || item._id?.substring(0, 5)}</TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100">
-                                      <img
-                                        src={
-                                          item.images?.[0] ||
-                                          "/placeholder.svg?height=100&width=100" ||
-                                          "/placeholder.svg"
-                                        }
-                                        alt={item.name || item.title}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    </div>
-                                    <div>
-                                      <div className="font-medium flex items-center">
-                                        {item.name || item.title}
-                                        {item.featured && (
-                                          <Badge className="ml-2 bg-secondary text-white text-xs">
-                                            {t("manageItems.featured", "Featured")}
-                                          </Badge>
-                                        )}
-                                      </div>
-                                      <div className="text-sm text-muted-foreground line-clamp-1">
-                                        {item.description}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <div
-                                    className="px-2 py-1 rounded text-xs font-medium inline-block"
-                                    style={{
-                                      backgroundColor:
-                                        categories.find((c) => c.id === item.categoryId)?.color || colors.primary,
-                                      color: "white",
-                                    }}
-                                  >
-                                    {item.category}
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="text-primary font-semibold">
-                                    ${item.price}
-                                    <span className="text-xs text-muted-foreground font-normal">
-                                      /{item.period || "month"}
-                                    </span>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <Badge
-                                    variant={item.status === "active" ? "default" : "secondary"}
-                                    className="capitalize"
-                                  >
-                                    {item.status}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex items-center">
-                                    <Avatar className="h-6 w-6 mr-2">
-                                      <AvatarImage
-                                        src={item.owner?.avatar || "/placeholder.svg"}
-                                        alt={item.owner?.name || "Owner"}
-                                      />
-                                      <AvatarFallback>{item.owner?._id?.charAt(0) || "U"}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="text-sm">{item.owner?.name || "Unknown"}</span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  <div className="flex items-center justify-end gap-2">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                          <MoreHorizontal className="h-4 w-4" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>
-                                          {t("manageItems.viewDetails", "View Details")}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem className="text-red-600">
-                                          {t("manageItems.deleteItem", "Delete Item")}
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </div>
-                                </TableCell>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-[50px] hidden sm:table-cell">ID</TableHead>
+                                <TableHead>{t("manageItems.item", "Item")}</TableHead>
+                                <TableHead className="hidden md:table-cell">
+                                  {t("manageItems.category", "Category")}
+                                </TableHead>
+                                <TableHead className="hidden lg:table-cell">
+                                  {t("manageItems.price", "Price")}
+                                </TableHead>
+                                <TableHead className="hidden md:table-cell">
+                                  {t("manageItems.status", "Status")}
+                                </TableHead>
+                                <TableHead className="hidden lg:table-cell">
+                                  {t("manageItems.owner", "Owner")}
+                                </TableHead>
+                                <TableHead className="text-right">{t("manageItems.actions", "Actions")}</TableHead>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredItems.map((item) => (
+                                <TableRow key={item.id || item._id} className="hover:bg-gray-50">
+                                  <TableCell className="font-medium hidden sm:table-cell">
+                                    {item.id || item._id?.substring(0, 5)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                                        <img
+                                          src={
+                                            item.images?.[0] ||
+                                            "/placeholder.svg?height=100&width=100" ||
+                                            "/placeholder.svg" ||
+                                            "/placeholder.svg"
+                                          }
+                                          alt={item.name || item.title}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="font-medium flex items-center">
+                                          <span className="truncate">{item.name || item.title}</span>
+                                          {item.featured && (
+                                            <Badge className="ml-2 bg-secondary text-white text-xs flex-shrink-0">
+                                              {t("manageItems.featured", "Featured")}
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground line-clamp-1">
+                                          {item.description}
+                                        </div>
+                                        {/* Show additional info on mobile */}
+                                        <div className="md:hidden mt-1 flex flex-wrap gap-2 text-xs">
+                                          <span className="text-primary font-semibold">
+                                            €{item.price}/{item.period || "month"}
+                                          </span>
+                                          <Badge
+                                            variant={item.status === "active" ? "default" : "secondary"}
+                                            className="capitalize text-xs"
+                                          >
+                                            {item.status}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell">
+                                    <div
+                                      className="px-2 py-1 rounded text-xs font-medium inline-block"
+                                      style={{
+                                        backgroundColor:
+                                          categories.find((c) => c.id === item.categoryId)?.color || colors.primary,
+                                        color: "white",
+                                      }}
+                                    >
+                                      {item.category}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="hidden lg:table-cell">
+                                    <div className="text-primary font-semibold">
+                                      €{item.price}
+                                      <span className="text-xs text-muted-foreground font-normal">
+                                        /{item.period || "month"}
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell">
+                                    <Badge
+                                      variant={item.status === "active" ? "default" : "secondary"}
+                                      className="capitalize"
+                                    >
+                                      {item.status}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="hidden lg:table-cell">
+                                    <div className="flex items-center">
+                                      <Avatar className="h-6 w-6 mr-2">
+                                        <AvatarImage
+                                          src={item.owner?.avatar || "/placeholder.svg"}
+                                          alt={item.owner?.name || "Owner"}
+                                        />
+                                        <AvatarFallback>{item.owner?._id?.charAt(0) || "U"}</AvatarFallback>
+                                      </Avatar>
+                                      <span className="text-sm truncate">{item.owner?.name || "Unknown"}</span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                          </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                          <DropdownMenuItem>
+                                            {t("manageItems.viewDetails", "View Details")}
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem className="text-red-600">
+                                            {t("manageItems.deleteItem", "Delete Item")}
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>
@@ -918,7 +906,7 @@ export default function ManageItems() {
 
       {/* Add Item Dialog */}
       <Dialog open={isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
+        <DialogContent className="sm:max-w-[600px] mx-4 p-0 overflow-hidden max-h-[90vh]">
           <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle className="text-xl">{t("manageItems.addNewItem", "Add New Item")}</DialogTitle>
             <DialogDescription>
@@ -952,7 +940,7 @@ export default function ManageItems() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="category">{t("addItem.category")}</Label>
                     <Select
@@ -1004,9 +992,9 @@ export default function ManageItems() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">{t("addItem.price")} ($)</Label>
+                    <Label htmlFor="price">{t("addItem.price")} (€)</Label>
                     <Input
                       id="price"
                       name="price"
@@ -1083,7 +1071,7 @@ export default function ManageItems() {
                   </motion.div>
                 </div>
                 {uploadedFiles.length > 0 && (
-                  <div className="mt-4 grid grid-cols-3 gap-3">
+                  <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <AnimatePresence>
                       {uploadedFiles.map((file, index) => (
                         <motion.div
@@ -1119,15 +1107,15 @@ export default function ManageItems() {
             </form>
           </div>
 
-          <DialogFooter className="px-6 py-4 bg-gray-50">
-            <Button variant="outline" onClick={() => setIsNewItemDialogOpen(false)}>
+          <DialogFooter className="px-6 py-4 bg-gray-50 flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsNewItemDialogOpen(false)} className="w-full sm:w-auto">
               {t("dialogbox.cancel")}
             </Button>
-            <motion.div variants={buttonHover} initial="rest" whileHover="hover">
+            <motion.div variants={buttonHover} initial="rest" whileHover="hover" className="w-full sm:w-auto">
               <Button
                 type="submit"
                 form="add-item-form"
-                className="relative overflow-hidden"
+                className="relative overflow-hidden w-full"
                 style={{
                   background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
                 }}
@@ -1147,7 +1135,7 @@ export default function ManageItems() {
 
       {/* Add Category Dialog */}
       <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-[450px] mx-4">
           <DialogHeader>
             <DialogTitle>{t("manageItems.addNewCategory", "Add New Category")}</DialogTitle>
             <DialogDescription></DialogDescription>
@@ -1167,8 +1155,8 @@ export default function ManageItems() {
             </div>
           </form>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(false)}>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(false)} className="w-full sm:w-auto">
               {t("dialogbox.cancel")}
             </Button>
             <Button
@@ -1177,12 +1165,54 @@ export default function ManageItems() {
               style={{
                 background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
               }}
+              className="w-full sm:w-auto"
             >
               {t("manageItems.addCategory", "Add Category")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Item Details Dialog */}
+      {selectedItemDetails && (
+        <Dialog open={isItemDetailsDialogOpen} onOpenChange={setIsItemDetailsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px] mx-4 p-0 overflow-hidden max-h-[90vh]">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="text-xl">{selectedItemDetails.name || selectedItemDetails.title}</DialogTitle>
+              <DialogDescription>{selectedItemDetails.description}</DialogDescription>
+            </DialogHeader>
+            <div className="px-6 py-4 overflow-y-auto max-h-[70vh]">
+              <div className="mb-4">
+                <img
+                  src={selectedItemDetails.images?.[0] || "/placeholder.svg?height=200&width=300"}
+                  alt={selectedItemDetails.name || selectedItemDetails.title}
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold">
+                  {t("manageItems.category", "Category")}: {selectedItemDetails.category}
+                </div>
+                <div className="font-semibold">
+                  {t("manageItems.price", "Price")}: €{selectedItemDetails.price} /{" "}
+                  {selectedItemDetails.period || "month"}
+                </div>
+                <div className="font-semibold">
+                  {t("manageItems.status", "Status")}: {selectedItemDetails.status}
+                </div>
+                <div className="font-semibold">
+                  {t("manageItems.owner", "Owner")}: {selectedItemDetails.owner?.name || "Unknown"}
+                </div>
+              </div>
+            </div>
+            <DialogFooter className="px-6 py-4 bg-gray-50">
+              <Button variant="outline" onClick={() => setIsItemDetailsDialogOpen(false)} className="w-full sm:w-auto">
+                {t("dialogbox.cancel")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </motion.div>
   )
 }

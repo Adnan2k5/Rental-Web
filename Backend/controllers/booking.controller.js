@@ -1,3 +1,4 @@
+import "dotenv/config";
 import ApiResponse from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -5,6 +6,7 @@ import { Cart } from "../models/cart.model.js";
 import { Booking } from "../models/booking.model.js";
 import { getAccessToken } from "../utils/paypal.js";
 import axios from "axios";
+import sendEmail from "../utils/sendOTP.js";
 
 export const createBooking = asyncHandler(async (req, res) => {
     const { name } = req.body;
@@ -31,19 +33,15 @@ export const createBooking = asyncHandler(async (req, res) => {
                     select: "merchantIdInPayPal"
                 }
             }
-        });
+    });
 
-    if (!cart) {
-        throw new ApiError(404, "Cart not found");
-    }
 
-    if (cart.items.length === 0) {
-        throw new ApiError(400, "Cart is empty");
-    }
+    if (!cart) throw new ApiError(404, "Cart not found");
+    if (cart.items.length === 0) throw new ApiError(400, "Cart is empty");
 
     const totalPrice = cart.items.reduce((acc, cartItem) => acc + cartItem.item.price, 0);
 
-    const bookings = await Booking.create({
+    const booking = await Booking.create({
         user: userId,
         item: cart.items.map((cartItem) => ({
             _id: cartItem.item._id,
@@ -54,7 +52,8 @@ export const createBooking = asyncHandler(async (req, res) => {
         quantity: cart.items.length,
     });
 
-    // Group items by owner (merchant)
+
+
     const ownerMap = new Map();
     cart.items.forEach(cartItem => {
         const owner = cartItem.item.owner;
@@ -77,79 +76,73 @@ export const createBooking = asyncHandler(async (req, res) => {
     });
 
 
-    // Create one purchase_unit per owner
-    const purchase_units = Array.from(ownerMap.values()).map(ownerEntry => {
-        return {
-            amount: {
-                currency_code: "EUR",
-                value: ownerEntry.total.toFixed(2),
-            },
-            payee: {
-                merchant_id: ownerEntry.payeeId,
-            },
-            payment_instruction: {
-                disbursement_mode: "INSTANT",
-                platform_fees: [
-                    {
-                        amount: {
-                            currency_code: "EUR",
-                            value: ownerEntry.platformFee.toFixed(2),
-                        },
-                        payee: {
-                            merchant_id: process.env.PAYPAL_PLATFORM_MERCHANT_ID, // Set in your .env
-                        }
-                    }
-                ]
-            },
-            description: ownerEntry.items.map(i => i.item.name).join(", ")
-        };
-    });
-    console.log("Purchase units to be sent to PayPal:", JSON.stringify(purchase_units, null, 2));
-    console.log(process.env.PAYPAL_PLATFORM_MERCHANT_ID);
+    const purchase_units = Array.from(ownerMap.values()).map(ownerEntry => ({
+        amount: {
+            currency_code: "EUR",
+            value: ownerEntry.total.toFixed(2),
+        },
+        payee: {
+            merchant_id: ownerEntry.payeeId,
+        },
+        payment_instruction: {
+            disbursement_mode: "INSTANT",
+            platform_fees: [{
+                amount: {
+                    currency_code: "EUR",
+                    value: ownerEntry.platformFee.toFixed(2),
+                },
+                payee: {
+                    merchant_id: process.env.PAYPAL_PLATFORM_MERCHANT_ID,
+                }
+            }]
+        },
+        description: ownerEntry.items.map(i => i.item.name).join(", ")
+    }));
 
-    // Build the PayPal order payload
     const payload = {
         intent: "CAPTURE",
-        purchase_units
+        purchase_units,
+        application_context: {
+            return_url: `${process.env.CLIENT_URL}/payment/approve`,
+            cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
+        }
     };
 
-    // Generate PayPal access token and auth assertion
     const accessToken = await getAccessToken();
-    // You must implement generatePayPalAuthAssertion for your platform and each seller
-    // For demo, using the first owner's merchantIdInPayPal (payeeId)
+    console.log("Access Token", accessToken);
     const clientId = process.env.PAYPAL_CLIENT_ID;
     const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
-    function encodeObjectToBase64(object) {
-        return Buffer.from(JSON.stringify(object)).toString("base64");
-    }
+
+
+    const encodeObjectToBase64 = (object) => Buffer.from(JSON.stringify(object)).toString("base64");
     const header = { alg: "none" };
     const encodedHeader = encodeObjectToBase64(header);
     const payloadAssertion = { iss: clientId, payer_id: sellerPayeeId };
     const encodedPayload = encodeObjectToBase64(payloadAssertion);
     const paypalAuthAssertion = `${encodedHeader}.${encodedPayload}.`;
 
-    const url = `https://api-m.sandbox.paypal.com/v2/checkout/orders`;
-
-    const response = await fetch(url, {
+    const response = await fetch("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
-            "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID, // Set in your .env
+            "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
             "PayPal-Auth-Assertion": paypalAuthAssertion,
         },
         body: JSON.stringify(payload),
     });
 
-    const paypalData = await response.json();
 
+    const paypalData = await response.json();
     if (!response.ok) {
         console.error("PayPal API error:", paypalData);
-
         throw new ApiError(response.status, paypalData.message || "Failed to create PayPal order");
     }
 
     const orderId = paypalData.id;
+    booking.paypalOrderId = orderId;
+    await booking.save();
+
     await req.user.save();
 
     const merchantIds = Array.from(ownerMap.keys());
@@ -157,13 +150,16 @@ export const createBooking = asyncHandler(async (req, res) => {
     res.status(201).json(new ApiResponse(true, "Booking created successfully", {
         orderId,
         totalPrice,
-        bookings,
+        booking,
         merchantIds,
+        redirectURL :paypalData.links[1].href // This is the approval URL for the PayPal order
     }));
 });
 
 export const approveBooking = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: userId })
+    const paypalOrderId = req.params.id;
+    
+    const cart = await Cart.findOne({ user: req.user._id })
         .populate({
             path: "items.item",
             select: "price name images owner",
@@ -179,39 +175,90 @@ export const approveBooking = asyncHandler(async (req, res) => {
 
     const accessToken = await getAccessToken();
 
-    const response = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${req.params.id}/capture`, {}, {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const sellerPayeeId = cart.items[0].item.owner?.paymentDetails?.merchantIdInPayPal;
+
+    const encodeObjectToBase64 = (object) => Buffer.from(JSON.stringify(object)).toString("base64");
+    const header = { alg: "none" };
+    const encodedHeader = encodeObjectToBase64(header);
+    const payloadAssertion = { iss: clientId, payer_id: sellerPayeeId };
+    const encodedPayload = encodeObjectToBase64(payloadAssertion);
+    const paypalAuthAssertion = `${encodedHeader}.${encodedPayload}.`;
+    
+    const response = await axios.get(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
             "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+            "PayPal-Auth-Assertion": paypalAuthAssertion,
         }
     });
 
-    if (response.status === 201) {
-        const booking = await Booking.findByIdAndUpdate(req.params.id, { status: "confirmed" }, { new: true });
-        // Clear the cart after booking 
+    console.log("On Approve",response.data);
+
+    // const payment_source = response.data.payment_source;
+
+    // const approvecall = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/confirm-payment-source`, {payment_source}, {
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${accessToken}`,
+    //         "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+    //         "PayPal-Auth-Assertion": paypalAuthAssertion,
+    //     }
+    // })
+
+    // console.log("Approve Call Response:", approvecall.data);
+
+    if (response.status === 201 || response.status === 200) {
+        try{
+            const captureResponse = await axios.post(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${paypalOrderId}/capture`,{},{
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+                "PayPal-Partner-Attribution-Id": process.env.PAYPAL_PARTNER_ATTRIBUTION_ID,
+                "PayPal-Auth-Assertion": paypalAuthAssertion,
+            }
+        });
+        }catch (error) {
+            if(error.response === 422){
+                return;
+            }
+        }
+
+        const booking = await Booking.findOneAndUpdate(
+            { paypalOrderId },
+            { status: "confirmed" },
+            { new: true }
+        );
+
+        if (!booking) {
+            throw new ApiError(404, "Booking not found for this PayPal order ID");
+        }
+
         const mails = cart.items;
-        cart.items = [];
-        await cart.save();
+        console.log("Mails", mails)
+        // cart.items = [];
+        // await cart.save();
 
-        sendEmail({
-            from: process.env.SMTP_EMAIL,
-            to: req.user.email,
-            subject: "Booking Confirmation",
-            text: `Your booking has been confirmed. Booking details: ${JSON.stringify(booking)}`,
-        });
+        // sendEmail({
+        //     from: process.env.SMTP_EMAIL,
+        //     to: req.user.email,
+        //     subject: "Booking Confirmation",
+        //     text: `Your booking has been confirmed. Booking details: ${JSON.stringify(booking)}`
+        // });
 
-        mails.forEach(async (cartItem) => {
-            sendEmail({
-                from: process.env.SMTP_EMAIL,
-                to: cartItem.item.owner.email,
-                subject: "New Booking",
-                text: `You have a new booking for your item ${cartItem.item.name}. Booking details: ${JSON.stringify(booking)}`,
-            });
-        });
+        // mails.forEach(async (cartItem) => {
+        //     sendEmail({
+        //         from: process.env.SMTP_EMAIL,
+        //         to: cartItem.item.owner.email,
+        //         subject: "New Booking",
+        //         text: `You have a new booking for your item ${cartItem.item.name}. Booking details: ${JSON.stringify(booking)}`
+        //     });
+        // });
 
-        res.status(200).json(new ApiResponse(true, "Booking approved successfully", booking));
+        res.status(200).json(new ApiResponse(true, "Booking approved successfully"));
     } else {
+        console.log(response.data);
         throw new ApiError(response.status, response.data.message || "Failed to approve booking");
     }
 });

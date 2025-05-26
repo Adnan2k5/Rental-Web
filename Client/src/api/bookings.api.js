@@ -1,16 +1,19 @@
-import axiosClient from "../Middleware/AxiosClient";
+import axiosClient from '../Middleware/AxiosClient';
 
 export const createBookingApi = async (fullName) => {
   try {
-    const res = await axiosClient.post("/api/booking", {name: fullName}, {
-      withCredentials: true,
-    });
+    const res = await axiosClient.post(
+      '/api/booking',
+      { name: fullName },
+      {
+        withCredentials: true,
+      }
+    );
     return res;
-  }
-  catch (err) {
+  } catch (err) {
     throw err;
   }
-}
+};
 
 export const approveBookingApi = async (id) => {
   try {
@@ -18,8 +21,7 @@ export const approveBookingApi = async (id) => {
       withCredentials: true,
     });
     return res;
-  }
-  catch (err) {
+  } catch (err) {
     throw err;
   }
-}
+};

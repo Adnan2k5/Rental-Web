@@ -156,7 +156,7 @@ export default function CartPage() {
   }
 
   const subtotal = cartItems.reduce(
-    (total, item) => total + (item.item?.price || 0) * item.quantity * calculateDaysBetween(item.startDate, item.endDate),
+    (total, item) => total + (item.item?.price || 0) * item.quantity * (calculateDaysBetween(item.startDate, item.endDate) + 1),
     0
   )
 
@@ -220,68 +220,68 @@ export default function CartPage() {
                 <div className="divide-y divide-gray-100">
                   {cartItems.map((item) => (
                     (item.item &&
-                    <motion.div
-                      key={item.item._id}
-                      className="p-6 flex flex-col sm:flex-row items-start gap-4"
-                      variants={fadeIn}
-                      layout
-                    >
-                      <div className="h-20 w-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={item.item.images[0] || "/placeholder.svg"}
-                          alt={item.item.name}
-                          width={80}
-                          height={80}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <h3 className="font-medium text-lg">{i18n.language === 'it' ? item.item.name_it : item.item.name}</h3>
-                          <div className="flex items-center">
-                            <span className="font-bold text-lg text-primary">
-                              €{item.item.price * item.quantity * calculateDaysBetween(item.startDate, item.endDate)}
-                            </span>
-                          </div>
+                      <motion.div
+                        key={item.item._id}
+                        className="p-6 flex flex-col sm:flex-row items-start gap-4"
+                        variants={fadeIn}
+                        layout
+                      >
+                        <div className="h-20 w-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                          <img
+                            src={item.item.images[0] || "/placeholder.svg"}
+                            alt={item.item.name}
+                            width={80}
+                            height={80}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          {t("cartPage.pricePerDay", { price: item.item.price })}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 className="font-medium text-lg">{i18n.language === 'it' ? item.item.name_it : item.item.name}</h3>
+                            <div className="flex items-center">
+                              <span className="font-bold text-lg text-primary">
+                                €{item.item.price * item.quantity * ((calculateDaysBetween(item.startDate, item.endDate)) + 1)}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            {t("cartPage.pricePerDay", { price: item.item.price })}
+                          </p>
 
-                        <div className="flex flex-wrap gap-6 mt-2">
-                          <div>
-                            <Label
-                              htmlFor={`duration-${item.item._id}`}
-                              className="text-xs text-muted-foreground mb-1 block"
-                            >
-                              {t("cartPage.rentalPeriod")}
-                            </Label>
-                            <DateRangePicker
-                              startDate={item.startDate ? new Date(item.startDate) : null}
-                              endDate={item.endDate ? new Date(item.endDate) : null}
-                              onChange={(start, end) => {
-                                if (start && end) {
-                                  // Calculate duration in months
-                                  const newDuration = calculateMonthsBetween(start, end)
-                                  updateDuration(item.item._id, start, end, newDuration)
-                                }
-                              }}
-                              className="w-[300px]"
-                            />
+                          <div className="flex flex-wrap gap-6 mt-2">
+                            <div>
+                              <Label
+                                htmlFor={`duration-${item.item._id}`}
+                                className="text-xs text-muted-foreground mb-1 block"
+                              >
+                                {t("cartPage.rentalPeriod")}
+                              </Label>
+                              <DateRangePicker
+                                startDate={item.startDate ? new Date(item.startDate) : null}
+                                endDate={item.endDate ? new Date(item.endDate) : null}
+                                onChange={(start, end) => {
+                                  if (start && end) {
+                                    // Calculate duration in months
+                                    const newDuration = calculateMonthsBetween(start, end)
+                                    updateDuration(item.item._id, start, end, newDuration)
+                                  }
+                                }}
+                                className="w-[300px]"
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-red-500"
-                          onClick={() => removeItem(item.item._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </motion.div>)
+                        <div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                            onClick={() => removeItem(item.item._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </motion.div>)
                   ))}
                 </div>
               </div>

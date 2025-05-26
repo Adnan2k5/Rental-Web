@@ -7,6 +7,6 @@ import { verifyJWT } from '../middlewares/auth.middleware.js';
 
 
 router.route('/').post(verifyJWT, createBooking);
-router.route('/approve/:id').get(verifyJWT, approveBooking);
+router.route('/approve/:id').get(verifyJWT,approveBooking);
 
 export default router;

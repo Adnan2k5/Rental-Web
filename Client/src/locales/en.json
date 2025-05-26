@@ -80,7 +80,9 @@
     "getverified": "Get Verified",
     "tickets": "Tickets & Support",
     "logout": "Logout",
-    "payments": "Link your Paypal"
+    "payments": "Link your Paypal",
+    "login": "Login",
+    "myprofile": "My Profile"
   },
   "userbooks": {
     "title": "Items Rented",
@@ -238,7 +240,8 @@
       "subject": "Subject is required.",
       "description": "Description is required.",
       "category": "Category is required."
-    }
+    },
+    "success": "Ticket submitted successfully!"
   },
   "userTickets": {
     "title": "My Support Tickets",
@@ -317,7 +320,7 @@
     "failedUpdateDuration": "Failed to update rental period.",
     "cartCleared": "Cart cleared.",
     "errorClearingCart": "Failed to clear cart.",
-    "pricePerDay": "${{price}} per day",
+    "pricePerDay": "€{{price}} per day",
     "quantity": "Quantity",
     "rentalPeriod": "Rental Period",
     "havePromo": "Have a promo code?",
@@ -432,7 +435,7 @@
     }
   },
   "signIn": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "welcomeBack": "Welcome Back!",
     "signInToContinue": "Sign in to continue to your account",
     "email": "Email",
@@ -475,10 +478,11 @@
     "feature3Title": "24/7 Support",
     "feature3Desc": "Get help whenever you need it.",
     "enterOtp": "Enter OTP",
-    "resendOtp": "Resend OTP"
+    "resendOtp": "Resend OTP",
+    "google": "Google"
   },
   "signUp": {
-    "brand": "Rental",
+    "brand": "Noleggiarmi",
     "headline": "Start your rental journey today",
     "subheadline": "Join our community and experience the freedom of renting instead of buying.",
     "feature1Title": "Flexible Plans",
@@ -506,7 +510,7 @@
     "twitter": "Twitter",
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
-    "whyChoose": "Why choose Rental?",
+    "whyChoose": "Why choose Noleggiarmi?",
     "mobileDesc": "Access premium products without commitment. Easy upgrades, flexible returns, and free maintenance included.",
     "otpTitle": "Enter OTP",
     "otpPlaceholder": "Enter OTP",
@@ -516,7 +520,8 @@
     "otpResentSuccess": "OTP resent successfully",
     "otpResentFail": "Failed to resend OTP",
     "accountCreated": "Account created successfully.",
-    "invalidOtp": "Invalid OTP. Please try again."
+    "invalidOtp": "Invalid OTP. Please try again.",
+    "google": "Google"
   },
   "adminDashboard": {
     "title": "Dashboard",
@@ -774,6 +779,7 @@
     "breadcrumbCart": "Cart",
     "breadcrumbPayment": "Payment",
     "pleaseTryAgain": "Please try again.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "quantity": "Quantity"
   }
 }
