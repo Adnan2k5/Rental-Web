@@ -121,33 +121,27 @@ export const CreateTicket = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         if (!validateForm()) {
             return
         }
-
         setSubmitting(true)
         setError(null)
-
         try {
             const response = await createTicket(formData)
-            if (response && response.data) {
+            if (response.statusCode === 201) {
                 // Clean up file preview URLs
                 filePreview.forEach((file) => URL.revokeObjectURL(file.url))
+                toast.success(t("Successfully created ticket!"))
 
-                if (!user.user) {
-                    toast.success(t("createTicket.success"))
-                }
-                else {
-                    toast.success(t("createTicket.success"))
-                    navigate(`/dashboard/tickets/${response.data._id}`)
-
-                }
-
-
+                // if (!user.user) {
+                //     toast.success(t("createTicket.success"))
+                // }
+                // else {
+                //     toast.success(t("createTicket.success"))
+                //     navigate(`/dashboard/tickets/${response.data._id}`)
+                // }
             }
         } catch (err) {
-            setError("Failed to create ticket. Please try again later.")
             setSubmitting(false)
         }
     }

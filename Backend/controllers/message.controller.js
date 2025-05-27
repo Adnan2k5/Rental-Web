@@ -96,7 +96,9 @@ const getAllChats = asyncHandler(async (req, res) => {
                 unreadCount: 1,
                 "user.name": 1,
                 "user.avatar": 1,
-                "user.email": 1
+                "user.email": 1,
+                "user.profilePicture": 1,
+
             }
         },
         {
