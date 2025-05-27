@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { Plus, Upload, X, Edit, Trash2, Sparkles, AlertCircle } from "lucide-react"
+import { Plus, Upload, X, Edit, Trash2, Sparkles, AlertCircle, Search } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "../../Components/ui/button"
 import {
@@ -17,6 +17,7 @@ import { Label } from "../../Components/ui/label"
 import { Input } from "../../Components/ui/input"
 import { Textarea } from "../../Components/ui/textarea"
 import { createItems, deleteItem, fetchByUserId, updateItem } from "../../api/items.api"
+import { getDocumentByUserId } from "../../api/documents.api"
 import { toast } from "sonner"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { colors } from "../../assets/Color"
@@ -55,12 +56,15 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const [selectedPosition, setSelectedPosition] = useState(null)
   const [locationInput, setLocationInput] = useState("")
+  const [selectedLocationName, setSelectedLocationName] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("");
   const [subCategoryInput, setSubCategoryInput] = useState("");
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [subCategoryOptionEn, setSubCategoryOptionEn] = useState([]);
   const [isVerified, setIsVerified] = useState(false);
   const [isDocVerificationAlertOpen, setIsDocVerificationAlertOpen] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [userDocument, setUserDocument] = useState(null);
 
   const {
     register,
@@ -93,11 +97,40 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    if (user?.user?.documentVerified === "verified") {
-      setIsVerified(true);
-    } else {
-      setIsVerified(false);
-    }
+    const checkVerificationStatus = async () => {
+      // Return early if user is not loaded yet
+      if (!user?.user) {
+        setIsVerified(false);
+        return;
+      }
+
+      // First check if user has documentVerified field set to verified
+      if (user.user.documentVerified === "verified") {
+        setIsVerified(true);
+        return;
+      }
+
+      // If not, check the documents API for verification status
+      try {
+        const res = await getDocumentByUserId(user.user._id);
+        if (res.status === 200 && res.data.message.documents.length > 0) {
+          const document = res.data.message.documents[0];
+          setUserDocument(document);
+          if (document.verified === "verified") {
+            setIsVerified(true);
+          } else {
+            setIsVerified(false);
+          }
+        } else {
+          setIsVerified(false);
+        }
+      } catch (error) {
+        console.error("Error checking verification status:", error);
+        setIsVerified(false);
+      }
+    };
+
+    checkVerificationStatus();
   }, [user]);
 
   // Map marker icon fix for leaflet in React
@@ -115,8 +148,9 @@ export default function Dashboard() {
     useMapEvents({
       click(e) {
         setSelectedPosition([e.latlng.lat, e.latlng.lng])
-        setLocationInput(`${e.latlng.lat},${e.latlng.lng}`)
         setValue("location", `${e.latlng.lat},${e.latlng.lng}`)
+        // Reverse geocode to get location name
+        reverseGeocode(e.latlng.lat, e.latlng.lng)
       },
     })
     return selectedPosition ? <Marker position={selectedPosition} icon={markerIcon} /> : null
@@ -136,7 +170,9 @@ export default function Dashboard() {
   useEffect(() => {
     const setDefaultLocation = (lat, lng) => {
       setSelectedPosition([lat, lng])
-      setLocationInput(`${lat},${lng}`)
+      // Don't set coordinates in the input field, keep it empty for search
+      setLocationInput("")
+      setSelectedLocationName("")
       setValue("location", `${lat},${lng}`, { shouldValidate: true })
     }
 
@@ -155,7 +191,62 @@ export default function Dashboard() {
       // Default to Lithuania if geolocation is not available
       setDefaultLocation(55.1694, 23.8813)
     }
-  }, [setValue])
+  }, [setValue])  // Location search function using Nominatim API
+  const searchLocation = async (query) => {
+    if (!query || query.length < 3) {
+      return
+    }
+
+    setIsSearching(true)
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          query
+        )}&limit=1&addressdetails=1`
+      )
+      const data = await response.json()
+
+      if (data && data.length > 0) {
+        const location = data[0]
+        const lat = parseFloat(location.lat)
+        const lon = parseFloat(location.lon)
+
+        // Update map position and form value
+        setSelectedPosition([lat, lon])
+        setValue("location", `${lat},${lon}`)
+        setSelectedLocationName(location.display_name)
+      }
+    } catch (error) {
+      console.error("Error searching location:", error)
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // Reverse geocoding function to get location name from coordinates
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      )
+      const data = await response.json()
+
+      if (data && data.display_name) {
+        setLocationInput(data.display_name)
+        setSelectedLocationName(data.display_name)
+      }
+    } catch (error) {
+      console.error("Error reverse geocoding:", error)
+      // Fallback to coordinates if reverse geocoding fails
+      setLocationInput(`${lat.toFixed(4)}, ${lng.toFixed(4)}`)
+    }
+  }  // Handle location search button click
+  const handleLocationSearchClick = () => {
+    if (locationInput && locationInput.length >= 3) {
+      searchLocation(locationInput)
+    }
+  }
+
   const handleItemSubmit = async (data) => {
     if (!isVerified) {
       toast.error(t("userverification.pleaseVerify"));
@@ -294,12 +385,17 @@ export default function Dashboard() {
     let locationString = ""
     if (item.location && item.location.type === "Point" && Array.isArray(item.location.coordinates)) {
       // GeoJSON is [lng, lat]
-      locationString = `${item.location.coordinates[1]},${item.location.coordinates[0]}`
+      const lat = item.location.coordinates[1]
+      const lng = item.location.coordinates[0]
+      locationString = `${lat},${lng}`
+      setSelectedPosition([lat, lng])
+      // Reverse geocode to get readable location name
+      reverseGeocode(lat, lng)
     } else if (typeof item.location === "string") {
       locationString = item.location
+      setLocationInput(item.location)
     }
     setValue("location", locationString)
-    setLocationInput(locationString)
     setValue("availableQuantity", item.availableQuantity || 1)
     setValue("available", item.available)
 
@@ -357,10 +453,12 @@ export default function Dashboard() {
               }
               setDialogMode("post")
               reset()
+              // Reset location fields
+              setLocationInput("")
+              setSelectedLocationName("")
               // Set default location after reset
               if (selectedPosition) {
                 const [lat, lng] = selectedPosition
-                setLocationInput(`${lat},${lng}`)
                 setValue("location", `${lat},${lng}`, { shouldValidate: true })
               }
               setIsItemDialogOpen(true)
@@ -713,17 +811,35 @@ export default function Dashboard() {
               {/* Location Selection */}
               <div>
                 <Label htmlFor="location">{t("addItem.location") || "Location"}</Label>
-                <Input
-                  id="location"
-                  placeholder={t("addItem.locationPlaceholder")}
-                  className="mt-1.5"
-                  value={locationInput}
-                  onChange={(e) => {
-                    setLocationInput(e.target.value)
-                    setValue("location", e.target.value)
-                  }}
-                  {...register("location", { required: "Location is required" })}
-                />
+                <div className="relative flex gap-2 mt-1.5">
+                  <Input
+                    id="location"
+                    placeholder={t("addItem.locationPlaceholder")}
+                    className="flex-1"
+                    value={locationInput}
+                    onChange={(e) => setLocationInput(e.target.value)}
+                  />
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleLocationSearchClick}
+                    disabled={isSearching || !locationInput || locationInput.length < 3}
+                    className="px-3"
+                  >
+                    {isSearching ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    ) : (
+                      <Search className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  {/* Hidden input for react-hook-form */}
+                  <input
+                    type="hidden"
+                    {...register("location", { required: "Location is required" })}
+                  />
+                </div>
                 {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location.message}</p>}
                 <div className="mt-3 rounded overflow-hidden" style={{ height: 250 }}>
                   <MapContainer

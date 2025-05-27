@@ -367,8 +367,8 @@ export default function BrowsePage() {
             transition={{ delay: 0.1 }}
           >
             <div className="sticky top-24  bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-              <FilterPanel />
               <UserSidebarLinks />
+              <FilterPanel />
             </div>
           </motion.div>
 
@@ -383,6 +383,7 @@ export default function BrowsePage() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto px-4 py-6 flex flex-col">
                 <div className="flex-1">
+                  <UserSidebarLinks onNavigate={() => setIsFilterSheetOpen(false)} />
                   <FilterPanel />
                 </div>
                 <Button

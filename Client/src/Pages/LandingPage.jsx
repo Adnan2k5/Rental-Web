@@ -596,12 +596,18 @@ export default function LandingPage() {
               <h3 className="font-semibold text-lg mb-4">{t('landingPage.footer.support')}</h3>
               <ul className="space-y-3">
                 {[
-                  t('landingPage.footer.helpCenter'),
-                  t('landingPage.footer.termsOfService'),
+                  {
+                    label: t('landingPage.footer.helpCenter'),
+                    link: '/dashboard/tickets',
+                  },
+                  {
+                    label: t('landingPage.footer.termsOfService'),
+                    link: '/terms',
+                  },
                 ].map((item, index) => (
                   <li key={index}>
-                    <Link to="#" className="text-gray-600 hover:text-primary">
-                      {item}
+                    <Link to={item.link} className="text-gray-600 hover:text-primary">
+                      {item.label}
                     </Link>
                   </li>
                 ))}

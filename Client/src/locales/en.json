@@ -63,7 +63,7 @@
     "categoryPlaceholder": "Select category",
     "subCategoryPlaceholder": "Select or type subcategory",
     "pricePlaceholder": "0.00",
-    "locationPlaceholder": "Click on map or enter coordinates (lat,lng)"
+    "locationPlaceholder": "Search for a location or click on map..."
   },
   "uploadContaier": {
     "title": "Upload Images",
@@ -224,6 +224,10 @@
       "bugReport": "Bug Report",
       "other": "Other"
     },
+    "name": "Name",
+    "email": "Email",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "Your email address",
     "description": "Description",
     "descriptionPlaceholder": "Describe your issue in detail",
     "attachments": "Attachments",

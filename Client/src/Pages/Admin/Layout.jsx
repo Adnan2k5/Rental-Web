@@ -18,7 +18,7 @@ import {
   SidebarInset,
 } from "../../Components/ui/sidebar"
 
-import { FileCheck, Home, LogOut, Package, TicketCheck, Users } from "lucide-react"
+import { FileCheck, Home, LogOut, MoveLeft, Package, TicketCheck, Users } from "lucide-react"
 import { motion } from "framer-motion"
 import { colors } from "../../assets/Color"
 import { shimmerAnimation } from "../../assets/Animations"
@@ -110,7 +110,11 @@ function AdminSidebar({ pathname, handleLogout, t }) {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b">
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-2">
+            <Link to="/dashboard">
+              <MoveLeft />
+            </Link>
+
             <SidebarMenuButton size="lg" asChild>
               <Link to="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">

@@ -15,6 +15,7 @@ import { pageTransition, itemFadeIn } from "../../assets/Animations"
 import { Loader } from "../../Components/loader"
 import { useAuth } from "../../Middleware/AuthProvider"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
 
 export const TicketDetails = () => {
     const { ticketId } = useParams()
@@ -54,8 +55,10 @@ export const TicketDetails = () => {
         try {
             setSubmitting(true)
             const response = await addTicketResponse(ticketId, newResponse)
-            if (response && response.data) {
+            console.log(response)
+            if (response.statusCode === 201) {
                 // Update the ticket with the new response
+                toast.success(t('ticketDetails.responseSuccess', 'Your response has been submitted successfully.'))
                 setTicket(response.data)
                 setNewResponse("")
             }
