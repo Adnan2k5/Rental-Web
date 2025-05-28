@@ -274,10 +274,11 @@ export default function TicketsSupport() {
                                     </div>
                                     <div className="divide-y">
                                         {tickets.filter((ticket) => {
+                                            const ticketName = ticket?.user?.name || ticket.name || '';
                                             const matchesSearch =
                                                 ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                                 ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                ticket?.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                                ticketName.toLowerCase().includes(searchQuery.toLowerCase())
                                             return matchesSearch;
                                         }).map((ticket) => (
                                             <motion.div
@@ -297,10 +298,10 @@ export default function TicketsSupport() {
                                                 <div className="col-span-3 hidden md:block">
                                                     <div className="flex items-center gap-2">
                                                         <Avatar className="h-6 w-6">
-                                                            <AvatarImage src={"/placeholder.svg"} alt={ticket?.user?.name} />
-                                                            <AvatarFallback>{ticket?.user?.name?.charAt(0)}</AvatarFallback>
+                                                            <AvatarImage src={"/placeholder.svg"} alt={ticket?.user?.name || ticket.name} />
+                                                            <AvatarFallback>{(ticket?.user?.name || ticket.name)?.charAt(0)}</AvatarFallback>
                                                         </Avatar>
-                                                        <span className="truncate">{ticket?.user?.name}</span>
+                                                        <span className="truncate">{ticket?.user?.name || ticket.name}</span>
                                                     </div>
                                                 </div>
                                                 <div className="col-span-3 md:col-span-2">{getStatusBadge(ticket.status)}</div>
@@ -405,12 +406,12 @@ export default function TicketsSupport() {
                         <div className="flex-1 overflow-y-auto py-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Avatar>
-                                    <AvatarImage src={"/placeholder.svg"} alt={selectedTicket.user.name} />
-                                    <AvatarFallback>{selectedTicket.user.name.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={"/placeholder.svg"} alt={selectedTicket?.user?.name || selectedTicket.name} />
+                                    <AvatarFallback>{(selectedTicket?.user?.name || selectedTicket.name)?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <div className="font-medium">{selectedTicket.user.name}</div>
-                                    <div className="text-sm text-muted-foreground">{selectedTicket.user.email}</div>
+                                    <div className="font-medium">{selectedTicket?.user?.name || selectedTicket.name}</div>
+                                    <div className="text-sm text-muted-foreground">{selectedTicket?.user?.email || selectedTicket.email}</div>
                                 </div>
                             </div>
                             <Tabs defaultValue="conversation" className="w-full">
@@ -430,10 +431,10 @@ export default function TicketsSupport() {
                                             >
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <Avatar className="h-6 w-6">
-                                                        <AvatarImage src={"/placeholder.svg"} alt={selectedTicket.user.name} />
-                                                        <AvatarFallback>{selectedTicket.user.name.charAt(0)}</AvatarFallback>
+                                                        <AvatarImage src={"/placeholder.svg"} alt={selectedTicket?.user?.name || selectedTicket.name} />
+                                                        <AvatarFallback>{(selectedTicket?.user?.name || selectedTicket.name)?.charAt(0)}</AvatarFallback>
                                                     </Avatar>
-                                                    <span className="text-sm font-medium">{message.isAdmin ? t("adminTickets.staff") : selectedTicket.user.name}</span>
+                                                    <span className="text-sm font-medium">{message.isAdmin ? t("adminTickets.staff") : (selectedTicket?.user?.name || selectedTicket.name)}</span>
                                                     <span className="text-xs opacity-70">{formatDate(message.timestamp)}</span>
                                                 </div>
                                                 <div className="whitespace-pre-wrap">{message.message}</div>
