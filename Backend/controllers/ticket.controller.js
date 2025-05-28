@@ -6,10 +6,15 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // Create a new support ticket
 const createTicket = asyncHandler(async (req, res) => {
-    const { subject, description,  priority, name, email } = req.body;
+    const { subject, description, priority, name, email } = req.body;
     
-    if (!subject || !description ) {
-        throw new ApiError(400, "All required fields must be provided");
+    if (!subject || !description) {
+        throw new ApiError(400, "Subject and description are required");
+    }
+    
+    // If user is not logged in, name and email are required
+    if (!req.user && (!name || !email)) {
+        throw new ApiError(400, "Name and email are required for guest users");
     }
     
     // Handle file uploads if any
@@ -23,15 +28,27 @@ const createTicket = asyncHandler(async (req, res) => {
         }
     }
     
-    const ticket = await Ticket.create({
-        user: req.user?._id || null ,
+    // Prepare ticket data
+    const ticketData = {
         subject,
         description,
-        name: name || req.user.name, 
-        email: email || req.user.email, 
         priority: priority || "medium",
         attachments: attachmentURLs
-    });
+    };
+    
+    // If user is logged in, store user ID and use their details
+    if (req.user) {
+        ticketData.user = req.user._id;
+        ticketData.name = req.user.name;
+        ticketData.email = req.user.email;
+    } else {
+        // If user is not logged in, store provided name and email, leave user as null
+        ticketData.user = null;
+        ticketData.name = name;
+        ticketData.email = email;
+    }
+    
+    const ticket = await Ticket.create(ticketData);
     
     return res.status(201).json(
         new ApiResponse(201, ticket, "Support ticket created successfully")

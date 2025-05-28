@@ -11,6 +11,12 @@ const ticketSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
+        name: {
+            type: String,
+        },
+        email : {
+            type: String,
+        },
         description: {
             type: String,
             required: true,
